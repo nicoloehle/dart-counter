@@ -51,7 +51,7 @@
       --dartOpacity: .22;
       --themeColor: #090c11;
 
-      /* NEU: Header-Hinterlegung (vollflächig, ohne Verlauf) */
+      /* Header-Hinterlegung: vollflächig, ohne Verlauf */
       --sbHeaderBg: rgba(255,255,255,.07);
     }
 
@@ -78,12 +78,15 @@
       --dartOpacity: .12;
       --themeColor: #ffffff;
 
-      /* NEU: Header-Hinterlegung (vollflächig, ohne Verlauf) */
+      /* Header-Hinterlegung: vollflächig, ohne Verlauf */
       --sbHeaderBg: rgba(11,15,20,.06);
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
+
+    /* FIX 2: horizontales Scrollen auf Mobile verhindern */
+    html, body{ overflow-x:hidden; }
 
     body{
       margin:0;
@@ -101,7 +104,7 @@
         max(14px, env(safe-area-inset-left));
     }
 
-    .wrap{ max-width: 980px; margin: 0 auto; position:relative; }
+    .wrap{ max-width: 980px; margin: 0 auto; position:relative; overflow-x: clip; }
 
     .wrap::before{
       content:"";
@@ -330,23 +333,22 @@
     /* ---- SCOREBOARD ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
-    /* FIX: mehr Abstand -> verhindert „ANWURFNAME“-Überlappung */
     .sb-header{
       display:grid;
-      grid-template-columns: 86px 1fr 74px 74px; /* vorher 56px */
+      grid-template-columns: 86px 1fr 74px 74px;
       align-items:center;
       padding: 10px 14px;
       border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: var(--sbHeaderBg); /* NEU: vollflächig ohne Verlauf */
+      background: var(--sbHeaderBg);
       column-gap: 8px;
     }
     .sb-header .col{
       text-align:center;
       font-size: var(--fs-col);
-      color: color-mix(in srgb, var(--muted) 86%, transparent); /* „leicht helles Grau“ */
+      color: color-mix(in srgb, var(--muted) 86%, transparent);
       font-weight: 1000;
       letter-spacing: .2px;
-      text-transform: uppercase; /* einheitlich */
+      text-transform: uppercase;
     }
     .sb-header .left{
       text-align:left;
@@ -354,12 +356,12 @@
       color: color-mix(in srgb, var(--muted) 86%, transparent);
       font-weight: 1000;
       letter-spacing: .2px;
-      text-transform: uppercase; /* einheitlich */
+      text-transform: uppercase;
     }
 
     .sb-row{
       display:grid;
-      grid-template-columns: 86px 1fr 74px 74px; /* muss zur Header-Spalte passen */
+      grid-template-columns: 86px 1fr 74px 74px;
       align-items:center;
       padding: 12px 14px;
       border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
@@ -368,21 +370,25 @@
     }
     .sb-row:last-child{ border-bottom:none; }
 
-    /* NEU: kräftigere Spielerflächen */
+    /* kräftigere Spielerflächen */
     .sb-row.playerA{
       background:
         linear-gradient(90deg,
-          color-mix(in srgb, var(--pA) 40%, transparent),
-          color-mix(in srgb, var(--tapBg) 70%, transparent)
+          color-mix(in srgb, var(--pA) 44%, transparent),
+          color-mix(in srgb, var(--tapBg) 68%, transparent)
         );
     }
     .sb-row.playerB{
       background:
         linear-gradient(90deg,
-          color-mix(in srgb, var(--pB) 40%, transparent),
-          color-mix(in srgb, var(--tapBg) 70%, transparent)
+          color-mix(in srgb, var(--pB) 44%, transparent),
+          color-mix(in srgb, var(--tapBg) 68%, transparent)
         );
     }
+
+    /* FIX 1: iOS Tap sicher */
+    .tap{ touch-action: manipulation; }
+
     .sb-row.tap:active{
       background:
         linear-gradient(90deg,
@@ -733,7 +739,6 @@
         <div class="badgeLine">
           <span class="pill" id="matchPill"></span>
           <span class="pill" id="legsPill"></span>
-          <!-- NEU: Spieler A/B statt nur A/B -->
           <span class="pill"><span class="chipDot a"></span>Spieler A</span>
           <span class="pill"><span class="chipDot b"></span>Spieler B</span>
         </div>
@@ -795,7 +800,7 @@
 </div>
 
 <script>
-  const STORAGE_KEY = "dart_counter_tvscore_v8";
+  const STORAGE_KEY = "dart_counter_tvscore_v9";
   const THEME_KEY   = "dart_counter_theme_v2";
 
   const COLOR_OPTIONS = [
@@ -1213,30 +1218,36 @@
     haptic(8);
   }
 
-  function attachLongPressUndo(targetEl){
+  /* FIX 1: Tap + Longpress robust (iOS) */
+  function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
-    let longPressed = false;
+    let didLong = false;
 
-    const start = (ev) => {
-      ev.preventDefault?.();
-      longPressed = false;
-      timer = setTimeout(() => { longPressed = true; undo(); }, LONG);
+    const clear = () => {
+      if(timer) clearTimeout(timer);
+      timer = null;
     };
-    const end = () => { if(timer) clearTimeout(timer); timer = null; };
 
-    targetEl.addEventListener("pointerdown", start, { passive:false });
-    targetEl.addEventListener("pointerup", end);
-    targetEl.addEventListener("pointercancel", end);
-    targetEl.addEventListener("pointerleave", end);
+    targetEl.addEventListener("pointerdown", () => {
+      didLong = false;
+      clear();
+      timer = setTimeout(() => {
+        didLong = true;
+        onLongPress();
+        haptic(10);
+      }, LONG);
+    }, { passive: true });
 
-    targetEl.addEventListener("touchstart", start, { passive:false });
-    targetEl.addEventListener("touchend", end);
-    targetEl.addEventListener("touchcancel", end);
+    targetEl.addEventListener("pointerup", () => {
+      if(!didLong) onTap();
+      clear();
+    });
 
-    targetEl.addEventListener("click", (ev) => {
-      if(longPressed){ ev.preventDefault(); ev.stopPropagation(); longPressed = false; }
-    }, true);
+    targetEl.addEventListener("pointercancel", clear);
+    targetEl.addEventListener("pointerleave", clear);
+
+    targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
   function swapSidesAndPrepare(){
@@ -1297,10 +1308,9 @@
       show("game");
     });
 
-    el("rowA").addEventListener("click", ()=> addLeg("A"));
-    el("rowB").addEventListener("click", ()=> addLeg("B"));
-    attachLongPressUndo(el("rowA"));
-    attachLongPressUndo(el("rowB"));
+    /* REPLACED: iOS-sicheres Tap/Longpress */
+    attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
+    attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
 
     el("undo").addEventListener("click", undo);
     el("toggleLog").addEventListener("click", toggleLog);
