@@ -1,0 +1,1345 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090c11" />
+  <title>Dart-Set-and-Leg-Counter</title>
+
+  <style>
+    :root{
+      --radius:18px;
+      --tap: 56px;
+
+      --fs-title: clamp(18px, 4.6vw, 26px);
+      --fs-h2: clamp(16px, 4.4vw, 20px);
+      --fs-body: clamp(15px, 4vw, 18px);
+      --fs-meta: clamp(12px, 3.3vw, 14px);
+
+      --fs-name: clamp(18px, 4.8vw, 22px);
+      --fs-col: clamp(12px, 3.2vw, 13px);
+      --fs-num: clamp(20px, 5.4vw, 26px);
+
+      /* Dart-Optik Akzente */
+      --pA: #d61f26;  /* dart red */
+      --pB: #14a44d;  /* dart green */
+
+      --boardWhite: #f7f8fb;
+      --boardBlack: #0b0f14;
+    }
+
+    /* Dark */
+    html[data-theme="dark"]{
+      --bg0:#05070a;
+      --bg1:#090c11;
+
+      --panelA: rgba(9,11,15,.93);
+      --panelB: rgba(13,16,21,.93);
+
+      --text:#f7f8fb;
+      --muted: rgba(247,248,251,.72);
+      --line: rgba(247,248,251,.14);
+
+      --shadow: 0 16px 36px rgba(0,0,0,.55);
+
+      --inputBg: rgba(0,0,0,.40);
+      --btnBg: rgba(255,255,255,.05);
+
+      --tapBg: rgba(255,255,255,.03);
+      --tapBgActive: rgba(255,255,255,.08);
+
+      --dartOpacity: .22;
+      --themeColor: #090c11;
+
+      /* NEU: Header-Hinterlegung (vollflächig, ohne Verlauf) */
+      --sbHeaderBg: rgba(255,255,255,.07);
+    }
+
+    /* Light */
+    html[data-theme="light"]{
+      --bg0:#eef1f4;
+      --bg1:#ffffff;
+
+      --panelA: rgba(255,255,255,.96);
+      --panelB: rgba(248,249,251,.96);
+
+      --text:#0b0f14;
+      --muted: rgba(11,15,20,.68);
+      --line: rgba(11,15,20,.14);
+
+      --shadow: 0 14px 28px rgba(0,0,0,.12);
+
+      --inputBg: rgba(255,255,255,.92);
+      --btnBg: rgba(11,15,20,.05);
+
+      --tapBg: rgba(11,15,20,.03);
+      --tapBgActive: rgba(11,15,20,.07);
+
+      --dartOpacity: .12;
+      --themeColor: #ffffff;
+
+      /* NEU: Header-Hinterlegung (vollflächig, ohne Verlauf) */
+      --sbHeaderBg: rgba(11,15,20,.06);
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--pA) 16%, transparent), transparent 60%),
+        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--pB) 14%, transparent), transparent 60%),
+        radial-gradient(900px 520px at 50% 110%, color-mix(in srgb, var(--boardBlack) 14%, transparent), transparent 62%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      padding:
+        max(14px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(14px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; position:relative; }
+
+    .wrap::before{
+      content:"";
+      position:absolute;
+      left: 50%;
+      top: 54%;
+      width: min(980px, 140vw);
+      height: min(980px, 140vw);
+      transform: translate(-50%,-50%) rotate(-18deg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='v' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='.20'/%3E%3Cstop offset='55%25' stop-color='%23000000' stop-opacity='.12'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg opacity='.92'%3E%3Cpath d='M160 530 L540 150 L610 220 L230 600 Z' fill='%23ffffff' fill-opacity='.08'/%3E%3Cpath d='M540 150 L690 90 L740 140 L610 220 Z' fill='%23d61f26' fill-opacity='.22'/%3E%3Cpath d='M230 600 L610 220 L680 290 L300 670 Z' fill='%2314a44d' fill-opacity='.20'/%3E%3Cpath d='M300 670 L680 290 L810 420 L430 800 Z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/g%3E%3Ccircle cx='450' cy='450' r='430' fill='url(%23v)'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: blur(12px);
+      opacity: var(--dartOpacity);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .card{
+      position:relative;
+      z-index:1;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin-bottom: 14px;
+    }
+
+    .navbar{
+      position: sticky;
+      top: max(0px, env(safe-area-inset-top));
+      z-index: 10;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panelA) 90%, transparent), color-mix(in srgb, var(--panelB) 90%, transparent));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 10px 12px;
+      margin-bottom: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .brandIcon{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background:
+        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--pA) 22%, transparent), transparent 55%),
+        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--pB) 18%, transparent), transparent 55%),
+        color-mix(in srgb, var(--btnBg) 92%, transparent);
+      flex: 0 0 auto;
+    }
+    .brandTitle{
+      font-size: var(--fs-title);
+      font-weight: 1100;
+      letter-spacing: .2px;
+      line-height: 1.12;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      word-break: break-word;
+    }
+
+    .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
+
+    .row{ display:grid; grid-template-columns: 1fr; gap: 12px; }
+    @media(min-width:560px){ .row.cols2{ grid-template-columns: 1fr 1fr; } }
+
+    label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
+
+    input, select{
+      width:100%;
+      font-size: var(--fs-body);
+      padding: 12px;
+      min-height: var(--tap);
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+      background: var(--inputBg);
+      color: var(--text);
+      outline:none;
+    }
+    input::placeholder{ color: color-mix(in srgb, var(--text) 45%, transparent); }
+
+    .meta{ color: var(--muted); font-size: var(--fs-meta); margin-top: 10px; line-height:1.35; }
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .spacer{ flex:1; }
+
+    button{
+      appearance:none;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: var(--btnBg);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 12px;
+      min-height: var(--tap);
+      font-size: var(--fs-body);
+      font-weight: 900;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action: manipulation;
+      box-shadow: 0 10px 20px rgba(0,0,0,.18);
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    button.primary{
+      border-color: color-mix(in srgb, var(--pA) 58%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--pA) 92%, white 0%), color-mix(in srgb, var(--pA) 70%, black 22%));
+      color: #fff;
+    }
+    button.ghost{ box-shadow:none; background: var(--btnBg); }
+
+    button.small{
+      min-height: 40px;
+      padding: 8px 10px;
+      font-size: var(--fs-meta);
+      border-radius: 999px;
+      box-shadow:none;
+    }
+
+    .themeBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 900;
+      box-shadow:none;
+      white-space: nowrap;
+    }
+
+    .hidden{ display:none!important; }
+
+    /* ---- SETUP kompakt ---- */
+    .playerCard{ display:grid; gap: 12px; }
+    .playerLine{
+      display:grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      align-items:center;
+    }
+    .colorPickBtn{
+      width: 48px;
+      height: 48px;
+      min-height: 48px;
+      padding: 0;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:none;
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    }
+    .colorPickBtn::after{
+      content:"";
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--text) 65%, transparent);
+      background: var(--dot, #fff);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    }
+
+    .palette{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+    }
+    .swatch{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--text) 28%, transparent);
+      background: var(--c);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0;
+      min-height: 34px;
+      box-shadow:none;
+      position: relative;
+    }
+    .swatch.selected{
+      outline: 3px solid color-mix(in srgb, var(--text) 42%, transparent);
+      outline-offset: 2px;
+    }
+    .swatch.disabled{
+      opacity: .26;
+      cursor: not-allowed;
+      filter: grayscale(65%);
+    }
+    .swatch .check{
+      font-size: 16px;
+      line-height: 1;
+      opacity: .0;
+      transform: translateY(-1px);
+      color: var(--checkColor, color-mix(in srgb, var(--text) 92%, transparent));
+      text-shadow: 0 8px 18px rgba(0,0,0,.35);
+    }
+    .swatch.selected .check{ opacity: 1; }
+
+    /* ---- SCOREBOARD ---- */
+    .scoreboard{ padding: 0; overflow:hidden; }
+
+    /* FIX: mehr Abstand -> verhindert „ANWURFNAME“-Überlappung */
+    .sb-header{
+      display:grid;
+      grid-template-columns: 86px 1fr 74px 74px; /* vorher 56px */
+      align-items:center;
+      padding: 10px 14px;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: var(--sbHeaderBg); /* NEU: vollflächig ohne Verlauf */
+      column-gap: 8px;
+    }
+    .sb-header .col{
+      text-align:center;
+      font-size: var(--fs-col);
+      color: color-mix(in srgb, var(--muted) 86%, transparent); /* „leicht helles Grau“ */
+      font-weight: 1000;
+      letter-spacing: .2px;
+      text-transform: uppercase; /* einheitlich */
+    }
+    .sb-header .left{
+      text-align:left;
+      font-size: var(--fs-col);
+      color: color-mix(in srgb, var(--muted) 86%, transparent);
+      font-weight: 1000;
+      letter-spacing: .2px;
+      text-transform: uppercase; /* einheitlich */
+    }
+
+    .sb-row{
+      display:grid;
+      grid-template-columns: 86px 1fr 74px 74px; /* muss zur Header-Spalte passen */
+      align-items:center;
+      padding: 12px 14px;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      background: var(--tapBg);
+      column-gap: 8px;
+    }
+    .sb-row:last-child{ border-bottom:none; }
+
+    /* NEU: kräftigere Spielerflächen */
+    .sb-row.playerA{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pA) 40%, transparent),
+          color-mix(in srgb, var(--tapBg) 70%, transparent)
+        );
+    }
+    .sb-row.playerB{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pB) 40%, transparent),
+          color-mix(in srgb, var(--tapBg) 70%, transparent)
+        );
+    }
+    .sb-row.tap:active{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--text) 10%, transparent),
+          var(--tapBgActive)
+        );
+    }
+
+    .serveCell{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 18px;
+      font-weight: 1100;
+      opacity: .95;
+      color: color-mix(in srgb, var(--text) 92%, transparent);
+    }
+    .serveCell.none{ opacity: 0; }
+
+    .name{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height: 44px;
+      font-size: var(--fs-name);
+      font-weight: 1100;
+      letter-spacing: .2px;
+      min-width: 0;
+    }
+    .name span{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .num{
+      text-align:center;
+      font-size: var(--fs-num);
+      font-weight: 1100;
+      letter-spacing: .3px;
+    }
+
+    .badgeLine{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: var(--fs-meta);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
+      font-weight: 900;
+    }
+    .chipDot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .chipDot.a{ background: var(--pA); }
+    .chipDot.b{ background: var(--pB); }
+
+    .hint{
+      margin-top: 10px;
+      font-size: var(--fs-meta);
+      color: color-mix(in srgb, var(--text) 62%, transparent);
+    }
+
+    .log{
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      border-radius: 14px;
+      padding: 12px;
+      max-height: 170px;
+      overflow: auto;
+      margin-top: 10px;
+    }
+
+    /* ---- WIN MODAL ---- */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+    .modalOverlay.show{ display:flex; }
+
+    .modalCard{
+      width: min(560px, 100%);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+    }
+    .modalTop{
+      padding: 14px 16px;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--winColor) 28%, transparent),
+        color-mix(in srgb, var(--winColor) 10%, transparent)
+      );
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalTopRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .modalTop .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 1000;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
+      background: color-mix(in srgb, var(--winColor) 18%, transparent);
+      white-space: nowrap;
+    }
+    .shareBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: var(--fs-meta);
+      font-weight: 1000;
+      box-shadow:none;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+    }
+
+    .modalBody{ padding: 18px 16px 16px; }
+    .modalTitle{
+      font-size: clamp(22px, 6vw, 34px);
+      font-weight: 1100;
+      line-height: 1.1;
+      margin: 0 0 10px;
+    }
+    .modalSub{
+      font-size: var(--fs-body);
+      color: var(--muted);
+      margin: 0 0 14px;
+    }
+
+    .summaryGrid{
+      display:grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      margin: 12px 0 14px;
+    }
+    .summaryRow{
+      display:grid;
+      grid-template-columns: 1fr 90px 90px;
+      gap: 10px;
+      align-items:center;
+      font-size: var(--fs-meta);
+      color: var(--muted);
+      letter-spacing: .2px;
+      font-weight: 900;
+    }
+    .summaryRow .h{ text-align:center; opacity:.85; }
+    .summaryRow .n{
+      color: var(--text);
+      font-size: var(--fs-body);
+      font-weight: 1100;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summaryRow .v{
+      text-align:center;
+      color: var(--text);
+      font-size: var(--fs-body);
+      font-weight: 1100;
+    }
+
+    .modalActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .modalActions button.primary{
+      border-color: color-mix(in srgb, var(--winColor) 45%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--winColor) 92%, white 0%), color-mix(in srgb, var(--winColor) 72%, black 18%));
+    }
+
+    @media(min-width: 860px){
+      .wrap{ max-width: 980px; }
+      .card{ padding: 16px; }
+      .navbar{ padding: 12px 14px; margin-bottom: 26px; }
+      .brandTitle{ font-size: clamp(20px, 2.2vw, 26px); }
+    }
+    @media(max-width: 420px){
+      .brandIcon{ width: 30px; height: 30px; }
+      .brandTitle{ font-size: clamp(16px, 4.6vw, 20px); }
+      .navbar{ gap: 8px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- SETUP -->
+  <div id="screenSetup">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brandIcon" aria-hidden="true">🎯</div>
+        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
+      </div>
+      <div class="topActions">
+        <button class="themeBtn ghost" id="themeToggle" type="button" aria-label="Theme wechseln">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="playerCard">
+        <div>
+          <label>Spieler A</label>
+          <div class="playerLine">
+            <button class="colorPickBtn" id="colorBtnA" type="button" aria-label="Farbe Spieler A wählen"></button>
+            <input id="nameA" placeholder="Name Spieler A" />
+          </div>
+          <div class="palette hidden" id="paletteA" aria-label="Farben Spieler A"></div>
+        </div>
+
+        <div>
+          <label>Spieler B</label>
+          <div class="playerLine">
+            <button class="colorPickBtn" id="colorBtnB" type="button" aria-label="Farbe Spieler B wählen"></button>
+            <input id="nameB" placeholder="Name Spieler B" />
+          </div>
+          <div class="palette hidden" id="paletteB" aria-label="Farben Spieler B"></div>
+        </div>
+      </div>
+
+      <div class="meta">Einstellungen werden gespeichert.</div>
+    </div>
+
+    <div class="card">
+      <div class="row cols2">
+        <div>
+          <label for="bestOfSets">Best of (Sets)</label>
+          <select id="bestOfSets">
+            <option value="5">Best of 5</option>
+            <option value="7">Best of 7</option>
+            <option value="15">Best of 15</option>
+          </select>
+        </div>
+        <div>
+          <label for="legsToWinSet">Legs pro Set</label>
+          <select id="legsToWinSet">
+            <option value="3">First to 3 Legs</option>
+            <option value="5">First to 5 Legs</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row cols2">
+        <div>
+          <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
+          <select id="firstServer">
+            <option value="A">Spieler A</option>
+            <option value="B">Spieler B</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="meta" style="margin-top:0;">&nbsp;</div>
+        </div>
+      </div>
+
+      <div class="meta" id="formatHint"></div>
+
+      <div class="controls" style="margin-top:14px;">
+        <button class="primary" id="startBtn" type="button">Spiel starten</button>
+        <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
+      </div>
+
+      <div class="meta" id="helpText" style="display:none;">
+        Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Undo.<br>
+        Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="screenGame" class="hidden">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brandIcon" aria-hidden="true">🎯</div>
+        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
+      </div>
+      <div class="topActions">
+        <button class="themeBtn ghost" id="themeToggle2" type="button" aria-label="Theme wechseln">
+          <span id="themeIcon2">🌙</span>
+          <span id="themeLabel2">Dark</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card scoreboard">
+      <div class="sb-header">
+        <div class="col">ANWURF</div>
+        <div class="left">NAME</div>
+        <div class="col">SETS</div>
+        <div class="col">LEGS</div>
+      </div>
+
+      <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen Spieler A">
+        <div class="serveCell" id="serveA">▶</div>
+        <div class="name"><span id="titleA">Spieler A</span></div>
+        <div class="num" id="setsA">0</div>
+        <div class="num" id="legsA">0</div>
+      </div>
+
+      <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen Spieler B">
+        <div class="serveCell" id="serveB">▶</div>
+        <div class="name"><span id="titleB">Spieler B</span></div>
+        <div class="num" id="setsB">0</div>
+        <div class="num" id="legsB">0</div>
+      </div>
+
+      <div style="padding:12px 14px;">
+        <div class="badgeLine">
+          <span class="pill" id="matchPill"></span>
+          <span class="pill" id="legsPill"></span>
+          <!-- NEU: Spieler A/B statt nur A/B -->
+          <span class="pill"><span class="chipDot a"></span>Spieler A</span>
+          <span class="pill"><span class="chipDot b"></span>Spieler B</span>
+        </div>
+
+        <div class="controls" style="margin-top:12px;">
+          <button class="ghost" id="undo" type="button">Undo</button>
+          <button class="ghost" id="resetToSetup" type="button">Neues Match</button>
+          <span class="spacer"></span>
+          <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
+        </div>
+
+        <div class="log hidden" id="log"></div>
+        <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- WIN MODAL -->
+<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
+  <div class="modalCard" style="--winColor: var(--pA);">
+    <div class="modalTop">
+      <span class="tag" id="winTag">🏆 Match beendet</span>
+      <div class="modalTopRight">
+        <span style="font-weight:1000; color: var(--muted); font-size: var(--fs-meta);" id="winScore">—</span>
+        <button class="shareBtn" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
+      </div>
+    </div>
+    <div class="modalBody">
+      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
+      <p class="modalSub" id="winSub">Sie haben das Match gewonnen.</p>
+
+      <div class="summaryGrid" aria-label="Match-Zusammenfassung">
+        <div class="summaryRow" style="opacity:.85;">
+          <div></div>
+          <div class="h">Sets</div>
+          <div class="h">Legs</div>
+        </div>
+        <div class="summaryRow">
+          <div class="n" id="sumNameA">Spieler A</div>
+          <div class="v" id="sumSetsA">0</div>
+          <div class="v" id="sumLegsA">0</div>
+        </div>
+        <div class="summaryRow">
+          <div class="n" id="sumNameB">Spieler B</div>
+          <div class="v" id="sumSetsB">0</div>
+          <div class="v" id="sumLegsB">0</div>
+        </div>
+      </div>
+
+      <div class="modalActions">
+        <button class="primary" id="winRematch" type="button">Revanche</button>
+        <button class="ghost" id="winSwapSides" type="button">Seiten wechseln</button>
+        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "dart_counter_tvscore_v8";
+  const THEME_KEY   = "dart_counter_theme_v2";
+
+  const COLOR_OPTIONS = [
+    { key: "red",    name: "Rot",     hex: "#d61f26" },
+    { key: "green",  name: "Grün",    hex: "#14a44d" },
+    { key: "black",  name: "Schwarz", hex: "#0b0f14" },
+    { key: "white",  name: "Weiß",    hex: "#f7f8fb" },
+    { key: "blue",   name: "Blau",    hex: "#2f6bff" },
+    { key: "yellow", name: "Gelb",    hex: "#f2c230" },
+    { key: "pink",   name: "Pink",    hex: "#ff3ea5" },
+    { key: "orange", name: "Orange",  hex: "#f97316" },
+    { key: "gray",   name: "Grau",    hex: "#9ca3af" }
+  ];
+
+  const state = {
+    names: { A: "Spieler A", B: "Spieler B" },
+    colors:{ A: "#d61f26",   B: "#14a44d" },
+    bestOfSets: 5,
+    firstToSets: 3,
+    legsToWinSet: 3,
+    firstServer: "A",
+    sets: { A: 0, B: 0 },
+    legs: { A: 0, B: 0 },
+    legsTotal: { A: 0, B: 0 },
+    history: [],
+    matchOver: false
+  };
+
+  const el = (id) => document.getElementById(id);
+  const other = (p) => (p === "A" ? "B" : "A");
+  const computeFirstTo = (bestOf) => Math.floor(bestOf / 2) + 1;
+
+  function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) {} }
+
+  function setTheme(theme){
+    const t = (theme === "light") ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", t);
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    meta && meta.setAttribute("content",
+      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() || (t==="light" ? "#ffffff" : "#090c11")
+    );
+
+    const label = (t === "light") ? "Light" : "Dark";
+    const icon  = (t === "light") ? "☀️" : "🌙";
+
+    el("themeLabel").textContent  = label;
+    el("themeLabel2").textContent = label;
+    el("themeIcon").textContent   = icon;
+    el("themeIcon2").textContent  = icon;
+
+    try { localStorage.setItem(THEME_KEY, t); } catch(_) {}
+  }
+  function toggleTheme(){
+    const cur = document.documentElement.getAttribute("data-theme") || "dark";
+    setTheme(cur === "dark" ? "light" : "dark");
+    haptic(8);
+  }
+  function loadTheme(){
+    try{
+      const t = localStorage.getItem(THEME_KEY);
+      setTheme(t || "dark");
+    }catch(_){
+      setTheme("dark");
+    }
+  }
+
+  function isLightHex(hex){
+    const h = (hex||"").replace("#","").trim();
+    if(h.length !== 6) return false;
+    const r = parseInt(h.slice(0,2),16);
+    const g = parseInt(h.slice(2,4),16);
+    const b = parseInt(h.slice(4,6),16);
+    const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+    return lum > 170;
+  }
+
+  function applyPlayerColors(){
+    document.documentElement.style.setProperty("--pA", state.colors.A);
+    document.documentElement.style.setProperty("--pB", state.colors.B);
+
+    el("colorBtnA").style.setProperty("--dot", state.colors.A);
+    el("colorBtnB").style.setProperty("--dot", state.colors.B);
+  }
+
+  function firstAvailableColor(excludeHex){
+    const exclude = (excludeHex||"").toLowerCase();
+    const found = COLOR_OPTIONS.find(c => c.hex.toLowerCase() !== exclude);
+    return found ? found.hex : (COLOR_OPTIONS[0]?.hex || "#ffffff");
+  }
+
+  function ensureUniqueColors(changedPlayer){
+    const a = state.colors.A.toLowerCase();
+    const b = state.colors.B.toLowerCase();
+    if(a === b){
+      const fix = other(changedPlayer);
+      state.colors[fix] = firstAvailableColor(state.colors[changedPlayer]);
+    }
+  }
+
+  function buildPalette(player){
+    const pal = el(player === "A" ? "paletteA" : "paletteB");
+    pal.innerHTML = "";
+
+    for(const c of COLOR_OPTIONS){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "swatch";
+      btn.style.setProperty("--c", c.hex);
+      btn.style.setProperty("--checkColor", isLightHex(c.hex) ? "#0b0f14" : "");
+
+      const check = document.createElement("span");
+      check.className = "check";
+      check.textContent = "✓";
+      btn.appendChild(check);
+
+      btn.addEventListener("click", ()=>{
+        const opp = other(player);
+        if(state.colors[opp].toLowerCase() === c.hex.toLowerCase()) return;
+        state.colors[player] = c.hex;
+        ensureUniqueColors(player);
+        saveSettings();
+        applyPlayerColors();
+        refreshPalettes();
+        haptic(10);
+      });
+
+      pal.appendChild(btn);
+    }
+  }
+
+  function refreshPalettes(){
+    const aPal = el("paletteA");
+    const bPal = el("paletteB");
+
+    const aColor = state.colors.A.toLowerCase();
+    const bColor = state.colors.B.toLowerCase();
+
+    [...aPal.querySelectorAll(".swatch")].forEach((sw, idx)=>{
+      const hex = COLOR_OPTIONS[idx].hex.toLowerCase();
+      sw.classList.toggle("selected", hex === aColor);
+      sw.classList.toggle("disabled", hex === bColor);
+    });
+
+    [...bPal.querySelectorAll(".swatch")].forEach((sw, idx)=>{
+      const hex = COLOR_OPTIONS[idx].hex.toLowerCase();
+      sw.classList.toggle("selected", hex === bColor);
+      sw.classList.toggle("disabled", hex === aColor);
+    });
+  }
+
+  function togglePalette(player){
+    const pal = el(player === "A" ? "paletteA" : "paletteB");
+    const otherPal = el(player === "A" ? "paletteB" : "paletteA");
+    otherPal.classList.add("hidden");
+    pal.classList.toggle("hidden");
+    haptic(8);
+  }
+
+  function closePalettes(){
+    el("paletteA").classList.add("hidden");
+    el("paletteB").classList.add("hidden");
+  }
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+
+      const s = JSON.parse(raw);
+
+      el("nameA").value = typeof s.nameA === "string" ? s.nameA : "";
+      el("nameB").value = typeof s.nameB === "string" ? s.nameB : "";
+
+      el("bestOfSets").value   = String([5,7,15].includes(+s.bestOfSets) ? +s.bestOfSets : 5);
+      el("legsToWinSet").value = String([3,5].includes(+s.legsToWinSet) ? +s.legsToWinSet : 3);
+      el("firstServer").value  = (s.firstServer === "B") ? "B" : "A";
+
+      state.colors.A = typeof s.colorA === "string" ? s.colorA : state.colors.A;
+      state.colors.B = typeof s.colorB === "string" ? s.colorB : state.colors.B;
+
+      ensureUniqueColors("A");
+    }catch(_){}
+  }
+
+  function saveSettings(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        nameA: el("nameA").value || "",
+        nameB: el("nameB").value || "",
+        bestOfSets: +el("bestOfSets").value,
+        legsToWinSet: +el("legsToWinSet").value,
+        firstServer: el("firstServer").value,
+        colorA: state.colors.A,
+        colorB: state.colors.B
+      }));
+    }catch(_){}
+  }
+
+  function snapshot(){
+    state.history.push(JSON.parse(JSON.stringify({
+      names: state.names,
+      colors: state.colors,
+      bestOfSets: state.bestOfSets,
+      firstToSets: state.firstToSets,
+      legsToWinSet: state.legsToWinSet,
+      firstServer: state.firstServer,
+      sets: state.sets,
+      legs: state.legs,
+      legsTotal: state.legsTotal,
+      matchOver: state.matchOver
+    })));
+    if(state.history.length > 80) state.history.shift();
+  }
+
+  function logLine(t){
+    el("log").textContent = t + "\n" + el("log").textContent;
+  }
+
+  function currentSetNumber(){ return state.sets.A + state.sets.B + 1; }
+  function currentLegNumberWithinSet(){ return state.legs.A + state.legs.B + 1; }
+
+  function computeThrower(){
+    const setNo = currentSetNumber();
+    const setStarter = (setNo % 2 === 1) ? state.firstServer : other(state.firstServer);
+    const legNo = currentLegNumberWithinSet();
+    return (legNo % 2 === 1) ? setStarter : other(setStarter);
+  }
+
+  function renderSetupHint(){
+    const bestOf = +el("bestOfSets").value;
+    const firstTo = computeFirstTo(bestOf);
+    const legsToWin = +el("legsToWinSet").value;
+    const starter = el("firstServer").value;
+    el("formatHint").textContent =
+      `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: Spieler ${starter}`;
+  }
+
+  function applySetup(){
+    state.names.A = el("nameA").value.trim() || "Spieler A";
+    state.names.B = el("nameB").value.trim() || "Spieler B";
+
+    ensureUniqueColors("A");
+    applyPlayerColors();
+
+    state.bestOfSets = +el("bestOfSets").value;
+    state.firstToSets = computeFirstTo(state.bestOfSets);
+    state.legsToWinSet = +el("legsToWinSet").value;
+    state.firstServer = (el("firstServer").value === "B") ? "B" : "A";
+  }
+
+  function show(screen){
+    el("screenSetup").classList.toggle("hidden", screen !== "setup");
+    el("screenGame").classList.toggle("hidden", screen !== "game");
+    closePalettes();
+  }
+
+  function renderGame(){
+    el("titleA").textContent = state.names.A;
+    el("titleB").textContent = state.names.B;
+
+    el("setsA").textContent = state.sets.A;
+    el("setsB").textContent = state.sets.B;
+    el("legsA").textContent = state.legs.A;
+    el("legsB").textContent = state.legs.B;
+
+    el("matchPill").textContent = `Best of ${state.bestOfSets} (First to ${state.firstToSets})`;
+    el("legsPill").textContent  = `Legs/Set: First to ${state.legsToWinSet}`;
+
+    const thrower = computeThrower();
+    el("serveA").classList.toggle("none", thrower !== "A");
+    el("serveB").classList.toggle("none", thrower !== "B");
+  }
+
+  function updateWinSummary(){
+    el("sumNameA").textContent = state.names.A;
+    el("sumNameB").textContent = state.names.B;
+    el("sumSetsA").textContent = state.sets.A;
+    el("sumSetsB").textContent = state.sets.B;
+    el("sumLegsA").textContent = state.legsTotal.A;
+    el("sumLegsB").textContent = state.legsTotal.B;
+  }
+
+  function buildShareText(){
+    return [
+      "🎯 Dart-Set-and-Leg-Counter",
+      `${state.names.A} vs ${state.names.B}`,
+      `Sets: ${state.sets.A}-${state.sets.B}`,
+      `Legs (gesamt): ${state.legsTotal.A}-${state.legsTotal.B}`,
+      `Format: Best of ${state.bestOfSets} (First to ${state.firstToSets}) · Legs/Set: ${state.legsToWinSet}`
+    ].join("\n");
+  }
+
+  async function shareResult(){
+    const text = buildShareText();
+    try{
+      if(navigator.share){
+        await navigator.share({ text, title: "Dart Ergebnis" });
+        haptic(16);
+        return;
+      }
+    }catch(_){}
+
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(text);
+        alert("Ergebnis in die Zwischenablage kopiert.");
+        haptic(16);
+        return;
+      }
+    }catch(_){}
+
+    prompt("Ergebnis kopieren:", text);
+  }
+
+  function showWinModal(winner){
+    state.matchOver = true;
+
+    const winnerName = state.names[winner];
+    const winnerColor = (winner === "A") ? state.colors.A : state.colors.B;
+
+    const modal = el("winModal");
+    const card = modal.querySelector(".modalCard");
+    card.style.setProperty("--winColor", winnerColor);
+
+    el("winTitle").textContent = `Glückwunsch ${winnerName}!`;
+    el("winSub").textContent = "Sie haben das Match gewonnen.";
+    el("winScore").textContent = `${state.sets.A}-${state.sets.B} Sets`;
+
+    updateWinSummary();
+    el("winTag").textContent = "🏆 Match beendet";
+
+    modal.classList.add("show");
+    haptic(40);
+  }
+
+  function hideWinModal(){ el("winModal").classList.remove("show"); }
+
+  function finishMatchIfNeeded(player){
+    if(state.sets[player] >= state.firstToSets){
+      showWinModal(player);
+      return true;
+    }
+    return false;
+  }
+
+  function awardSet(player){
+    state.sets[player] += 1;
+    state.legs.A = 0;
+    state.legs.B = 0;
+    logLine(`Set an ${state.names[player]} — Sets: ${state.sets.A}-${state.sets.B}`);
+    finishMatchIfNeeded(player);
+  }
+
+  function addLeg(player){
+    if(state.matchOver) return;
+    snapshot();
+
+    state.legs[player] += 1;
+    state.legsTotal[player] += 1;
+
+    haptic(12);
+    logLine(`Leg an ${state.names[player]} — Legs: ${state.legs.A}-${state.legs.B}`);
+
+    if(state.legs[player] >= state.legsToWinSet){
+      awardSet(player);
+      if(state.matchOver){ renderGame(); return; }
+    }
+    renderGame();
+  }
+
+  function resetMatch(keepSetup = true){
+    state.matchOver = false;
+    state.sets.A = 0; state.sets.B = 0;
+    state.legs.A = 0; state.legs.B = 0;
+    state.legsTotal.A = 0; state.legsTotal.B = 0;
+    state.history = [];
+    el("log").textContent = "";
+    logLine("Neues Match gestartet.");
+    hideWinModal();
+    renderGame();
+    haptic(20);
+
+    if(!keepSetup) show("setup");
+  }
+
+  function undo(){
+    if(state.matchOver) return;
+    const prev = state.history.pop();
+    if(!prev) return;
+
+    state.names = prev.names;
+    state.colors = prev.colors;
+    state.bestOfSets = prev.bestOfSets;
+    state.firstToSets = prev.firstToSets;
+    state.legsToWinSet = prev.legsToWinSet;
+    state.firstServer = prev.firstServer;
+    state.sets = prev.sets;
+    state.legs = prev.legs;
+    state.legsTotal = prev.legsTotal;
+    state.matchOver = prev.matchOver;
+
+    applyPlayerColors();
+    refreshPalettes();
+    haptic(10);
+    logLine("Undo.");
+    renderGame();
+  }
+
+  function toggleLog(){
+    el("log").classList.toggle("hidden");
+    const vis = !el("log").classList.contains("hidden");
+    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded", String(vis));
+    haptic(8);
+  }
+
+  function attachLongPressUndo(targetEl){
+    const LONG = 450;
+    let timer = null;
+    let longPressed = false;
+
+    const start = (ev) => {
+      ev.preventDefault?.();
+      longPressed = false;
+      timer = setTimeout(() => { longPressed = true; undo(); }, LONG);
+    };
+    const end = () => { if(timer) clearTimeout(timer); timer = null; };
+
+    targetEl.addEventListener("pointerdown", start, { passive:false });
+    targetEl.addEventListener("pointerup", end);
+    targetEl.addEventListener("pointercancel", end);
+    targetEl.addEventListener("pointerleave", end);
+
+    targetEl.addEventListener("touchstart", start, { passive:false });
+    targetEl.addEventListener("touchend", end);
+    targetEl.addEventListener("touchcancel", end);
+
+    targetEl.addEventListener("click", (ev) => {
+      if(longPressed){ ev.preventDefault(); ev.stopPropagation(); longPressed = false; }
+    }, true);
+  }
+
+  function swapSidesAndPrepare(){
+    [state.names.A, state.names.B] = [state.names.B, state.names.A];
+    [state.colors.A, state.colors.B] = [state.colors.B, state.colors.A];
+    state.firstServer = other(state.firstServer);
+
+    el("nameA").value = (state.names.A === "Spieler A") ? "" : state.names.A;
+    el("nameB").value = (state.names.B === "Spieler B") ? "" : state.names.B;
+
+    applyPlayerColors();
+    refreshPalettes();
+    saveSettings();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    buildPalette("A");
+    buildPalette("B");
+
+    el("colorBtnA").addEventListener("click", ()=> togglePalette("A"));
+    el("colorBtnB").addEventListener("click", ()=> togglePalette("B"));
+
+    document.addEventListener("click", (e)=>{
+      const inA = el("paletteA").contains(e.target) || el("colorBtnA").contains(e.target);
+      const inB = el("paletteB").contains(e.target) || el("colorBtnB").contains(e.target);
+      if(!inA && !inB) closePalettes();
+    });
+
+    ["nameA","nameB","bestOfSets","legsToWinSet","firstServer"].forEach(id=>{
+      el(id).addEventListener("input", ()=>{ saveSettings(); renderSetupHint(); });
+      el(id).addEventListener("change", ()=>{ saveSettings(); renderSetupHint(); });
+    });
+
+    el("quickHelpBtn").addEventListener("click", ()=>{
+      const t = el("helpText");
+      t.style.display = (t.style.display === "none") ? "block" : "none";
+      haptic(8);
+    });
+
+    el("startBtn").addEventListener("click", ()=>{
+      applySetup();
+      saveSettings();
+
+      state.matchOver = false;
+      state.sets.A = 0; state.sets.B = 0;
+      state.legs.A = 0; state.legs.B = 0;
+      state.legsTotal.A = 0; state.legsTotal.B = 0;
+      state.history = [];
+      el("log").textContent = "";
+
+      logLine(`Start: ${state.names.A} vs ${state.names.B} — Best of ${state.bestOfSets} — Legs/Set: ${state.legsToWinSet} — Anwurf: Spieler ${state.firstServer}`);
+      el("log").classList.add("hidden");
+      el("toggleLog").textContent = "Verlauf anzeigen";
+      el("toggleLog").setAttribute("aria-expanded","false");
+
+      renderGame();
+      haptic(12);
+      show("game");
+    });
+
+    el("rowA").addEventListener("click", ()=> addLeg("A"));
+    el("rowB").addEventListener("click", ()=> addLeg("B"));
+    attachLongPressUndo(el("rowA"));
+    attachLongPressUndo(el("rowB"));
+
+    el("undo").addEventListener("click", undo);
+    el("toggleLog").addEventListener("click", toggleLog);
+
+    el("resetToSetup").addEventListener("click", ()=>{
+      haptic(10);
+      if(confirm("Zum Setup zurückkehren und neues Match vorbereiten?")){
+        hideWinModal();
+        state.matchOver = false;
+        show("setup");
+      }
+    });
+
+    el("themeToggle").addEventListener("click", toggleTheme);
+    el("themeToggle2").addEventListener("click", toggleTheme);
+
+    el("winRematch").addEventListener("click", ()=> resetMatch(true));
+    el("winSwapSides").addEventListener("click", ()=>{
+      swapSidesAndPrepare();
+      resetMatch(true);
+    });
+    el("winToSetup").addEventListener("click", ()=>{
+      hideWinModal();
+      state.matchOver = false;
+      show("setup");
+    });
+
+    el("shareBtn").addEventListener("click", shareResult);
+
+    el("winModal").addEventListener("click", (e)=>{
+      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
+    });
+
+    loadTheme();
+    loadSettings();
+    applyPlayerColors();
+    refreshPalettes();
+    renderSetupHint();
+  });
+</script>
+</body>
+</html>
