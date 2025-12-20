@@ -173,10 +173,9 @@
       inset:-90px;
       pointer-events:none;
       opacity:.22;
-      background:
-        repeating-conic-gradient(from 0deg,
-          rgba(255,255,255,.08) 0 12deg,
-          transparent 12deg 18deg);
+      background: repeating-conic-gradient(from 0deg,
+        rgba(255,255,255,.08) 0 12deg,
+        transparent 12deg 18deg);
       mix-blend-mode: overlay;
       filter: blur(.2px);
     }
@@ -383,10 +382,10 @@
     /* ---- Spiel: Scoreboard ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
-    /* HEADER: weiß/schwarz “Board-Score-Leiste” mit roten/grünen Trennlinien */
+    /* ✅ Spaltenbreite angepasst: mehr Platz für Namen */
     .sb-header{
       display:grid;
-      grid-template-columns: 106px 1fr 84px 84px; /* etwas breiter -> besser lesbar */
+      grid-template-columns: 86px 1fr 70px 70px; /* Anwurf / Name / Sets / Legs */
       align-items:center;
       padding: 10px 14px;
       border-bottom: 1px solid rgba(0,0,0,.10);
@@ -432,7 +431,7 @@
 
     .sb-row{
       display:grid;
-      grid-template-columns: 106px 1fr 84px 84px;
+      grid-template-columns: 86px 1fr 70px 70px; /* ✅ */
       align-items:center;
       padding: 12px 14px;
       border-bottom: 1px solid rgba(255,255,255,.10);
@@ -494,7 +493,7 @@
       letter-spacing: .3px;
     }
 
-    /* Pills: “Badge” mit Dart-Ring-Anmutung */
+    /* Pills */
     .badgeLine{
       display:flex;
       flex-wrap:wrap;
@@ -827,7 +826,7 @@
       <img class="footerImg" id="footerImg" alt="Dart Gimmick"
            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='108' viewBox='0 0 168 108'%3E%3Crect width='168' height='108' rx='22' fill='%230b0f14'/%3E%3Ccircle cx='130' cy='38' r='44' fill='%23ffffff' fill-opacity='.07'/%3E%3Cpath d='M22 78 L82 18 L92 28 L32 88 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M82 18 L118 8 L124 14 L92 28 Z' fill='%23d61f26' fill-opacity='.42'/%3E%3Cpath d='M32 88 L92 28 L102 38 L42 98 Z' fill='%2314a44d' fill-opacity='.38'/%3E%3C/svg%3E" />
       <div class="footerText">
-        <strong>🎯 Kleines Gimmick:</strong> Speichern &amp; Fortsetzen funktioniert lokal im Browser.<br>
+        <strong>Diese App wird dir bereitgestellt von Niki (den aber jeder Leiter nur Niko nennt)</strong><br>
         Viel Spaß beim Darten!
       </div>
     </div>
@@ -853,7 +852,6 @@
 
       <div class="modalActions">
         <button class="primary" id="winRevenge" type="button">Revanche</button>
-        <button class="ghost" id="winSwitch" type="button">Seiten wechseln</button>
         <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
       </div>
     </div>
@@ -861,8 +859,8 @@
 </div>
 
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v16";
-  const MATCH_KEY    = "dart_counter_match_v16";
+  const SETTINGS_KEY = "dart_counter_settings_v17";
+  const MATCH_KEY    = "dart_counter_match_v17";
 
   const COLOR_OPTIONS = [
     { key: "red",    name: "Rot",     hex: "#d61f26" },
@@ -1389,16 +1387,6 @@
     }catch(_){}
   }
 
-  function switchSides(){
-    if(state.players.length < 2) return;
-    const tmp = state.players[0];
-    state.players[0] = state.players[1];
-    state.players[1] = tmp;
-    saveSettings();
-    applyP1P2ColorsToCSS();
-    renderPlayers();
-  }
-
   function resetMatchScores(){
     state.match.inProgress = true;
     state.match.matchOver = false;
@@ -1528,12 +1516,6 @@
     el("shareBtn").addEventListener("click", shareResult);
 
     el("winRevenge").addEventListener("click", ()=>{
-      resetMatchScores();
-      haptic(14); sfx.ui();
-    });
-
-    el("winSwitch").addEventListener("click", ()=>{
-      switchSides();
       resetMatchScores();
       haptic(14); sfx.ui();
     });
