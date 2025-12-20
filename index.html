@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de" data-theme="dark">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#090c11" />
-  <title>Dart-Set-and-Leg-Counter</title>
+  <meta name="theme-color" content="#b8161c" />
+  <title>Dart Set &amp; Leg Counter</title>
 
   <style>
     :root{
@@ -19,48 +19,38 @@
       --fs-col:   clamp(12px, 3.2vw, 13px);
       --fs-num:   clamp(20px, 5.4vw, 26px);
 
-      /* Dart-Optik Akzente */
-      --pA: #d61f26;
-      --pB: #14a44d;
+      /* Dart-Basisfarben */
+      --dartRed:   #b8161c;
+      --dartRedHi: #ff3a41;
+      --dartGreen: #0f7a2b;
+      --dartGreenHi:#1ad35f;
+      --dartBlack: #0b0f14;
+      --dartWhite: #f7f8fb;
 
-      --boardWhite: #f7f8fb;
-      --boardBlack: #0b0f14;
-    }
+      /* UI */
+      --bg: var(--dartGreen);
+      --text: var(--dartWhite);
+      --muted: rgba(247,248,251,.80);
 
-    html[data-theme="dark"]{
-      --bg0:#05070a;
-      --bg1:#090c11;
-      --panelA: rgba(9,11,15,.93);
-      --panelB: rgba(13,16,21,.93);
-      --text:#f7f8fb;
-      --muted: rgba(247,248,251,.72);
-      --line: rgba(247,248,251,.14);
-      --shadow: 0 16px 36px rgba(0,0,0,.55);
-      --inputBg: rgba(0,0,0,.40);
-      --btnBg: rgba(255,255,255,.05);
-      --tapBg: rgba(255,255,255,.03);
-      --tapBgActive: rgba(255,255,255,.08);
-      --dartOpacity: .22;
-      --themeColor: #090c11;
-      --sbHeaderBg: rgba(255,255,255,.10); /* vollflächig, ohne Verlauf */
-    }
+      --panelA: rgba(10,13,18,.94);
+      --panelB: rgba(16,20,27,.94);
+      --panelEdge: rgba(255,255,255,.16);
+      --line: rgba(247,248,251,.16);
+      --shadow: 0 18px 40px rgba(0,0,0,.45);
 
-    html[data-theme="light"]{
-      --bg0:#eef1f4;
-      --bg1:#ffffff;
-      --panelA: rgba(255,255,255,.96);
-      --panelB: rgba(248,249,251,.96);
-      --text:#0b0f14;
-      --muted: rgba(11,15,20,.68);
-      --line: rgba(11,15,20,.14);
-      --shadow: 0 14px 28px rgba(0,0,0,.12);
-      --inputBg: rgba(255,255,255,.92);
-      --btnBg: rgba(11,15,20,.05);
-      --tapBg: rgba(11,15,20,.03);
-      --tapBgActive: rgba(11,15,20,.07);
-      --dartOpacity: .12;
-      --themeColor: #ffffff;
-      --sbHeaderBg: rgba(11,15,20,.08); /* vollflächig, ohne Verlauf */
+      --inputBg: rgba(0,0,0,.32);
+
+      --btnEdge: rgba(255,255,255,.18);
+
+      --tapBg: rgba(255,255,255,.04);
+
+      /* Scoreboard Header: “Board Score Leiste” */
+      --sbHeaderBg: rgba(255,255,255,.92);
+      --sbHeaderText: rgba(11,15,20,.92);
+
+      /* Pill look */
+      --pillBg: rgba(0,0,0,.22);
+      --pillEdge: rgba(255,255,255,.16);
     }
 
     *{ box-sizing:border-box; }
@@ -70,11 +60,7 @@
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--pA) 18%, transparent), transparent 60%),
-        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--pB) 16%, transparent), transparent 60%),
-        radial-gradient(900px 520px at 50% 110%, color-mix(in srgb, var(--boardBlack) 14%, transparent), transparent 62%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
+      background: var(--bg);
       padding:
         max(14px, env(safe-area-inset-top))
         max(14px, env(safe-area-inset-right))
@@ -82,35 +68,47 @@
         max(14px, env(safe-area-inset-left));
     }
 
-    .wrap{ max-width: 980px; margin: 0 auto; position:relative; overflow-x: clip; }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      min-height: 100%;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow-x: clip;
+    }
 
-    /* Dart-Pfeil Hintergrund */
+    /* Hintergrund: Dartboard-Feeling */
     .wrap::before{
       content:"";
       position:absolute;
-      left: 50%;
-      top: 54%;
-      width: min(980px, 140vw);
-      height: min(980px, 140vw);
-      transform: translate(-50%,-50%) rotate(-18deg);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='v' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='.20'/%3E%3Cstop offset='55%25' stop-color='%23000000' stop-opacity='.12'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg opacity='.92'%3E%3Cpath d='M160 530 L540 150 L610 220 L230 600 Z' fill='%23ffffff' fill-opacity='.10'/%3E%3Cpath d='M540 150 L690 90 L740 140 L610 220 Z' fill='%23d61f26' fill-opacity='.26'/%3E%3Cpath d='M230 600 L610 220 L680 290 L300 670 Z' fill='%2314a44d' fill-opacity='.24'/%3E%3Cpath d='M300 670 L680 290 L810 420 L430 800 Z' fill='%23ffffff' fill-opacity='.08'/%3E%3C/g%3E%3Ccircle cx='450' cy='450' r='430' fill='url(%23v)'/%3E%3C/svg%3E");
-      background-size: cover;
-      background-repeat: no-repeat;
-      filter: blur(12px);
-      opacity: var(--dartOpacity);
+      inset:-140px;
       pointer-events:none;
+      opacity:.22;
+      background-image:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,.18), transparent 42%),
+        radial-gradient(circle at 82% 30%, rgba(0,0,0,.26), transparent 46%),
+        radial-gradient(circle at 50% 85%, rgba(255,255,255,.10), transparent 52%),
+        repeating-conic-gradient(from 18deg,
+          rgba(255,255,255,.10) 0 10deg,
+          transparent 10deg 18deg),
+        repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 8px, transparent 8px 22px);
+      mix-blend-mode: overlay;
+      filter: blur(1.2px);
       z-index:0;
     }
 
+    .main{ position:relative; z-index:1; flex:1; }
+
+    /* Navbar: kräftig Rot, vollflächig */
     .navbar{
       position: sticky;
       top: max(0px, env(safe-area-inset-top));
       z-index: 10;
       border-radius: var(--radius);
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--panelA) 90%, transparent), color-mix(in srgb, var(--panelB) 90%, transparent));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.20);
+      background: linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
+      box-shadow: 0 16px 34px rgba(0,0,0,.28);
       padding: 10px 12px;
       margin-bottom: 22px;
       display:flex;
@@ -118,6 +116,7 @@
       justify-content:space-between;
       gap: 10px;
     }
+
     .brand{
       display:flex;
       align-items:center;
@@ -125,41 +124,61 @@
       min-width: 0;
       flex: 1;
     }
-    .brandIcon{
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
-      background:
-        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--pA) 22%, transparent), transparent 55%),
-        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--pB) 18%, transparent), transparent 55%),
-        color-mix(in srgb, var(--btnBg) 92%, transparent);
+
+    .logoImg{
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.26);
+      background: rgba(0,0,0,.18);
       flex: 0 0 auto;
+      object-fit: cover;
+      box-shadow: 0 10px 18px rgba(0,0,0,.25);
     }
+
     .brandTitle{
       font-size: var(--fs-title);
-      font-weight: 1100;
+      font-weight: 1200;
       letter-spacing: .2px;
       line-height: 1.12;
+      color: #fff;
+      text-shadow: 0 10px 20px rgba(0,0,0,.22);
       white-space: normal;
-      overflow: visible;
       word-break: break-word;
     }
+
     .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
 
+    /* Panels: subtiler Dartboard-Rahmen */
     .card{
-      position:relative;
-      z-index:1;
-      background: linear-gradient(180deg, var(--panelA), var(--panelB));
-      border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 14px;
+      margin-bottom: 14px;
+
+      border: 1px solid var(--panelEdge);
+      background:
+        radial-gradient(900px 260px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
+        radial-gradient(900px 300px at 0% 100%, rgba(0,0,0,.28), transparent 58%),
+        linear-gradient(180deg, var(--panelA), var(--panelB));
       box-shadow: var(--shadow);
       backdrop-filter: blur(8px);
-      margin-bottom: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* feine Segmentlinien im Panel */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-90px;
+      pointer-events:none;
+      opacity:.22;
+      background:
+        repeating-conic-gradient(from 0deg,
+          rgba(255,255,255,.08) 0 12deg,
+          transparent 12deg 18deg);
+      mix-blend-mode: overlay;
+      filter: blur(.2px);
     }
 
     label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
@@ -170,39 +189,58 @@
       padding: 12px;
       min-height: var(--tap);
       border-radius: 14px;
-      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+      border: 1px solid rgba(255,255,255,.18);
       background: var(--inputBg);
       color: var(--text);
       outline:none;
     }
-    input::placeholder{ color: color-mix(in srgb, var(--text) 45%, transparent); }
+    input::placeholder{ color: rgba(255,255,255,.55); }
 
     .meta{ color: var(--muted); font-size: var(--fs-meta); margin-top: 10px; line-height:1.35; }
 
+    /* Buttons: “Dartboard-Button” */
     button{
       appearance:none;
-      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
-      background: var(--btnBg);
+      border: 1px solid var(--btnEdge);
+      background:
+        radial-gradient(140px 85px at 30% 25%, rgba(255,255,255,.14), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
       color: var(--text);
       border-radius: 14px;
       padding: 12px 12px;
       min-height: var(--tap);
       font-size: var(--fs-body);
-      font-weight: 900;
+      font-weight: 950;
       user-select:none;
       -webkit-user-select:none;
       touch-action: manipulation;
-      box-shadow: 0 10px 20px rgba(0,0,0,.18);
+      box-shadow: 0 12px 24px rgba(0,0,0,.18);
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
     }
-    button:active{ transform: translateY(1px) scale(.99); }
-    button.primary{
-      border-color: color-mix(in srgb, var(--pA) 58%, transparent);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--pA) 92%, white 0%), color-mix(in srgb, var(--pA) 70%, black 22%));
-      color: #fff;
+    button:hover{
+      background:
+        radial-gradient(160px 95px at 30% 25%, rgba(255,255,255,.16), transparent 64%),
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
     }
-    button.ghost{ box-shadow:none; background: var(--btnBg); }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    button.primary{
+      border-color: rgba(255,255,255,.24);
+      background:
+        radial-gradient(160px 95px at 30% 25%, rgba(255,255,255,.18), transparent 64%),
+        linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
+      color:#fff;
+      box-shadow: 0 16px 30px rgba(0,0,0,.22);
+    }
+
+    button.ghost{
+      box-shadow:none;
+      background:
+        radial-gradient(140px 85px at 30% 25%, rgba(255,255,255,.10), transparent 62%),
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.10));
+    }
+
     button.small{
       min-height: 40px;
       padding: 8px 10px;
@@ -210,33 +248,35 @@
       border-radius: 999px;
       box-shadow:none;
     }
-    .themeBtn{
-      min-height: 40px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: var(--fs-meta);
-      font-weight: 900;
-      box-shadow:none;
-      white-space: nowrap;
-    }
+
     .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .spacer{ flex:1; }
-
     .hidden{ display:none!important; }
 
     /* ---- Setup: Spielerliste ---- */
     .playersList{ display:grid; gap: 12px; }
 
     .playerRow{
-      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border: 1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(260px 140px at 25% 15%, rgba(255,255,255,.08), transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.10));
       border-radius: 14px;
       padding: 10px;
       display:grid;
       gap: 10px;
+      position:relative;
+      overflow:hidden;
+    }
+    .playerRow::before{
+      content:"";
+      position:absolute; inset:-70px;
+      pointer-events:none;
+      opacity:.18;
+      background: repeating-conic-gradient(from 0deg,
+        rgba(255,255,255,.10) 0 14deg,
+        transparent 14deg 18deg);
+      mix-blend-mode: overlay;
     }
 
     .playerRowTop{
@@ -244,6 +284,8 @@
       grid-template-columns: 48px 1fr 44px;
       gap: 10px;
       align-items:center;
+      position:relative;
+      z-index:1;
     }
 
     .colorPickBtn{
@@ -256,15 +298,15 @@
       align-items:center;
       justify-content:center;
       box-shadow:none;
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.22);
     }
     .colorPickBtn::after{
       content:"";
       width: 18px;
       height: 18px;
       border-radius: 999px;
-      border: 2px solid color-mix(in srgb, var(--text) 65%, transparent);
+      border: 2px solid rgba(255,255,255,.78);
       background: var(--dot, #fff);
       box-shadow: 0 10px 18px rgba(0,0,0,.18);
     }
@@ -283,15 +325,17 @@
       gap: 10px;
       padding: 10px 10px;
       border-radius: 14px;
-      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.20);
+      position:relative;
+      z-index:1;
     }
 
     .swatch{
       width: 34px;
       height: 34px;
       border-radius: 999px;
-      border: 2px solid color-mix(in srgb, var(--text) 28%, transparent);
+      border: 2px solid rgba(255,255,255,.24);
       background: var(--c);
       display:inline-flex;
       align-items:center;
@@ -300,22 +344,38 @@
       min-height: 34px;
       box-shadow:none;
       position: relative;
+      overflow:hidden;
     }
     .swatch.selected{
-      outline: 3px solid color-mix(in srgb, var(--text) 42%, transparent);
+      outline: 3px solid rgba(255,255,255,.42);
       outline-offset: 2px;
     }
-    .swatch.disabled{
-      opacity: .26;
+
+    .swatch.taken{
+      opacity: .95;
       cursor: not-allowed;
-      filter: grayscale(65%);
+      filter: none;
     }
+    .swatch.taken::after{
+      content:"";
+      position:absolute;
+      inset:-6px;
+      background:
+        linear-gradient(135deg,
+          transparent 47%,
+          rgba(255,255,255,.92) 48%,
+          rgba(255,255,255,.92) 52%,
+          transparent 53%);
+      opacity: .9;
+      pointer-events:none;
+    }
+
     .swatch .check{
       font-size: 16px;
       line-height: 1;
       opacity: 0;
       transform: translateY(-1px);
-      color: color-mix(in srgb, var(--text) 92%, transparent);
+      color: rgba(255,255,255,.96);
       text-shadow: 0 8px 18px rgba(0,0,0,.35);
     }
     .swatch.selected .check{ opacity: 1; }
@@ -323,61 +383,92 @@
     /* ---- Spiel: Scoreboard ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
+    /* HEADER: weiß/schwarz “Board-Score-Leiste” mit roten/grünen Trennlinien */
     .sb-header{
       display:grid;
-      grid-template-columns: 94px 1fr 74px 74px; /* mehr Abstand, kein Überlappen */
+      grid-template-columns: 106px 1fr 84px 84px; /* etwas breiter -> besser lesbar */
       align-items:center;
       padding: 10px 14px;
-      border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: var(--sbHeaderBg); /* vollflächig, ohne Verlauf */
+      border-bottom: 1px solid rgba(0,0,0,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
       column-gap: 10px;
+      position:relative;
+    }
+    .sb-header::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(90deg,
+          rgba(0,0,0,.00) 0%,
+          rgba(0,0,0,.08) 40%,
+          rgba(0,0,0,.00) 100%);
+      opacity:.55;
+    }
+    .sb-header::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height: 3px;
+      background:
+        linear-gradient(90deg,
+          var(--dartRed) 0 50%,
+          var(--dartGreenHi) 50% 100%);
+      opacity:.95;
     }
     .sb-header .col, .sb-header .left{
       font-size: var(--fs-col);
-      color: color-mix(in srgb, var(--muted) 92%, transparent);
-      font-weight: 1000;
-      letter-spacing: .2px;
+      color: var(--sbHeaderText);
+      font-weight: 1200;
+      letter-spacing: .28px;
       text-transform: uppercase;
+      position:relative;
+      z-index:1;
     }
     .sb-header .col{ text-align:center; }
     .sb-header .left{ text-align:left; }
 
     .sb-row{
       display:grid;
-      grid-template-columns: 94px 1fr 74px 74px;
+      grid-template-columns: 106px 1fr 84px 84px;
       align-items:center;
       padding: 12px 14px;
-      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
-      background: var(--tapBg);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
       column-gap: 10px;
     }
     .sb-row:last-child{ border-bottom:none; }
 
-    /* kräftigere Spielerflächen */
+    .tap{ touch-action: manipulation; }
+
+    /* Spielerfarben bleiben wie bisher (per JS setzt --pA/--pB) – etwas kräftiger */
     .sb-row.playerA{
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--pA) 52%, transparent),
-        color-mix(in srgb, var(--tapBg) 64%, transparent)
-      );
+      background:
+        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--pA) 32%, transparent), transparent 70%),
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pA) 68%, transparent),
+          rgba(255,255,255,.03)
+        );
     }
     .sb-row.playerB{
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--pB) 52%, transparent),
-        color-mix(in srgb, var(--tapBg) 64%, transparent)
-      );
+      background:
+        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--pB) 32%, transparent), transparent 70%),
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pB) 68%, transparent),
+          rgba(255,255,255,.03)
+        );
     }
-
-    /* iOS Tap sicher */
-    .tap{ touch-action: manipulation; }
 
     .serveCell{
       display:flex;
       align-items:center;
       justify-content:center;
       font-size: 18px;
-      font-weight: 1100;
+      font-weight: 1200;
       opacity: .95;
-      color: color-mix(in srgb, var(--text) 92%, transparent);
+      color: rgba(255,255,255,.96);
     }
     .serveCell.none{ opacity: 0; }
 
@@ -386,7 +477,7 @@
       align-items:center;
       min-height: 44px;
       font-size: var(--fs-name);
-      font-weight: 1100;
+      font-weight: 1200;
       letter-spacing: .2px;
       min-width: 0;
     }
@@ -399,10 +490,11 @@
     .num{
       text-align:center;
       font-size: var(--fs-num);
-      font-weight: 1100;
+      font-weight: 1200;
       letter-spacing: .3px;
     }
 
+    /* Pills: “Badge” mit Dart-Ring-Anmutung */
     .badgeLine{
       display:flex;
       flex-wrap:wrap;
@@ -416,204 +508,361 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 7px 10px;
+      padding: 8px 11px;
       border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
-      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
-      font-weight: 900;
+      border: 1px solid var(--pillEdge);
+      background:
+        radial-gradient(120px 50px at 30% 25%, rgba(255,255,255,.10), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.16));
+      font-weight: 950;
     }
-    .chipDot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
-    .chipDot.a{ background: var(--pA); }
-    .chipDot.b{ background: var(--pB); }
+    .pill::before{
+      content:"";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.20);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 6px 12px rgba(0,0,0,.18);
+      display:inline-block;
+    }
 
     .hint{
       margin-top: 10px;
       font-size: var(--fs-meta);
-      color: color-mix(in srgb, var(--text) 62%, transparent);
+      color: rgba(255,255,255,.78);
     }
 
     .log{
       white-space: pre-wrap;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 12px;
-      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
-      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: 14px;
       padding: 12px;
-      max-height: 170px;
+      max-height: 190px;
       overflow: auto;
       margin-top: 10px;
     }
 
-    /* ---- Fortsetzen Card ---- */
-    .resumeRow{
+    /* ---- WIN MODAL ---- */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+    .modalOverlay.show{ display:flex; }
+
+    .modalCard{
+      width: min(560px, 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+      background:
+        radial-gradient(900px 260px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
+        linear-gradient(180deg, rgba(10,13,18,.95), rgba(16,20,27,.95));
+    }
+    .modalTop{
+      padding: 14px 16px;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--winColor) 28%, transparent),
+        color-mix(in srgb, var(--winColor) 10%, transparent)
+      );
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalTopLeft{
+      display:flex; gap:10px; align-items:center; min-width:0;
+    }
+    .modalTop .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 1100;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
+      background: color-mix(in srgb, var(--winColor) 18%, transparent);
+      white-space: nowrap;
+    }
+    .shareBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      box-shadow:none;
+      font-size: 16px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .modalBody{
+      padding: 18px 16px 16px;
+    }
+    .modalTitle{
+      font-size: clamp(22px, 6vw, 34px);
+      font-weight: 1200;
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    .modalSub{
+      font-size: var(--fs-body);
+      color: rgba(255,255,255,.80);
+      margin: 0 0 12px;
+    }
+    .summaryBox{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 12px;
+      margin: 12px 0 14px;
+      line-height: 1.35;
+      font-size: var(--fs-body);
+    }
+    .summaryRow{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(255,255,255,.18);
+    }
+    .summaryRow:last-child{ border-bottom:none; }
+    .summaryKey{ color: rgba(255,255,255,.72); font-weight: 950; }
+    .summaryVal{ font-weight: 1200; text-align:right; }
+
+    .modalActions{
       display:flex;
       gap:10px;
-      align-items:center;
       flex-wrap:wrap;
     }
+    .modalActions button.primary{
+      border-color: rgba(255,255,255,.22);
+      background: linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
+    }
+
+    /* ---- FOOTER ---- */
+    .footer{
+      position:relative;
+      z-index:1;
+      margin-top: 18px;
+      padding: 16px 0 4px;
+      color: rgba(255,255,255,.82);
+      font-size: var(--fs-meta);
+      display:flex;
+      justify-content:center;
+    }
+    .footerCard{
+      width: min(980px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      padding: 12px;
+    }
+    .footerImg{
+      width: 84px;
+      height: 54px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.16);
+      flex: 0 0 auto;
+    }
+    .footerText{ min-width: 0; line-height: 1.25; }
+    .footerText strong{ color: rgba(255,255,255,.98); }
   </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- SETUP -->
-  <div id="screenSetup">
-    <div class="navbar">
-      <div class="brand">
-        <div class="brandIcon" aria-hidden="true">🎯</div>
-        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
-      </div>
-      <div class="topActions">
-        <button class="themeBtn ghost" id="themeToggle" type="button" aria-label="Theme wechseln">
-          <span id="themeIcon">🌙</span>
-          <span id="themeLabel">Dark</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="card hidden" id="resumeCard">
-      <div style="font-weight:1100; margin-bottom:6px;">Es gibt ein gespeichertes Match.</div>
-      <div class="meta" id="resumeMeta" style="margin-top:0;">—</div>
-      <div class="controls" style="margin-top:12px;">
-        <button class="primary" id="resumeBtn" type="button">Fortsetzen</button>
-        <button class="ghost" id="discardBtn" type="button">Neues Match anlegen</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <label>Spieler</label>
-      <div class="playersList" id="playersList"></div>
-
-      <div class="controls" style="margin-top:12px;">
-        <button class="ghost" id="addPlayer" type="button">+ Spieler hinzufügen</button>
-        <span class="spacer"></span>
-        <span class="meta" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
-      </div>
-      <div class="meta">Einstellungen werden gespeichert. (Namen bleiben als Vorschläge erhalten.)</div>
-    </div>
-
-    <div class="card">
-      <div class="controls" style="gap:12px;">
-        <div style="flex:1; min-width: 240px;">
-          <label for="pickA">Teilnehmer links</label>
-          <select id="pickA"></select>
+  <div class="main">
+    <!-- SETUP -->
+    <div id="screenSetup">
+      <div class="navbar">
+        <div class="brand">
+          <img class="logoImg" id="topLogo" alt="Logo"
+               src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Crect x='6' y='6' width='76' height='76' rx='18' fill='%230b0f14'/%3E%3Ccircle cx='44' cy='44' r='28' fill='%23ffffff' fill-opacity='.10'/%3E%3Cpath d='M18 56 L50 24 L58 32 L26 64 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M50 24 L70 16 L74 20 L58 32 Z' fill='%23d61f26' fill-opacity='.38'/%3E%3Cpath d='M26 64 L58 32 L66 40 L34 72 Z' fill='%2314a44d' fill-opacity='.34'/%3E%3C/svg%3E" />
+          <div class="brandTitle">Dart Set &amp; Leg Counter</div>
         </div>
-        <div style="flex:1; min-width: 240px;">
-          <label for="pickB">Teilnehmer rechts</label>
-          <select id="pickB"></select>
+        <div class="topActions"></div>
+      </div>
+
+      <div class="card hidden" id="resumeCard">
+        <div style="font-weight:1100; margin-bottom:6px; position:relative; z-index:1;">Es gibt ein gespeichertes Match.</div>
+        <div class="meta" id="resumeMeta" style="margin-top:0; position:relative; z-index:1;">—</div>
+        <div class="controls" style="margin-top:12px; position:relative; z-index:1;">
+          <button class="primary" id="resumeBtn" type="button">Fortsetzen</button>
+          <button class="ghost" id="discardBtn" type="button">Match verwerfen</button>
         </div>
       </div>
 
-      <div class="controls" style="gap:12px; margin-top:12px;">
-        <div style="flex:1; min-width: 240px;">
-          <label for="bestOfSets">Best of (Sets)</label>
-          <select id="bestOfSets">
-            <option value="5">Best of 5</option>
-            <option value="7">Best of 7</option>
-            <option value="15">Best of 15</option>
-          </select>
-        </div>
-        <div style="flex:1; min-width: 240px;">
-          <label for="legsToWinSet">Legs pro Set</label>
-          <select id="legsToWinSet">
-            <option value="3">First to 3 Legs</option>
-            <option value="5">First to 5 Legs</option>
-          </select>
-        </div>
-      </div>
+      <div class="card">
+        <label style="position:relative; z-index:1;">Spieler</label>
+        <div class="playersList" id="playersList" style="position:relative; z-index:1;"></div>
 
-      <div class="controls" style="gap:12px; margin-top:12px;">
-        <div style="flex:1; min-width: 240px;">
-          <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
-          <select id="firstServer">
-            <option value="A">Links</option>
-            <option value="B">Rechts</option>
-          </select>
-        </div>
-        <div style="flex:1; min-width: 240px;">
-          <label>&nbsp;</label>
-          <div class="meta" id="formatHint" style="margin-top:0;"></div>
-        </div>
-      </div>
-
-      <div class="controls" style="margin-top:14px;">
-        <button class="primary" id="startBtn" type="button">Spiel starten</button>
-        <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
-      </div>
-
-      <div class="meta" id="helpText" style="display:none;">
-        Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Undo.<br>
-        Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
-      </div>
-    </div>
-  </div>
-
-  <!-- GAME -->
-  <div id="screenGame" class="hidden">
-    <div class="navbar">
-      <div class="brand">
-        <div class="brandIcon" aria-hidden="true">🎯</div>
-        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
-      </div>
-      <div class="topActions">
-        <button class="themeBtn ghost" id="themeToggle2" type="button" aria-label="Theme wechseln">
-          <span id="themeIcon2">🌙</span>
-          <span id="themeLabel2">Dark</span>
-        </button>
-      </div>
-    </div>
-
-    <div class="card scoreboard">
-      <div class="sb-header">
-        <div class="col">ANWURF</div>
-        <div class="left">NAME</div>
-        <div class="col">SETS</div>
-        <div class="col">LEGS</div>
-      </div>
-
-      <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen links">
-        <div class="serveCell" id="serveA">▶</div>
-        <div class="name"><span id="titleA">Spieler</span></div>
-        <div class="num" id="setsA">0</div>
-        <div class="num" id="legsA">0</div>
-      </div>
-
-      <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen rechts">
-        <div class="serveCell" id="serveB">▶</div>
-        <div class="name"><span id="titleB">Spieler</span></div>
-        <div class="num" id="setsB">0</div>
-        <div class="num" id="legsB">0</div>
-      </div>
-
-      <div style="padding:12px 14px;">
-        <div class="badgeLine">
-          <span class="pill" id="matchPill"></span>
-          <span class="pill" id="legsPill"></span>
-          <span class="pill"><span class="chipDot a"></span><span id="pillA">Spieler links</span></span>
-          <span class="pill"><span class="chipDot b"></span><span id="pillB">Spieler rechts</span></span>
-        </div>
-
-        <div class="controls" style="margin-top:12px;">
-          <button class="ghost" id="undo" type="button">Undo</button>
-          <button class="ghost" id="newMatch" type="button">Neues Match</button>
+        <div class="controls" style="margin-top:12px; position:relative; z-index:1;">
+          <button class="ghost" id="addPlayer" type="button">+ Spieler hinzufügen</button>
           <span class="spacer"></span>
-          <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
+          <span class="meta" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
+        </div>
+        <div class="meta" style="position:relative; z-index:1;">Einstellungen werden gespeichert. (Match kann später fortgesetzt werden.)</div>
+      </div>
+
+      <div class="card">
+        <div class="controls" style="gap:12px; position:relative; z-index:1;">
+          <div style="flex:1; min-width: 240px;">
+            <label for="bestOfSets">Best of (Sets)</label>
+            <select id="bestOfSets">
+              <option value="5">Best of 5</option>
+              <option value="7">Best of 7</option>
+              <option value="15">Best of 15</option>
+            </select>
+          </div>
+          <div style="flex:1; min-width: 240px;">
+            <label for="legsToWinSet">Legs pro Set</label>
+            <select id="legsToWinSet">
+              <option value="3">First to 3 Legs</option>
+              <option value="5">First to 5 Legs</option>
+            </select>
+          </div>
         </div>
 
-        <div class="log hidden" id="log"></div>
-        <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
+        <div class="controls" style="gap:12px; margin-top:12px; position:relative; z-index:1;">
+          <div style="flex:1; min-width: 240px;">
+            <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
+            <select id="firstServer">
+              <option value="A">Spieler 1</option>
+              <option value="B">Spieler 2</option>
+            </select>
+          </div>
+          <div style="flex:1; min-width: 240px;">
+            <label>&nbsp;</label>
+            <div class="meta" id="formatHint" style="margin-top:0;"></div>
+          </div>
+        </div>
+
+        <div class="controls" style="margin-top:14px; position:relative; z-index:1;">
+          <button class="primary" id="startBtn" type="button">Spiel starten</button>
+          <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
+        </div>
+
+        <div class="meta" id="helpText" style="display:none; position:relative; z-index:1;">
+          Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Rückgängig.<br>
+          Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME -->
+    <div id="screenGame" class="hidden">
+      <div class="navbar">
+        <div class="brand">
+          <img class="logoImg" alt="Logo" src="" id="topLogo2" />
+          <div class="brandTitle">Dart Set &amp; Leg Counter</div>
+        </div>
+        <div class="topActions"></div>
+      </div>
+
+      <div class="card scoreboard">
+        <div class="sb-header">
+          <div class="col">ANWURF</div>
+          <div class="left">NAME</div>
+          <div class="col">SETS</div>
+          <div class="col">LEGS</div>
+        </div>
+
+        <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen Spieler 1">
+          <div class="serveCell" id="serveA">▶</div>
+          <div class="name"><span id="titleA">Spieler 1</span></div>
+          <div class="num" id="setsA">0</div>
+          <div class="num" id="legsA">0</div>
+        </div>
+
+        <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen Spieler 2">
+          <div class="serveCell" id="serveB">▶</div>
+          <div class="name"><span id="titleB">Spieler 2</span></div>
+          <div class="num" id="setsB">0</div>
+          <div class="num" id="legsB">0</div>
+        </div>
+
+        <div style="padding:12px 14px; position:relative; z-index:1;">
+          <div class="badgeLine">
+            <span class="pill" id="matchPill"></span>
+            <span class="pill" id="legsPill"></span>
+          </div>
+
+          <div class="controls" style="margin-top:12px;">
+            <button class="ghost" id="undo" type="button">Rückgängig</button>
+            <button class="ghost" id="toSetup" type="button">Zum Setup</button>
+            <span class="spacer"></span>
+            <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
+          </div>
+
+          <div class="log hidden" id="log"></div>
+          <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" aria-label="Footer">
+    <div class="footerCard">
+      <img class="footerImg" id="footerImg" alt="Dart Gimmick"
+           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='108' viewBox='0 0 168 108'%3E%3Crect width='168' height='108' rx='22' fill='%230b0f14'/%3E%3Ccircle cx='130' cy='38' r='44' fill='%23ffffff' fill-opacity='.07'/%3E%3Cpath d='M22 78 L82 18 L92 28 L32 88 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M82 18 L118 8 L124 14 L92 28 Z' fill='%23d61f26' fill-opacity='.42'/%3E%3Cpath d='M32 88 L92 28 L102 38 L42 98 Z' fill='%2314a44d' fill-opacity='.38'/%3E%3C/svg%3E" />
+      <div class="footerText">
+        <strong>🎯 Kleines Gimmick:</strong> Speichern &amp; Fortsetzen funktioniert lokal im Browser.<br>
+        Viel Spaß beim Darten!
+      </div>
+    </div>
+  </footer>
 
 </div>
 
+<!-- WIN MODAL -->
+<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
+  <div class="modalCard" style="--winColor: var(--pA);">
+    <div class="modalTop">
+      <div class="modalTopLeft">
+        <span class="tag" id="winTag">🏆 Match beendet</span>
+        <span style="font-weight:1000; color: rgba(255,255,255,.82); font-size: var(--fs-meta);" id="winScore">—</span>
+      </div>
+      <button class="shareBtn ghost" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
+    </div>
+    <div class="modalBody">
+      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
+      <p class="modalSub" id="winSub">Sie haben das Match gewonnen.</p>
+
+      <div class="summaryBox" id="winSummary"></div>
+
+      <div class="modalActions">
+        <button class="primary" id="winRevenge" type="button">Revanche</button>
+        <button class="ghost" id="winSwitch" type="button">Seiten wechseln</button>
+        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v10";
-  const MATCH_KEY    = "dart_counter_match_v10";
-  const THEME_KEY    = "dart_counter_theme_v2";
+  const SETTINGS_KEY = "dart_counter_settings_v16";
+  const MATCH_KEY    = "dart_counter_match_v16";
 
   const COLOR_OPTIONS = [
     { key: "red",    name: "Rot",     hex: "#d61f26" },
@@ -629,23 +878,50 @@
 
   const el = (id) => document.getElementById(id);
   const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
+  const other = (p) => (p === "A" ? "B" : "A");
+  const computeFirstTo = (bestOf) => Math.floor(bestOf / 2) + 1;
+
+  function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
+
+  /* ---------- Sounds (WebAudio) ---------- */
+  let audioCtx = null;
+  function ensureAudio(){
+    if(audioCtx) return;
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(_){ audioCtx = null; }
+  }
+  function beep(freq=520, ms=45, type="sine", gain=0.05){
+    try{
+      ensureAudio();
+      if(!audioCtx) return;
+      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type; o.frequency.value = freq; g.gain.value = gain;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); setTimeout(()=>{ try{o.stop();}catch(_){} }, ms);
+    }catch(_){}
+  }
+  const sfx = {
+    tap(){ beep(520, 40, "sine", 0.045); },
+    undo(){ beep(260, 60, "triangle", 0.05); },
+    set(){ beep(740, 70, "square", 0.04); },
+    win(){ beep(880, 90, "sine", 0.055); setTimeout(()=>beep(1040, 110, "sine", 0.05), 90); },
+    ui(){  beep(420, 35, "sine", 0.035); }
+  };
 
   const state = {
     players: [
       { id: "p1", name: "", color: "#d61f26" },
       { id: "p2", name: "", color: "#14a44d" }
     ],
-    pick: { A: "p1", B: "p2" },
-
     bestOfSets: 5,
     firstToSets: 3,
     legsToWinSet: 3,
     firstServer: "A",
-
     match: {
       inProgress: false,
       matchOver: false,
-      active: { A: "p1", B: "p2" },
       sets: { A: 0, B: 0 },
       legs: { A: 0, B: 0 },
       legsTotal: { A: 0, B: 0 },
@@ -653,159 +929,28 @@
     }
   };
 
-  const other = (p) => (p === "A" ? "B" : "A");
-  const computeFirstTo = (bestOf) => Math.floor(bestOf / 2) + 1;
+  function getP1(){ return state.players[0] || { id:"p1", name:"", color:"#d61f26" }; }
+  function getP2(){ return state.players[1] || { id:"p2", name:"", color:"#14a44d" }; }
+  function playerName(p, fallback){ const n=(p?.name||"").trim(); return n ? n : fallback; }
 
-  function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
-
-  /* ---------- Theme ---------- */
-  function setTheme(theme){
-    const t = (theme === "light") ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", t);
-    const meta = document.querySelector('meta[name="theme-color"]');
-    meta && meta.setAttribute("content",
-      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() || (t==="light" ? "#ffffff" : "#090c11")
-    );
-    const label = (t === "light") ? "Light" : "Dark";
-    const icon  = (t === "light") ? "☀️" : "🌙";
-    el("themeLabel").textContent  = label;
-    el("themeLabel2").textContent = label;
-    el("themeIcon").textContent   = icon;
-    el("themeIcon2").textContent  = icon;
-    try { localStorage.setItem(THEME_KEY, t); } catch(_) {}
-  }
-  function toggleTheme(){
-    const cur = document.documentElement.getAttribute("data-theme") || "dark";
-    setTheme(cur === "dark" ? "light" : "dark");
-    haptic(8);
-  }
-  function loadTheme(){
-    try { setTheme(localStorage.getItem(THEME_KEY) || "dark"); }
-    catch(_) { setTheme("dark"); }
+  function syncLogos(){
+    const src = el("topLogo")?.getAttribute("src") || "";
+    if(el("topLogo2")) el("topLogo2").setAttribute("src", src);
   }
 
-  /* ---------- Persist ---------- */
-  function saveSettings(){
-    try{
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-        players: state.players,
-        pick: state.pick,
-        bestOfSets: state.bestOfSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServer: state.firstServer
-      }));
-    }catch(_){}
-  }
-
-  function loadSettings(){
-    try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if(!raw) return;
-      const s = JSON.parse(raw);
-
-      if(Array.isArray(s.players) && s.players.length >= 2){
-        // Wichtig: Namen bleiben erlaubt, aber NIE automatisch ins Input "vorausgefüllt", außer es ist wirklich gespeichert.
-        state.players = s.players.map((p, i)=>({
-          id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
-          name: (typeof p.name === "string") ? p.name : "",
-          color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
-        }));
-      }
-
-      if(s.pick && typeof s.pick.A === "string" && typeof s.pick.B === "string"){
-        state.pick.A = s.pick.A;
-        state.pick.B = s.pick.B;
-      }
-
-      state.bestOfSets   = [5,7,15].includes(+s.bestOfSets) ? +s.bestOfSets : state.bestOfSets;
-      state.legsToWinSet = [3,5].includes(+s.legsToWinSet) ? +s.legsToWinSet : state.legsToWinSet;
-      state.firstServer  = (s.firstServer === "B") ? "B" : "A";
-
-      state.firstToSets = computeFirstTo(state.bestOfSets);
-      dedupeInvalidPicks();
-      enforceUniqueColorsAll();
-    }catch(_){}
-  }
-
-  function saveMatch(){
-    try{
-      localStorage.setItem(MATCH_KEY, JSON.stringify({
-        inProgress: state.match.inProgress,
-        matchOver: state.match.matchOver,
-        active: state.match.active,
-        sets: state.match.sets,
-        legs: state.match.legs,
-        legsTotal: state.match.legsTotal,
-        history: state.match.history,
-        bestOfSets: state.bestOfSets,
-        firstToSets: state.firstToSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServer: state.firstServer
-      }));
-    }catch(_){}
-  }
-
-  function loadMatch(){
-    try{
-      const raw = localStorage.getItem(MATCH_KEY);
-      if(!raw) return false;
-      const m = JSON.parse(raw);
-      if(!m || !m.inProgress) return false;
-
-      state.match.inProgress = !!m.inProgress;
-      state.match.matchOver  = !!m.matchOver;
-      state.match.active     = m.active || state.match.active;
-      state.match.sets       = m.sets || state.match.sets;
-      state.match.legs       = m.legs || state.match.legs;
-      state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
-      state.match.history    = Array.isArray(m.history) ? m.history : [];
-
-      // Format aus Match übernehmen (damit Fortsetzen exakt passt)
-      if([5,7,15].includes(+m.bestOfSets)) state.bestOfSets = +m.bestOfSets;
-      state.firstToSets = computeFirstTo(state.bestOfSets);
-      if([3,5].includes(+m.legsToWinSet)) state.legsToWinSet = +m.legsToWinSet;
-      state.firstServer = (m.firstServer === "B") ? "B" : "A";
-
-      return (state.match.inProgress && !state.match.matchOver);
-    }catch(_){
-      return false;
-    }
-  }
-
-  function clearMatchStorage(){
-    try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
-  }
-
-  /* ---------- Setup helpers ---------- */
-  function playerLabel(p, idx){
-    const name = (p.name || "").trim();
-    return name ? name : `Spieler ${idx+1}`;
-  }
-
-  function dedupeInvalidPicks(){
-    const ids = new Set(state.players.map(p=>p.id));
-    if(!ids.has(state.pick.A)) state.pick.A = state.players[0].id;
-    if(!ids.has(state.pick.B)) state.pick.B = state.players[1].id;
-    if(state.pick.A === state.pick.B){
-      const alt = state.players.find(p=>p.id !== state.pick.A);
-      state.pick.B = alt ? alt.id : state.pick.B;
-    }
-  }
-
-  function usedColors(exceptPlayerId=null){
+  /* ---------- Colors unique ---------- */
+  function usedColors(exceptId=null){
     const used = new Set();
     for(const p of state.players){
-      if(exceptPlayerId && p.id === exceptPlayerId) continue;
+      if(exceptId && p.id === exceptId) continue;
       used.add((p.color||"").toLowerCase());
     }
     return used;
   }
-
   function firstFreeColor(usedSet){
     const found = COLOR_OPTIONS.find(c => !usedSet.has(c.hex.toLowerCase()));
     return found ? found.hex : COLOR_OPTIONS[0].hex;
   }
-
   function enforceUniqueColorsAll(){
     const seen = new Set();
     for(const p of state.players){
@@ -817,8 +962,92 @@
       seen.add(p.color.toLowerCase());
     }
   }
+  function applyP1P2ColorsToCSS(){
+    const p1 = getP1(), p2 = getP2();
+    document.documentElement.style.setProperty("--pA", p1.color || "#d61f26");
+    document.documentElement.style.setProperty("--pB", p2.color || "#14a44d");
+  }
 
-  /* ---------- Render setup (players) ---------- */
+  /* ---------- Persist ---------- */
+  function saveSettings(){
+    try{
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+        players: state.players,
+        bestOfSets: state.bestOfSets,
+        legsToWinSet: state.legsToWinSet,
+        firstServer: state.firstServer,
+        logoSrc: el("topLogo")?.getAttribute("src") || "",
+        footerSrc: el("footerImg")?.getAttribute("src") || ""
+      }));
+    }catch(_){}
+  }
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if(!raw) return;
+      const s = JSON.parse(raw);
+
+      if(Array.isArray(s.players) && s.players.length >= 2){
+        state.players = s.players.map((p, i)=>({
+          id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
+          name: (typeof p.name === "string") ? p.name : "",
+          color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
+        }));
+      }
+      state.bestOfSets   = [5,7,15].includes(+s.bestOfSets) ? +s.bestOfSets : state.bestOfSets;
+      state.legsToWinSet = [3,5].includes(+s.legsToWinSet) ? +s.legsToWinSet : state.legsToWinSet;
+      state.firstServer  = (s.firstServer === "B") ? "B" : "A";
+      state.firstToSets = computeFirstTo(state.bestOfSets);
+
+      if(typeof s.logoSrc === "string" && s.logoSrc) el("topLogo").setAttribute("src", s.logoSrc);
+      if(typeof s.footerSrc === "string" && s.footerSrc) el("footerImg").setAttribute("src", s.footerSrc);
+      syncLogos();
+
+      enforceUniqueColorsAll();
+    }catch(_){}
+  }
+
+  function saveMatch(){
+    try{
+      localStorage.setItem(MATCH_KEY, JSON.stringify({
+        inProgress: state.match.inProgress,
+        matchOver: state.match.matchOver,
+        sets: state.match.sets,
+        legs: state.match.legs,
+        legsTotal: state.match.legsTotal,
+        history: state.match.history,
+        bestOfSets: state.bestOfSets,
+        firstToSets: state.firstToSets,
+        legsToWinSet: state.legsToWinSet,
+        firstServer: state.firstServer
+      }));
+    }catch(_){}
+  }
+  function loadMatch(){
+    try{
+      const raw = localStorage.getItem(MATCH_KEY);
+      if(!raw) return false;
+      const m = JSON.parse(raw);
+      if(!m || !m.inProgress) return false;
+
+      state.match.inProgress = !!m.inProgress;
+      state.match.matchOver  = !!m.matchOver;
+      state.match.sets       = m.sets || state.match.sets;
+      state.match.legs       = m.legs || state.match.legs;
+      state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
+      state.match.history    = Array.isArray(m.history) ? m.history : [];
+
+      if([5,7,15].includes(+m.bestOfSets)) state.bestOfSets = +m.bestOfSets;
+      state.firstToSets = computeFirstTo(state.bestOfSets);
+      if([3,5].includes(+m.legsToWinSet)) state.legsToWinSet = +m.legsToWinSet;
+      state.firstServer = (m.firstServer === "B") ? "B" : "A";
+
+      return (state.match.inProgress && !state.match.matchOver);
+    }catch(_){ return false; }
+  }
+  function clearMatchStorage(){ try{ localStorage.removeItem(MATCH_KEY); }catch(_){} }
+
+  /* ---------- Setup rendering ---------- */
   let openPaletteFor = null;
 
   function renderPlayers(){
@@ -840,44 +1069,40 @@
       colorBtn.addEventListener("click", ()=>{
         openPaletteFor = (openPaletteFor === p.id) ? null : p.id;
         renderPlayers();
-        haptic(8);
+        haptic(8); sfx.ui();
       });
 
       const input = document.createElement("input");
       input.placeholder = `Spieler ${idx+1}`;
-      // WICHTIG: Kein Default-Text im value für neu hinzugefügte Spieler
       input.value = (typeof p.name === "string") ? p.name : "";
       input.addEventListener("input", ()=>{
-        p.name = input.value; // kann leer sein
+        p.name = input.value;
         saveSettings();
-        renderPickSelects();
-        renderSetupHint();
+        if(state.match.inProgress) renderGame();
       });
 
-      const trash = document.createElement("button");
-      trash.type = "button";
-      trash.className = "trashBtn ghost";
-      trash.textContent = "🗑️";
-      trash.disabled = (state.players.length <= 2); // min. 2 Spieler behalten
-      trash.title = "Spieler entfernen";
-      trash.addEventListener("click", ()=>{
-        if(state.players.length <= 2) return;
-        // Wenn entfernte Person gerade ausgewählt ist, Picks reparieren
-        state.players = state.players.filter(x=>x.id !== p.id);
-        openPaletteFor = null;
-        dedupeInvalidPicks();
-        enforceUniqueColorsAll();
-        saveSettings();
-        renderPlayers();
-        renderPickSelects();
-        renderSetupHint();
-        haptic(12);
-      });
+      let rightEl = document.createElement("div");
+      if(idx >= 2){
+        const trash = document.createElement("button");
+        trash.type = "button";
+        trash.className = "trashBtn ghost";
+        trash.textContent = "🗑️";
+        trash.title = "Spieler entfernen";
+        trash.addEventListener("click", ()=>{
+          state.players = state.players.filter(x=>x.id !== p.id);
+          openPaletteFor = null;
+          enforceUniqueColorsAll();
+          saveSettings();
+          applyP1P2ColorsToCSS();
+          renderPlayers();
+          haptic(12); sfx.ui();
+        });
+        rightEl = trash;
+      }
 
       top.appendChild(colorBtn);
       top.appendChild(input);
-      top.appendChild(trash);
-
+      top.appendChild(rightEl);
       row.appendChild(top);
 
       if(openPaletteFor === p.id){
@@ -897,18 +1122,21 @@
           sw.appendChild(check);
 
           const hex = c.hex.toLowerCase();
-          sw.classList.toggle("selected", hex === (p.color||"").toLowerCase());
-          sw.classList.toggle("disabled", used.has(hex));
+          const isSelected = hex === (p.color||"").toLowerCase();
+          const isTaken = used.has(hex) && !isSelected;
+
+          sw.classList.toggle("selected", isSelected);
+          sw.classList.toggle("taken", isTaken);
 
           sw.addEventListener("click", ()=>{
-            if(used.has(hex)) return; // Farben nur einmal wählbar
+            if(isTaken) return;
             p.color = c.hex;
             enforceUniqueColorsAll();
             saveSettings();
-            applyActiveColorsToCSS(); // falls aktiver Pick geändert
+            applyP1P2ColorsToCSS();
+            if(state.match.inProgress) renderGame();
             renderPlayers();
-            renderPickSelects();
-            haptic(10);
+            haptic(10); sfx.ui();
           });
 
           pal.appendChild(sw);
@@ -919,75 +1147,22 @@
 
       list.appendChild(row);
     });
-
-    // Klick außerhalb schließt Palette
-    document.addEventListener("click", onDocClickClosePalettes, { once: true });
   }
 
-  function onDocClickClosePalettes(e){
-    const inPalette = e.target.closest(".palette") || e.target.closest(".colorPickBtn") || e.target.closest(".swatch");
-    if(!inPalette){
+  document.addEventListener("pointerdown", (e)=>{
+    if(!openPaletteFor) return;
+    const inside = e.target.closest(".palette") || e.target.closest(".colorPickBtn") || e.target.closest(".swatch");
+    if(!inside){
       openPaletteFor = null;
       renderPlayers();
     }
-  }
-
-  function renderPickSelects(){
-    const selA = el("pickA");
-    const selB = el("pickB");
-
-    const build = (sel, current) => {
-      sel.innerHTML = "";
-      state.players.forEach((p, idx)=>{
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = playerLabel(p, idx);
-        if(p.id === current) opt.selected = true;
-        sel.appendChild(opt);
-      });
-    };
-
-    build(selA, state.pick.A);
-    build(selB, state.pick.B);
-
-    // Falls gleich, reparieren
-    if(state.pick.A === state.pick.B){
-      const alt = state.players.find(p=>p.id !== state.pick.A);
-      if(alt) state.pick.B = alt.id;
-      build(selB, state.pick.B);
-    }
-
-    selA.onchange = ()=>{
-      state.pick.A = selA.value;
-      if(state.pick.A === state.pick.B){
-        const alt = state.players.find(p=>p.id !== state.pick.A);
-        if(alt) state.pick.B = alt.id;
-      }
-      saveSettings();
-      renderPickSelects();
-      applyActiveColorsToCSS();
-      renderSetupHint();
-    };
-
-    selB.onchange = ()=>{
-      state.pick.B = selB.value;
-      if(state.pick.B === state.pick.A){
-        const alt = state.players.find(p=>p.id !== state.pick.B);
-        if(alt) state.pick.A = alt.id;
-      }
-      saveSettings();
-      renderPickSelects();
-      applyActiveColorsToCSS();
-      renderSetupHint();
-    };
-  }
+  }, { passive: true });
 
   function renderSetupHint(){
-    state.firstToSets = computeFirstTo(state.bestOfSets);
     const bestOf = +el("bestOfSets").value;
     const firstTo = computeFirstTo(bestOf);
     const legsToWin = +el("legsToWinSet").value;
-    const starter = el("firstServer").value === "B" ? "Rechts" : "Links";
+    const starter = el("firstServer").value === "B" ? "Spieler 2" : "Spieler 1";
     el("formatHint").textContent =
       `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: ${starter}`;
   }
@@ -999,36 +1174,11 @@
     renderPlayers();
   }
 
-  /* ---------- Match logic (2 Spieler) ---------- */
-  function getPlayerById(id){
-    return state.players.find(p=>p.id === id) || state.players[0];
-  }
-
-  function applyActiveColorsToCSS(){
-    const pA = getPlayerById(state.pick.A);
-    const pB = getPlayerById(state.pick.B);
-    document.documentElement.style.setProperty("--pA", pA.color || "#d61f26");
-    document.documentElement.style.setProperty("--pB", pB.color || "#14a44d");
-  }
-
-  function snapshot(){
-    state.match.history.push(JSON.parse(JSON.stringify({
-      inProgress: state.match.inProgress,
-      matchOver: state.match.matchOver,
-      active: state.match.active,
-      sets: state.match.sets,
-      legs: state.match.legs,
-      legsTotal: state.match.legsTotal,
-      bestOfSets: state.bestOfSets,
-      firstToSets: state.firstToSets,
-      legsToWinSet: state.legsToWinSet,
-      firstServer: state.firstServer
-    })));
-    if(state.match.history.length > 80) state.match.history.shift();
-  }
-
+  /* ---------- Game logic ---------- */
   function logLine(t){
-    el("log").textContent = t + "\n" + el("log").textContent;
+    const prev = el("log").textContent || "";
+    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
+    el("log").textContent = t + sep + prev;
   }
 
   function currentSetNumber(){ return state.match.sets.A + state.match.sets.B + 1; }
@@ -1042,17 +1192,11 @@
   }
 
   function renderGame(){
-    const pLeft  = getPlayerById(state.match.active.A);
-    const pRight = getPlayerById(state.match.active.B);
+    const p1 = getP1(), p2 = getP2();
+    applyP1P2ColorsToCSS();
 
-    // Farben fürs Match
-    document.documentElement.style.setProperty("--pA", pLeft.color  || "#d61f26");
-    document.documentElement.style.setProperty("--pB", pRight.color || "#14a44d");
-
-    el("titleA").textContent = (pLeft.name||"").trim()  || "Spieler";
-    el("titleB").textContent = (pRight.name||"").trim() || "Spieler";
-    el("pillA").textContent  = (pLeft.name||"").trim()  || "Spieler links";
-    el("pillB").textContent  = (pRight.name||"").trim() || "Spieler rechts";
+    el("titleA").textContent = playerName(p1, "Spieler 1");
+    el("titleB").textContent = playerName(p2, "Spieler 2");
 
     el("setsA").textContent = state.match.sets.A;
     el("setsB").textContent = state.match.sets.B;
@@ -1069,12 +1213,55 @@
     saveMatch();
   }
 
+  function snapshot(){
+    state.match.history.push(JSON.parse(JSON.stringify({
+      inProgress: state.match.inProgress,
+      matchOver: state.match.matchOver,
+      sets: state.match.sets,
+      legs: state.match.legs,
+      legsTotal: state.match.legsTotal,
+      bestOfSets: state.bestOfSets,
+      firstToSets: state.firstToSets,
+      legsToWinSet: state.legsToWinSet,
+      firstServer: state.firstServer
+    })));
+    if(state.match.history.length > 80) state.match.history.shift();
+    saveMatch();
+  }
+
+  function showWinModal(winner){
+    state.match.matchOver = true;
+    state.match.inProgress = false;
+
+    const p1 = getP1(), p2 = getP2();
+    const winnerName = winner === "A" ? playerName(p1, "Spieler 1") : playerName(p2, "Spieler 2");
+    const winColor = winner === "A" ? (p1.color || "#d61f26") : (p2.color || "#14a44d");
+
+    const modal = el("winModal");
+    const card = modal.querySelector(".modalCard");
+    card.style.setProperty("--winColor", winColor);
+
+    el("winTitle").textContent = `Glückwunsch ${winnerName}!`;
+    el("winSub").textContent = "Sie haben das Match gewonnen.";
+    el("winScore").textContent = `${state.match.sets.A}-${state.match.sets.B} Sets`;
+
+    const n1 = playerName(p1, "Spieler 1");
+    const n2 = playerName(p2, "Spieler 2");
+    el("winSummary").innerHTML = `
+      <div class="summaryRow"><div class="summaryKey">Ergebnis (Sets)</div><div class="summaryVal">${n1}: ${state.match.sets.A} · ${n2}: ${state.match.sets.B}</div></div>
+      <div class="summaryRow"><div class="summaryKey">Legs (gesamt)</div><div class="summaryVal">${n1}: ${state.match.legsTotal.A} · ${n2}: ${state.match.legsTotal.B}</div></div>
+      <div class="summaryRow"><div class="summaryKey">Format</div><div class="summaryVal">Best of ${state.bestOfSets} · Legs/Set ${state.legsToWinSet}</div></div>
+    `;
+
+    modal.classList.add("show");
+    haptic(40); sfx.win();
+    saveMatch();
+  }
+  function hideWinModal(){ el("winModal").classList.remove("show"); }
+
   function finishMatchIfNeeded(player){
     if(state.match.sets[player] >= state.firstToSets){
-      state.match.matchOver = true;
-      state.match.inProgress = false;
-      saveMatch();
-      alert(`Match beendet! Ergebnis: ${state.match.sets.A}-${state.match.sets.B} Sets`);
+      showWinModal(player);
       return true;
     }
     return false;
@@ -1084,17 +1271,25 @@
     state.match.sets[player] += 1;
     state.match.legs.A = 0;
     state.match.legs.B = 0;
-    logLine(`Set an ${player === "A" ? el("titleA").textContent : el("titleB").textContent} — Sets: ${state.match.sets.A}-${state.match.sets.B}`);
+
+    const p1 = getP1(), p2 = getP2();
+    logLine(`Set an ${(player==="A") ? playerName(p1,"Spieler 1") : playerName(p2,"Spieler 2")} — Sets: ${state.match.sets.A}-${state.match.sets.B}`);
+    sfx.set();
+    saveMatch();
+
     finishMatchIfNeeded(player);
   }
 
   function addLeg(player){
     if(state.match.matchOver) return;
     snapshot();
+
     state.match.legs[player] += 1;
     state.match.legsTotal[player] += 1;
-    haptic(12);
-    logLine(`Leg an ${player === "A" ? el("titleA").textContent : el("titleB").textContent} — Legs: ${state.match.legs.A}-${state.match.legs.B}`);
+    haptic(12); sfx.tap();
+
+    const p1 = getP1(), p2 = getP2();
+    logLine(`Leg an ${(player==="A") ? playerName(p1,"Spieler 1") : playerName(p2,"Spieler 2")} — Legs: ${state.match.legs.A}-${state.match.legs.B}`);
 
     if(state.match.legs[player] >= state.legsToWinSet){
       awardSet(player);
@@ -1110,7 +1305,6 @@
 
     state.match.inProgress = prev.inProgress;
     state.match.matchOver  = prev.matchOver;
-    state.match.active     = prev.active;
     state.match.sets       = prev.sets;
     state.match.legs       = prev.legs;
     state.match.legsTotal  = prev.legsTotal;
@@ -1124,9 +1318,10 @@
     el("legsToWinSet").value = String(state.legsToWinSet);
     el("firstServer").value  = state.firstServer;
 
-    haptic(10);
-    logLine("Undo.");
+    haptic(10); sfx.undo();
+    logLine("Rückgängig.");
     renderGame();
+    saveMatch();
   }
 
   function toggleLog(){
@@ -1134,28 +1329,19 @@
     const vis = !el("log").classList.contains("hidden");
     el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
     el("toggleLog").setAttribute("aria-expanded", String(vis));
-    haptic(8);
+    haptic(8); sfx.ui();
   }
 
-  /* iOS-sicher: Tap + Longpress */
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
     let didLong = false;
 
-    const clear = () => {
-      if(timer) clearTimeout(timer);
-      timer = null;
-    };
+    const clear = () => { if(timer) clearTimeout(timer); timer = null; };
 
     targetEl.addEventListener("pointerdown", () => {
-      didLong = false;
-      clear();
-      timer = setTimeout(() => {
-        didLong = true;
-        onLongPress();
-        haptic(10);
-      }, LONG);
+      didLong = false; clear();
+      timer = setTimeout(() => { didLong = true; onLongPress(); }, LONG);
     }, { passive: true });
 
     targetEl.addEventListener("pointerup", () => {
@@ -1168,40 +1354,81 @@
     targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
-  /* ---------- New match behavior (wichtig für Ihre Anforderung) ---------- */
-  function clearSelectedNamesInSetup(){
-    // „Neues Match anlegen“ soll neue Namen erlauben, ohne „alten Namen löschen“.
-    // Daher leeren wir die beiden aktuell ausgewählten Teilnehmer im Setup.
-    const a = state.players.find(p=>p.id === state.pick.A);
-    const b = state.players.find(p=>p.id === state.pick.B);
-    if(a) a.name = "";
-    if(b) b.name = "";
+  function showResumeUIIfNeeded(){
+    const has = loadMatch();
+    if(has){
+      const p1 = getP1(), p2 = getP2();
+      el("resumeMeta").textContent =
+        `${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} · Sets ${state.match.sets.A}-${state.match.sets.B} · Legs ${state.match.legs.A}-${state.match.legs.B}`;
+      el("resumeCard").classList.remove("hidden");
+    }else{
+      el("resumeCard").classList.add("hidden");
+    }
+  }
+
+  async function shareResult(){
+    const p1 = getP1(), p2 = getP2();
+    const n1 = playerName(p1,"Spieler 1");
+    const n2 = playerName(p2,"Spieler 2");
+    const text =
+      `🎯 Dart Set & Leg Counter\n` +
+      `Ergebnis: ${n1} ${state.match.sets.A}-${state.match.sets.B} ${n2} (Sets)\n` +
+      `Legs gesamt: ${n1} ${state.match.legsTotal.A}-${state.match.legsTotal.B} ${n2}\n` +
+      `Format: Best of ${state.bestOfSets} · Legs/Set ${state.legsToWinSet}`;
+
+    try{
+      if(navigator.share){
+        await navigator.share({ title: "Dart Ergebnis", text });
+      }else if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+        alert("Ergebnis kopiert – Sie können es jetzt z.B. in WhatsApp einfügen.");
+      }else{
+        prompt("Kopieren Sie das Ergebnis:", text);
+      }
+      haptic(10); sfx.ui();
+    }catch(_){}
+  }
+
+  function switchSides(){
+    if(state.players.length < 2) return;
+    const tmp = state.players[0];
+    state.players[0] = state.players[1];
+    state.players[1] = tmp;
     saveSettings();
+    applyP1P2ColorsToCSS();
+    renderPlayers();
+  }
+
+  function resetMatchScores(){
+    state.match.inProgress = true;
+    state.match.matchOver = false;
+    state.match.sets = { A: 0, B: 0 };
+    state.match.legs = { A: 0, B: 0 };
+    state.match.legsTotal = { A: 0, B: 0 };
+    state.match.history = [];
+    el("log").textContent = "";
+    hideWinModal();
+    saveMatch();
+    renderGame();
   }
 
   function startMatch(){
-    // Setup übernehmen
     state.bestOfSets   = +el("bestOfSets").value;
     state.firstToSets  = computeFirstTo(state.bestOfSets);
     state.legsToWinSet = +el("legsToWinSet").value;
     state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
 
-    dedupeInvalidPicks();
-
-    // Match init
     state.match.inProgress = true;
     state.match.matchOver = false;
-    state.match.active = { A: state.pick.A, B: state.pick.B };
     state.match.sets = { A: 0, B: 0 };
     state.match.legs = { A: 0, B: 0 };
     state.match.legsTotal = { A: 0, B: 0 };
     state.match.history = [];
     el("log").textContent = "";
 
-    const pLeft  = getPlayerById(state.pick.A);
-    const pRight = getPlayerById(state.pick.B);
+    const p1 = getP1(), p2 = getP2();
+    logLine(`Start: ${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} — Best of ${state.bestOfSets} — Legs/Set: ${state.legsToWinSet} — Anwurf: ${(state.firstServer==="A") ? "Spieler 1" : "Spieler 2"}`);
 
-    logLine(`Start: ${playerLabel(pLeft, 0)} vs ${playerLabel(pRight, 1)} — Best of ${state.bestOfSets} — Legs/Set: ${state.legsToWinSet} — Anwurf: ${state.firstServer === "A" ? "Links" : "Rechts"}`);
     el("log").classList.add("hidden");
     el("toggleLog").textContent = "Verlauf anzeigen";
     el("toggleLog").setAttribute("aria-expanded","false");
@@ -1209,46 +1436,27 @@
     saveSettings();
     saveMatch();
     renderGame();
-    haptic(12);
+    haptic(12); sfx.ui();
     show("game");
   }
 
-  function showResumeUIIfNeeded(){
-    const has = loadMatch();
-    if(has){
-      // Text bauen
-      const pLeft  = getPlayerById(state.match.active.A);
-      const pRight = getPlayerById(state.match.active.B);
-      el("resumeMeta").textContent =
-        `${(pLeft.name||"").trim()||"Spieler links"} vs ${(pRight.name||"").trim()||"Spieler rechts"} · Sets ${state.match.sets.A}-${state.match.sets.B} · Legs ${state.match.legs.A}-${state.match.legs.B}`;
-      el("resumeCard").classList.remove("hidden");
-    }else{
-      el("resumeCard").classList.add("hidden");
-    }
-  }
-
-  /* ---------- Wiring ---------- */
   document.addEventListener("DOMContentLoaded", ()=>{
-    loadTheme();
-    loadSettings();
+    document.addEventListener("pointerdown", ()=>ensureAudio(), { once:true, passive:true });
 
-    // Setup selects initial
+    syncLogos();
+    loadSettings();
+    syncLogos();
+
     el("bestOfSets").value   = String(state.bestOfSets);
     el("legsToWinSet").value = String(state.legsToWinSet);
     el("firstServer").value  = state.firstServer;
+    state.firstToSets = computeFirstTo(state.bestOfSets);
 
-    // Setup render
     enforceUniqueColorsAll();
+    applyP1P2ColorsToCSS();
     renderPlayers();
-    renderPickSelects();
-    applyActiveColorsToCSS();
     renderSetupHint();
-
-    // Resume?
     showResumeUIIfNeeded();
-
-    el("themeToggle").addEventListener("click", toggleTheme);
-    el("themeToggle2").addEventListener("click", toggleTheme);
 
     el("addPlayer").addEventListener("click", ()=>{
       if(state.players.length >= COLOR_OPTIONS.length){
@@ -1257,12 +1465,11 @@
       }
       const used = usedColors(null);
       const newColor = firstFreeColor(used);
-      state.players.push({ id: uid(), name: "", color: newColor }); // name leer -> kein „erst löschen“
+      state.players.push({ id: uid(), name: "", color: newColor });
       enforceUniqueColorsAll();
       saveSettings();
       renderPlayers();
-      renderPickSelects();
-      haptic(12);
+      haptic(12); sfx.ui();
     });
 
     ["bestOfSets","legsToWinSet","firstServer"].forEach(id=>{
@@ -1275,68 +1482,75 @@
         if(id === "firstServer") state.firstServer = el("firstServer").value === "B" ? "B" : "A";
         saveSettings();
         renderSetupHint();
+        sfx.ui();
       });
     });
 
     el("quickHelpBtn").addEventListener("click", ()=>{
       const t = el("helpText");
       t.style.display = (t.style.display === "none") ? "block" : "none";
-      haptic(8);
+      haptic(8); sfx.ui();
     });
 
     el("startBtn").addEventListener("click", startMatch);
 
-    // iOS-sicheres Scoring
     attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
     attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
 
     el("undo").addEventListener("click", undo);
     el("toggleLog").addEventListener("click", toggleLog);
 
-    el("newMatch").addEventListener("click", ()=>{
-      haptic(10);
-      if(confirm("Neues Match anlegen? (Match wird verworfen und Setup geöffnet)")){
-        // Match verwerfen
-        state.match.inProgress = false;
-        state.match.matchOver = false;
-        state.match.history = [];
-        clearMatchStorage();
-
-        // Wichtig: damit Sie NICHT die alten Namen im neuen Match haben:
-        clearSelectedNamesInSetup();
-
-        // Setup neu rendern
-        renderPlayers();
-        renderPickSelects();
-        applyActiveColorsToCSS();
-        renderSetupHint();
-        show("setup");
-      }
+    el("toSetup").addEventListener("click", ()=>{
+      saveMatch();
+      showResumeUIIfNeeded();
+      show("setup");
+      haptic(8); sfx.ui();
     });
 
-    // Resume-Buttons
     el("resumeBtn").addEventListener("click", ()=>{
-      if(!loadMatch()){
-        showResumeUIIfNeeded();
-        return;
-      }
-      haptic(12);
+      if(!loadMatch()){ showResumeUIIfNeeded(); return; }
       show("game");
       renderGame();
+      haptic(10); sfx.ui();
     });
 
     el("discardBtn").addEventListener("click", ()=>{
-      haptic(10);
-      if(confirm("Gespeichertes Match verwerfen und neues Match anlegen?")){
+      haptic(10); sfx.ui();
+      if(confirm("Gespeichertes Match wirklich verwerfen?")){
         clearMatchStorage();
         state.match.inProgress = false;
         state.match.matchOver = false;
         state.match.history = [];
-        clearSelectedNamesInSetup();
         showResumeUIIfNeeded();
-        renderPlayers();
-        renderPickSelects();
       }
+    });
+
+    el("shareBtn").addEventListener("click", shareResult);
+
+    el("winRevenge").addEventListener("click", ()=>{
+      resetMatchScores();
+      haptic(14); sfx.ui();
+    });
+
+    el("winSwitch").addEventListener("click", ()=>{
+      switchSides();
+      resetMatchScores();
+      haptic(14); sfx.ui();
+    });
+
+    el("winToSetup").addEventListener("click", ()=>{
+      hideWinModal();
+      clearMatchStorage();
+      state.match.inProgress = false;
+      state.match.matchOver = false;
+      state.match.history = [];
+      showResumeUIIfNeeded();
+      show("setup");
+      haptic(10); sfx.ui();
+    });
+
+    el("winModal").addEventListener("click", (e)=>{
+      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
     });
   });
 </script>
