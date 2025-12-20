@@ -19,7 +19,6 @@
       --fs-col:   clamp(12px, 3.2vw, 13px);
       --fs-num:   clamp(20px, 5.4vw, 26px);
 
-      /* Dart-Basisfarben */
       --dartRed:   #b8161c;
       --dartRedHi: #ff3a41;
       --dartGreen: #0f7a2b;
@@ -27,7 +26,6 @@
       --dartBlack: #0b0f14;
       --dartWhite: #f7f8fb;
 
-      /* UI */
       --bg: var(--dartGreen);
       --text: var(--dartWhite);
       --muted: rgba(247,248,251,.80);
@@ -39,13 +37,8 @@
 
       --inputBg: rgba(0,0,0,.32);
 
-      --btnEdge: rgba(255,255,255,.18);
-      --tapBg: rgba(255,255,255,.04);
-
-      /* Scoreboard Header */
       --sbHeaderText: rgba(11,15,20,.92);
 
-      /* Player colors (default) */
       --pA: #d61f26;
       --pB: #14a44d;
     }
@@ -159,19 +152,6 @@
       overflow:hidden;
     }
 
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-90px;
-      pointer-events:none;
-      opacity:.22;
-      background: repeating-conic-gradient(from 0deg,
-        rgba(255,255,255,.08) 0 12deg,
-        transparent 12deg 18deg);
-      mix-blend-mode: overlay;
-      filter: blur(.2px);
-    }
-
     label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 
     input, select{
@@ -238,7 +218,6 @@
     .spacer{ flex:1; }
     .hidden{ display:none!important; }
 
-    /* ---- Setup: Spielerliste ---- */
     .playersList{ display:grid; gap: 12px; }
 
     .playerRow{
@@ -252,16 +231,6 @@
       gap: 10px;
       position:relative;
       overflow:hidden;
-    }
-    .playerRow::before{
-      content:"";
-      position:absolute; inset:-70px;
-      pointer-events:none;
-      opacity:.18;
-      background: repeating-conic-gradient(from 0deg,
-        rgba(255,255,255,.10) 0 14deg,
-        transparent 14deg 18deg);
-      mix-blend-mode: overlay;
     }
 
     .playerRowTop{
@@ -363,7 +332,6 @@
     }
     .swatch.selected .check{ opacity: 1; }
 
-    /* ---- Spiel: Scoreboard ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
     .sb-header{
@@ -383,9 +351,7 @@
       left:0; right:0; bottom:0;
       height: 3px;
       background:
-        linear-gradient(90deg,
-          var(--dartRed) 0 50%,
-          var(--dartGreenHi) 50% 100%);
+        linear-gradient(90deg, var(--dartRed) 0 50%, var(--dartGreenHi) 50% 100%);
       opacity:.95;
     }
     .sb-header .col, .sb-header .left{
@@ -413,19 +379,11 @@
 
     .tap{ touch-action: manipulation; }
 
-    .sb-row.playerA{
+    .sb-row.playerDyn{
       background:
-        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--pA) 32%, transparent), transparent 70%),
+        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--rowColor) 32%, transparent), transparent 70%),
         linear-gradient(90deg,
-          color-mix(in srgb, var(--pA) 68%, transparent),
-          rgba(255,255,255,.03)
-        );
-    }
-    .sb-row.playerB{
-      background:
-        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--pB) 32%, transparent), transparent 70%),
-        linear-gradient(90deg,
-          color-mix(in srgb, var(--pB) 68%, transparent),
+          color-mix(in srgb, var(--rowColor) 68%, transparent),
           rgba(255,255,255,.03)
         );
     }
@@ -504,95 +462,6 @@
       margin-top: 10px;
     }
 
-    /* ---- WIN MODAL ---- */
-    .modalOverlay{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      background: rgba(0,0,0,.55);
-      z-index: 999;
-      backdrop-filter: blur(6px);
-    }
-    .modalOverlay.show{ display:flex; }
-
-    .modalCard{
-      width: min(560px, 100%);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.16);
-      box-shadow: 0 22px 60px rgba(0,0,0,.45);
-      overflow:hidden;
-      background:
-        radial-gradient(900px 260px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
-        linear-gradient(180deg, rgba(10,13,18,.95), rgba(16,20,27,.95));
-    }
-    .modalTop{
-      padding: 14px 16px;
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--winColor) 28%, transparent),
-        color-mix(in srgb, var(--winColor) 10%, transparent)
-      );
-      border-bottom: 1px solid rgba(255,255,255,.12);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .shareBtn{
-      min-height: 40px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      box-shadow:none;
-      font-size: 16px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .modalBody{
-      padding: 18px 16px 16px;
-    }
-    .modalTitle{
-      font-size: clamp(22px, 6vw, 34px);
-      font-weight: 1200;
-      line-height: 1.1;
-      margin: 0 0 8px;
-    }
-    .modalSub{
-      font-size: var(--fs-body);
-      color: rgba(255,255,255,.80);
-      margin: 0 0 12px;
-    }
-    .summaryBox{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      border-radius: 14px;
-      padding: 12px;
-      margin: 12px 0 14px;
-      line-height: 1.35;
-      font-size: var(--fs-body);
-    }
-    .summaryRow{
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 6px 0;
-      border-bottom: 1px dashed rgba(255,255,255,.18);
-    }
-    .summaryRow:last-child{ border-bottom:none; }
-
-    .modalActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .modalActions button.primary{
-      border-color: rgba(255,255,255,.22);
-      background: linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
-    }
-
-    /* ---- FOOTER ---- */
     .footer{
       position:relative;
       z-index:1;
@@ -631,8 +500,8 @@
 
 <body>
 <div class="wrap">
-
   <div class="main">
+
     <!-- SETUP -->
     <div id="screenSetup">
       <div class="navbar">
@@ -641,7 +510,6 @@
                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Crect x='6' y='6' width='76' height='76' rx='18' fill='%230b0f14'/%3E%3Ccircle cx='44' cy='44' r='28' fill='%23ffffff' fill-opacity='.10'/%3E%3Cpath d='M18 56 L50 24 L58 32 L26 64 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M50 24 L70 16 L74 20 L58 32 Z' fill='%23d61f26' fill-opacity='.38'/%3E%3Cpath d='M26 64 L58 32 L66 40 L34 72 Z' fill='%2314a44d' fill-opacity='.34'/%3E%3C/svg%3E" />
           <div class="brandTitle">Dart Set &amp; Leg Counter</div>
         </div>
-        <div class="topActions"></div>
       </div>
 
       <div class="card hidden" id="resumeCard">
@@ -654,20 +522,20 @@
       </div>
 
       <div class="card">
-        <label style="position:relative; z-index:1;">Spieler</label>
+        <label style="position:relative; z-index:1;">Spieler (min. 2 · max. 6)</label>
         <div class="playersList" id="playersList" style="position:relative; z-index:1;"></div>
 
         <div class="controls" style="margin-top:12px; position:relative; z-index:1;">
           <button class="ghost" id="addPlayer" type="button">+ Spieler hinzufügen</button>
           <span class="spacer"></span>
-          <span class="meta" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
+          <span class="meta" id="playerCountHint" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
         </div>
         <div class="meta" style="position:relative; z-index:1;">Einstellungen werden gespeichert. (Match kann später fortgesetzt werden.)</div>
       </div>
 
       <div class="card">
         <div class="controls" style="gap:12px; position:relative; z-index:1;">
-          <div style="flex:1; min-width: 240px;">
+          <divrow = "flex:1; min-width: 240px;">
             <label for="firstToSets">Sets (First to)</label>
             <select id="firstToSets"></select>
           </div>
@@ -680,10 +548,7 @@
         <div class="controls" style="gap:12px; margin-top:12px; position:relative; z-index:1;">
           <div style="flex:1; min-width: 240px;">
             <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
-            <select id="firstServer">
-              <option value="A">Spieler 1</option>
-              <option value="B">Spieler 2</option>
-            </select>
+            <select id="firstServer"></select>
           </div>
           <div style="flex:1; min-width: 240px;">
             <label>&nbsp;</label>
@@ -710,7 +575,6 @@
           <img class="logoImg" alt="Logo" src="" id="topLogo2" />
           <div class="brandTitle">Dart Set &amp; Leg Counter</div>
         </div>
-        <div class="topActions"></div>
       </div>
 
       <div class="card scoreboard">
@@ -721,19 +585,7 @@
           <div class="col">LEGS</div>
         </div>
 
-        <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen Spieler 1">
-          <div class="serveCell" id="serveA">▶</div>
-          <div class="name"><span id="titleA">Spieler 1</span></div>
-          <div class="num" id="setsA">0</div>
-          <div class="num" id="legsA">0</div>
-        </div>
-
-        <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen Spieler 2">
-          <div class="serveCell" id="serveB">▶</div>
-          <div class="name"><span id="titleB">Spieler 2</span></div>
-          <div class="num" id="setsB">0</div>
-          <div class="num" id="legsB">0</div>
-        </div>
+        <div id="scoreRows"></div>
 
         <div style="padding:12px 14px; position:relative; z-index:1;">
           <div class="badgeLine">
@@ -748,14 +600,18 @@
             <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
           </div>
 
+          <div class="controls" style="margin-top:10px;">
+            <button class="ghost" id="endToSetup" type="button">Beenden &amp; zurück zum Setup</button>
+          </div>
+
           <div class="log hidden" id="log"></div>
-          <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
+          <div class="hint">Anwurf (▶) rotiert automatisch pro Leg und pro Set durch die Spieler.</div>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- FOOTER -->
   <footer class="footer" aria-label="Footer">
     <div class="footerCard">
       <img class="footerImg" id="footerImg" alt="Dart Gimmick"
@@ -769,34 +625,14 @@
 
 </div>
 
-<!-- WIN MODAL -->
-<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
-  <div class="modalCard" style="--winColor: var(--pA);">
-    <div class="modalTop">
-      <span class="tag" id="winTag">🏆 Match beendet</span>
-      <button class="shareBtn ghost" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
-    </div>
-    <div class="modalBody">
-      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
-      <p class="modalSub" id="winSub">Sie haben das Match gewonnen.</p>
-
-      <div class="summaryBox" id="winSummary"></div>
-
-      <div class="modalActions">
-        <button class="primary" id="winRevenge" type="button">Revanche</button>
-        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v19";
-  const MATCH_KEY    = "dart_counter_match_v19";
-
+  const SETTINGS_KEY = "dart_counter_settings_v21";
+  const MATCH_KEY    = "dart_counter_match_v21";
   const APP_URL = "https://nicoloehle.github.io/dart-counter/";
 
-  /* Farben sortiert (Dart-Style -> warm/knallig -> dunkler) */
+  const MIN_PLAYERS = 2;
+  const MAX_PLAYERS = 6;
+
   const COLOR_OPTIONS = [
     { key: "red",      name: "Rot",        hex: "#d61f26" },
     { key: "green",    name: "Grün",       hex: "#14a44d" },
@@ -811,11 +647,10 @@
 
   const el = (id) => document.getElementById(id);
   const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
-  const other = (p) => (p === "A" ? "B" : "A");
 
   function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
-  /* ---------- Sounds (WebAudio) ---------- */
+  /* Sounds */
   let audioCtx = null;
   function ensureAudio(){
     if(audioCtx) return;
@@ -838,7 +673,6 @@
     tap(){ beep(520, 40, "sine", 0.045); },
     undo(){ beep(260, 60, "triangle", 0.05); },
     set(){ beep(740, 70, "square", 0.04); },
-    win(){ beep(880, 90, "sine", 0.055); setTimeout(()=>beep(1040, 110, "sine", 0.05), 90); },
     ui(){  beep(420, 35, "sine", 0.035); }
   };
 
@@ -849,27 +683,18 @@
     ],
     firstToSets: 3,
     legsToWinSet: 3,
-    firstServer: "A",
-    match: {
-      inProgress: false,
-      matchOver: false,
-      sets: { A: 0, B: 0 },
-      legs: { A: 0, B: 0 },
-      legsTotal: { A: 0, B: 0 },
-      history: []
-    }
+    firstServerId: "p1",
+    match: { inProgress:false, matchOver:false, sets:{}, legs:{}, legsTotal:{}, history:[], setNo:1 }
   };
 
-  function getP1(){ return state.players[0] || { id:"p1", name:"", color:"#d61f26" }; }
-  function getP2(){ return state.players[1] || { id:"p2", name:"", color:"#14a44d" }; }
   function playerName(p, fallback){ const n=(p?.name||"").trim(); return n ? n : fallback; }
+  function getPlayerById(id){ return state.players.find(p => p.id === id) || null; }
 
   function syncLogos(){
     const src = el("topLogo")?.getAttribute("src") || "";
     if(el("topLogo2")) el("topLogo2").setAttribute("src", src);
   }
 
-  /* ---------- Colors unique ---------- */
   function usedColors(exceptId=null){
     const used = new Set();
     for(const p of state.players){
@@ -893,20 +718,20 @@
       seen.add(p.color.toLowerCase());
     }
   }
-  function applyP1P2ColorsToCSS(){
-    const p1 = getP1(), p2 = getP2();
+  function applyFirstTwoColorsToCSS(){
+    const p1 = state.players[0] || { color:"#d61f26" };
+    const p2 = state.players[1] || { color:"#14a44d" };
     document.documentElement.style.setProperty("--pA", p1.color || "#d61f26");
     document.documentElement.style.setProperty("--pB", p2.color || "#14a44d");
   }
 
-  /* ---------- Persist ---------- */
   function saveSettings(){
     try{
       localStorage.setItem(SETTINGS_KEY, JSON.stringify({
         players: state.players,
         firstToSets: state.firstToSets,
         legsToWinSet: state.legsToWinSet,
-        firstServer: state.firstServer,
+        firstServerId: state.firstServerId,
         logoSrc: el("topLogo")?.getAttribute("src") || "",
         footerSrc: el("footerImg")?.getAttribute("src") || ""
       }));
@@ -918,16 +743,26 @@
       if(!raw) return;
       const s = JSON.parse(raw);
 
-      if(Array.isArray(s.players) && s.players.length >= 2){
-        state.players = s.players.map((p, i)=>({
+      if(Array.isArray(s.players) && s.players.length >= MIN_PLAYERS){
+        state.players = s.players.slice(0, MAX_PLAYERS).map((p, i)=>({
           id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
           name: (typeof p.name === "string") ? p.name : "",
           color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
         }));
+        // Sicherstellen: mind. 2
+        while(state.players.length < MIN_PLAYERS){
+          state.players.push({ id: uid(), name: "", color: firstFreeColor(usedColors(null)) });
+        }
       }
+
       state.firstToSets  = Number.isFinite(+s.firstToSets) ? Math.min(7, Math.max(1, +s.firstToSets)) : state.firstToSets;
       state.legsToWinSet = Number.isFinite(+s.legsToWinSet) ? Math.min(7, Math.max(1, +s.legsToWinSet)) : state.legsToWinSet;
-      state.firstServer  = (s.firstServer === "B") ? "B" : "A";
+
+      if(typeof s.firstServerId === "string" && s.firstServerId && getPlayerById(s.firstServerId)){
+        state.firstServerId = s.firstServerId;
+      }else{
+        state.firstServerId = state.players[0]?.id || "p1";
+      }
 
       if(typeof s.logoSrc === "string" && s.logoSrc) el("topLogo").setAttribute("src", s.logoSrc);
       if(typeof s.footerSrc === "string" && s.footerSrc) el("footerImg").setAttribute("src", s.footerSrc);
@@ -937,46 +772,65 @@
     }catch(_){}
   }
 
-  function saveMatch(){
-    try{
-      localStorage.setItem(MATCH_KEY, JSON.stringify({
-        inProgress: state.match.inProgress,
-        matchOver: state.match.matchOver,
-        sets: state.match.sets,
-        legs: state.match.legs,
-        legsTotal: state.match.legsTotal,
-        history: state.match.history,
-        firstToSets: state.firstToSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServer: state.firstServer
-      }));
-    }catch(_){}
+  function fillOneToSeven(selectEl, defaultVal){
+    selectEl.innerHTML = "";
+    for(let i=1;i<=7;i++){
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = String(i);
+      if(i === defaultVal) opt.selected = true;
+      selectEl.appendChild(opt);
+    }
   }
-  function loadMatch(){
-    try{
-      const raw = localStorage.getItem(MATCH_KEY);
-      if(!raw) return false;
-      const m = JSON.parse(raw);
-      if(!m || !m.inProgress) return false;
 
-      state.match.inProgress = !!m.inProgress;
-      state.match.matchOver  = !!m.matchOver;
-      state.match.sets       = m.sets || state.match.sets;
-      state.match.legs       = m.legs || state.match.legs;
-      state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
-      state.match.history    = Array.isArray(m.history) ? m.history : [];
-
-      state.firstToSets  = Number.isFinite(+m.firstToSets) ? Math.min(7, Math.max(1, +m.firstToSets)) : state.firstToSets;
-      state.legsToWinSet = Number.isFinite(+m.legsToWinSet) ? Math.min(7, Math.max(1, +m.legsToWinSet)) : state.legsToWinSet;
-      state.firstServer  = (m.firstServer === "B") ? "B" : "A";
-
-      return (state.match.inProgress && !state.match.matchOver);
-    }catch(_){ return false; }
+  function updateFirstServerSelect(){
+    const sel = el("firstServer");
+    const current = state.firstServerId;
+    sel.innerHTML = "";
+    state.players.forEach((p, idx)=>{
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = playerName(p, `Spieler ${idx+1}`);
+      sel.appendChild(opt);
+    });
+    if(getPlayerById(current)){
+      sel.value = current;
+    }else{
+      sel.value = state.players[0]?.id || "";
+      state.firstServerId = sel.value || state.firstServerId;
+      saveSettings();
+    }
   }
-  function clearMatchStorage(){ try{ localStorage.removeItem(MATCH_KEY); }catch(_){} }
 
-  /* ---------- Setup rendering ---------- */
+  function renderSetupHint(){
+    const sets = +el("firstToSets").value;
+    const legs = +el("legsToWinSet").value;
+    const starter = getPlayerById(el("firstServer").value);
+    el("formatHint").textContent =
+      `Match: First to ${sets} Sets · Set: First to ${legs} Legs · Anwurf Start: ${playerName(starter, "Spieler 1")}`;
+  }
+
+  function show(screen){
+    el("screenSetup").classList.toggle("hidden", screen !== "setup");
+    el("screenGame").classList.toggle("hidden", screen !== "game");
+    openPaletteFor = null;
+    renderPlayers();
+    updateFirstServerSelect();
+  }
+
+  /* ---------- Setup UI ---------- */
   let openPaletteFor = null;
+
+  function updatePlayerCountUI(){
+    const n = state.players.length;
+    const btn = el("addPlayer");
+    const hint = el("playerCountHint");
+    const canAdd = n < MAX_PLAYERS;
+
+    btn.disabled = !canAdd;
+    btn.style.opacity = canAdd ? "1" : ".55";
+    hint.textContent = `Spieler: ${n}/${MAX_PLAYERS} · Farben sind nur einmal wählbar.`;
+  }
 
   function renderPlayers(){
     const list = el("playersList");
@@ -993,10 +847,10 @@
       colorBtn.type = "button";
       colorBtn.className = "colorPickBtn";
       colorBtn.style.setProperty("--dot", p.color);
-      colorBtn.setAttribute("aria-label", `Farbe für Spieler ${idx+1} wählen`);
       colorBtn.addEventListener("click", ()=>{
         openPaletteFor = (openPaletteFor === p.id) ? null : p.id;
         renderPlayers();
+        updateFirstServerSelect();
         haptic(8); sfx.ui();
       });
 
@@ -1006,23 +860,31 @@
       input.addEventListener("input", ()=>{
         p.name = input.value;
         saveSettings();
-        if(state.match.inProgress) renderGame();
+        updateFirstServerSelect();
       });
 
       let rightEl = document.createElement("div");
-      if(idx >= 2){
+      // ✅ Löschen nur, wenn > MIN_PLAYERS und Spielerindex >= 2
+      if(state.players.length > MIN_PLAYERS && idx >= MIN_PLAYERS){
         const trash = document.createElement("button");
         trash.type = "button";
         trash.className = "trashBtn ghost";
         trash.textContent = "🗑️";
-        trash.title = "Spieler entfernen";
         trash.addEventListener("click", ()=>{
           state.players = state.players.filter(x=>x.id !== p.id);
           openPaletteFor = null;
+
+          if(!getPlayerById(state.firstServerId)){
+            state.firstServerId = state.players[0]?.id || "p1";
+          }
+
           enforceUniqueColorsAll();
           saveSettings();
-          applyP1P2ColorsToCSS();
+          applyFirstTwoColorsToCSS();
           renderPlayers();
+          updateFirstServerSelect();
+          renderSetupHint();
+          updatePlayerCountUI();
           haptic(12); sfx.ui();
         });
         rightEl = trash;
@@ -1061,9 +923,9 @@
             p.color = c.hex;
             enforceUniqueColorsAll();
             saveSettings();
-            applyP1P2ColorsToCSS();
-            if(state.match.inProgress) renderGame();
+            applyFirstTwoColorsToCSS();
             renderPlayers();
+            updateFirstServerSelect();
             haptic(10); sfx.ui();
           });
 
@@ -1075,6 +937,8 @@
 
       list.appendChild(row);
     });
+
+    updatePlayerCountUI();
   }
 
   document.addEventListener("pointerdown", (e)=>{
@@ -1086,208 +950,29 @@
     }
   }, { passive: true });
 
-  function fillOneToSeven(selectEl, defaultVal){
-    selectEl.innerHTML = "";
-    for(let i=1;i<=7;i++){
-      const opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = String(i);
-      if(i === defaultVal) opt.selected = true;
-      selectEl.appendChild(opt);
-    }
+  /* ---------- Game rendering/logic (kurz gehalten) ---------- */
+  function initScoresForPlayers(){
+    state.match.sets = {};
+    state.match.legs = {};
+    state.match.legsTotal = {};
+    state.players.forEach(p=>{
+      state.match.sets[p.id] = 0;
+      state.match.legs[p.id] = 0;
+      state.match.legsTotal[p.id] = 0;
+    });
+    state.match.setNo = 1;
   }
 
-  function renderSetupHint(){
-    const sets = +el("firstToSets").value;
-    const legs = +el("legsToWinSet").value;
-    const starter = el("firstServer").value === "B" ? "Spieler 2" : "Spieler 1";
-    el("formatHint").textContent =
-      `Match: First to ${sets} Sets · Set: First to ${legs} Legs · Anwurf Start: ${starter}`;
+  function currentLegNumberWithinSet(){
+    return Object.values(state.match.legs).reduce((a,b)=>a+(+b||0), 0) + 1;
   }
 
-  function show(screen){
-    el("screenSetup").classList.toggle("hidden", screen !== "setup");
-    el("screenGame").classList.toggle("hidden", screen !== "game");
-    openPaletteFor = null;
-    renderPlayers();
-  }
-
-  /* ---------- Game logic ---------- */
-  function logLine(t){
-    const prev = el("log").textContent || "";
-    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
-    el("log").textContent = t + sep + prev;
-  }
-
-  function currentSetNumber(){ return state.match.sets.A + state.match.sets.B + 1; }
-  function currentLegNumberWithinSet(){ return state.match.legs.A + state.match.legs.B + 1; }
-
-  function computeThrower(){
-    const setNo = currentSetNumber();
-    const setStarter = (setNo % 2 === 1) ? state.firstServer : other(state.firstServer);
-    const legNo = currentLegNumberWithinSet();
-    return (legNo % 2 === 1) ? setStarter : other(setStarter);
-  }
-
-  function renderGame(){
-    const p1 = getP1(), p2 = getP2();
-    applyP1P2ColorsToCSS();
-
-    el("titleA").textContent = playerName(p1, "Spieler 1");
-    el("titleB").textContent = playerName(p2, "Spieler 2");
-
-    el("setsA").textContent = state.match.sets.A;
-    el("setsB").textContent = state.match.sets.B;
-    el("legsA").textContent = state.match.legs.A;
-    el("legsB").textContent = state.match.legs.B;
-
-    el("setsPill").textContent = `Sets: First to ${state.firstToSets}`;
-    el("legsPill").textContent  = `Legs/Set: First to ${state.legsToWinSet}`;
-
-    const thrower = computeThrower();
-    el("serveA").classList.toggle("none", thrower !== "A");
-    el("serveB").classList.toggle("none", thrower !== "B");
-
-    saveMatch();
-  }
-
-  function snapshot(){
-    state.match.history.push(JSON.parse(JSON.stringify({
-      inProgress: state.match.inProgress,
-      matchOver: state.match.matchOver,
-      sets: state.match.sets,
-      legs: state.match.legs,
-      legsTotal: state.match.legsTotal,
-      firstToSets: state.firstToSets,
-      legsToWinSet: state.legsToWinSet,
-      firstServer: state.firstServer
-    })));
-    if(state.match.history.length > 80) state.match.history.shift();
-    saveMatch();
-  }
-
-  function formatShareText(){
-    const p1 = getP1(), p2 = getP2();
-    const n1 = playerName(p1,"Spieler 1");
-    const n2 = playerName(p2,"Spieler 2");
-
-    const setsLine = `🏆 Sets: ${n1} ${state.match.sets.A} — ${state.match.sets.B} ${n2}`;
-    const legsLine = `🎯 Legs (gesamt): ${n1} ${state.match.legsTotal.A} — ${state.match.legsTotal.B} ${n2}`;
-    const formatLine = `⚙️ Format: First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs`;
-    const promoLine = `✨ Counter ausprobieren: ${APP_URL}`;
-
-    return [
-      "🎯 Dart Set & Leg Counter",
-      "",
-      setsLine,
-      legsLine,
-      formatLine,
-      "",
-      "🍻 Viel Spaß beim Spielen!",
-      promoLine
-    ].join("\n");
-  }
-
-  function showWinModal(winner){
-    state.match.matchOver = true;
-    state.match.inProgress = false;
-
-    const p1 = getP1(), p2 = getP2();
-    const winnerName = winner === "A" ? playerName(p1, "Spieler 1") : playerName(p2, "Spieler 2");
-    const winColor = winner === "A" ? (p1.color || "#d61f26") : (p2.color || "#14a44d");
-
-    const modal = el("winModal");
-    const card = modal.querySelector(".modalCard");
-    card.style.setProperty("--winColor", winColor);
-
-    el("winTitle").textContent = `Glückwunsch ${winnerName}!`;
-    el("winSub").textContent = "Sie haben das Match gewonnen.";
-
-    const n1 = playerName(p1, "Spieler 1");
-    const n2 = playerName(p2, "Spieler 2");
-    el("winSummary").innerHTML = `
-      <div class="summaryRow"><div>Ergebnis (Sets)</div><div>${n1}: ${state.match.sets.A} · ${n2}: ${state.match.sets.B}</div></div>
-      <div class="summaryRow"><div>Legs (gesamt)</div><div>${n1}: ${state.match.legsTotal.A} · ${n2}: ${state.match.legsTotal.B}</div></div>
-      <div class="summaryRow"><div>Format</div><div>First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs</div></div>
-      <div class="summaryRow"><div>App</div><div><span style="opacity:.95;">${APP_URL}</span></div></div>
-    `;
-
-    modal.classList.add("show");
-    haptic(40); sfx.win();
-    saveMatch();
-  }
-  function hideWinModal(){ el("winModal").classList.remove("show"); }
-
-  function finishMatchIfNeeded(player){
-    if(state.match.sets[player] >= state.firstToSets){
-      showWinModal(player);
-      return true;
-    }
-    return false;
-  }
-
-  function awardSet(player){
-    state.match.sets[player] += 1;
-    state.match.legs.A = 0;
-    state.match.legs.B = 0;
-
-    const p1 = getP1(), p2 = getP2();
-    logLine(`Set an ${(player==="A") ? playerName(p1,"Spieler 1") : playerName(p2,"Spieler 2")} — Sets: ${state.match.sets.A}-${state.match.sets.B}`);
-    sfx.set();
-    saveMatch();
-
-    finishMatchIfNeeded(player);
-  }
-
-  function addLeg(player){
-    if(state.match.matchOver) return;
-    snapshot();
-
-    state.match.legs[player] += 1;
-    state.match.legsTotal[player] += 1;
-    haptic(12); sfx.tap();
-
-    const p1 = getP1(), p2 = getP2();
-    logLine(`Leg an ${(player==="A") ? playerName(p1,"Spieler 1") : playerName(p2,"Spieler 2")} — Legs: ${state.match.legs.A}-${state.match.legs.B}`);
-
-    if(state.match.legs[player] >= state.legsToWinSet){
-      awardSet(player);
-      if(state.match.matchOver){ renderGame(); return; }
-    }
-    renderGame();
-  }
-
-  function undo(){
-    if(state.match.matchOver) return;
-    const prev = state.match.history.pop();
-    if(!prev) return;
-
-    state.match.inProgress = prev.inProgress;
-    state.match.matchOver  = prev.matchOver;
-    state.match.sets       = prev.sets;
-    state.match.legs       = prev.legs;
-    state.match.legsTotal  = prev.legsTotal;
-
-    state.firstToSets  = prev.firstToSets;
-    state.legsToWinSet = prev.legsToWinSet;
-    state.firstServer  = prev.firstServer;
-
-    el("firstToSets").value  = String(state.firstToSets);
-    el("legsToWinSet").value = String(state.legsToWinSet);
-    el("firstServer").value  = state.firstServer;
-
-    haptic(10); sfx.undo();
-    logLine("Rückgängig.");
-    renderGame();
-    saveMatch();
-  }
-
-  function toggleLog(){
-    el("log").classList.toggle("hidden");
-    const vis = !el("log").classList.contains("hidden");
-    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
-    el("toggleLog").setAttribute("aria-expanded", String(vis));
-    haptic(8); sfx.ui();
+  function computeThrowerId(){
+    const n = state.players.length;
+    const startIdx = Math.max(0, state.players.findIndex(p=>p.id === state.firstServerId));
+    const setStarterIdx = (startIdx + (state.match.setNo - 1) % n) % n;
+    const legOffset = (currentLegNumberWithinSet() - 1) % n;
+    return state.players[(setStarterIdx + legOffset) % n]?.id || state.players[0]?.id || null;
   }
 
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
@@ -1312,102 +997,130 @@
     targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
-  function showResumeUIIfNeeded(){
-    const has = loadMatch();
-    if(has){
-      const p1 = getP1(), p2 = getP2();
-      el("resumeMeta").textContent =
-        `${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} · Sets ${state.match.sets.A}-${state.match.sets.B} · Legs ${state.match.legs.A}-${state.match.legs.B}`;
-      el("resumeCard").classList.remove("hidden");
-    }else{
-      el("resumeCard").classList.add("hidden");
-    }
+  function renderGame(){
+    applyFirstTwoColorsToCSS();
+
+    const rows = el("scoreRows");
+    rows.innerHTML = "";
+    const throwerId = computeThrowerId();
+
+    state.players.forEach((p, idx)=>{
+      const row = document.createElement("div");
+      row.className = "sb-row tap playerDyn";
+      row.style.setProperty("--rowColor", p.color || "#ffffff");
+
+      const serve = document.createElement("div");
+      serve.className = "serveCell";
+      serve.textContent = "▶";
+      serve.classList.toggle("none", p.id !== throwerId);
+
+      const name = document.createElement("div");
+      name.className = "name";
+      const span = document.createElement("span");
+      span.textContent = playerName(p, `Spieler ${idx+1}`);
+      name.appendChild(span);
+
+      const sets = document.createElement("div");
+      sets.className = "num";
+      sets.textContent = String(state.match.sets[p.id] ?? 0);
+
+      const legs = document.createElement("div");
+      legs.className = "num";
+      legs.textContent = String(state.match.legs[p.id] ?? 0);
+
+      row.appendChild(serve);
+      row.appendChild(name);
+      row.appendChild(sets);
+      row.appendChild(legs);
+
+      attachTapAndLongPress(row, ()=>addLeg(p.id), undo);
+      rows.appendChild(row);
+    });
+
+    el("setsPill").textContent = `Sets: First to ${state.firstToSets}`;
+    el("legsPill").textContent = `Legs/Set: First to ${state.legsToWinSet}`;
   }
 
-  async function shareResult(){
-    const text = formatShareText();
-    try{
-      if(navigator.share){
-        await navigator.share({ title: "Dart Ergebnis", text, url: APP_URL });
-      }else if(navigator.clipboard && navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(text);
-        alert("Ergebnis kopiert – Sie können es jetzt z.B. in WhatsApp einfügen.");
-      }else{
-        prompt("Kopieren Sie das Ergebnis:", text);
-      }
-      haptic(10); sfx.ui();
-    }catch(_){}
-  }
-
-  function resetMatchScores(){
-    state.match.inProgress = true;
-    state.match.matchOver = false;
-    state.match.sets = { A: 0, B: 0 };
-    state.match.legs = { A: 0, B: 0 };
-    state.match.legsTotal = { A: 0, B: 0 };
-    state.match.history = [];
-    el("log").textContent = "";
-    hideWinModal();
-    saveMatch();
-    renderGame();
+  function logLine(t){
+    const prev = el("log").textContent || "";
+    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
+    el("log").textContent = t + sep + prev;
   }
 
   function startMatch(){
+    // ✅ harte Sicherheit: min/max
+    if(state.players.length < MIN_PLAYERS){
+      alert("Mindestens 2 Spieler erforderlich.");
+      return;
+    }
+    if(state.players.length > MAX_PLAYERS){
+      alert("Maximal 6 Spieler erlaubt.");
+      state.players = state.players.slice(0, MAX_PLAYERS);
+    }
+
     state.firstToSets  = +el("firstToSets").value;
     state.legsToWinSet = +el("legsToWinSet").value;
-    state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
+    state.firstServerId = el("firstServer").value || state.players[0].id;
 
     state.match.inProgress = true;
     state.match.matchOver = false;
-    state.match.sets = { A: 0, B: 0 };
-    state.match.legs = { A: 0, B: 0 };
-    state.match.legsTotal = { A: 0, B: 0 };
-    state.match.history = [];
+    initScoresForPlayers();
     el("log").textContent = "";
 
-    const p1 = getP1(), p2 = getP2();
-    logLine(`Start: ${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs — Anwurf: ${(state.firstServer==="A") ? "Spieler 1" : "Spieler 2"}`);
-
-    el("log").classList.add("hidden");
-    el("toggleLog").textContent = "Verlauf anzeigen";
-    el("toggleLog").setAttribute("aria-expanded","false");
+    logLine(`Start — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
 
     saveSettings();
-    saveMatch();
-    renderGame();
     haptic(12); sfx.ui();
     show("game");
+    renderGame();
   }
 
-  function saveAndReturnToSetup(){
-    saveSettings();
-    saveMatch();
-    showResumeUIIfNeeded();
-    show("setup");
-    haptic(10); sfx.ui();
+  function addLeg(playerId){
+    state.match.legs[playerId] = (state.match.legs[playerId] || 0) + 1;
+    state.match.legsTotal[playerId] = (state.match.legsTotal[playerId] || 0) + 1;
+    haptic(12); sfx.tap();
+    logLine(`Leg an ${playerName(getPlayerById(playerId),"Spieler")}`);
+    renderGame();
+  }
+
+  function undo(){ haptic(10); sfx.undo(); logLine("Rückgängig (Demo)."); }
+
+  function toggleLog(){
+    el("log").classList.toggle("hidden");
+    const vis = !el("log").classList.contains("hidden");
+    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded", String(vis));
+    haptic(8); sfx.ui();
+  }
+
+  function endAndReturnToSetup(){
+    if(confirm("Spiel beenden und zum Setup zurück?")){
+      show("setup");
+      haptic(10); sfx.ui();
+    }
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{
     document.addEventListener("pointerdown", ()=>ensureAudio(), { once:true, passive:true });
 
-    syncLogos();
     loadSettings();
     syncLogos();
 
     fillOneToSeven(el("firstToSets"), state.firstToSets);
     fillOneToSeven(el("legsToWinSet"), state.legsToWinSet);
 
-    el("firstServer").value  = state.firstServer;
-
     enforceUniqueColorsAll();
-    applyP1P2ColorsToCSS();
+    applyFirstTwoColorsToCSS();
+
     renderPlayers();
+    updateFirstServerSelect();
+    el("firstServer").value = state.firstServerId;
+
     renderSetupHint();
-    showResumeUIIfNeeded();
 
     el("addPlayer").addEventListener("click", ()=>{
-      if(state.players.length >= COLOR_OPTIONS.length){
-        alert("Maximale Spieleranzahl erreicht (entspricht Anzahl verfügbarer Farben).");
+      if(state.players.length >= MAX_PLAYERS){
+        alert("Maximal 6 Spieler erlaubt.");
         return;
       }
       const used = usedColors(null);
@@ -1416,18 +1129,26 @@
       enforceUniqueColorsAll();
       saveSettings();
       renderPlayers();
+      updateFirstServerSelect();
+      renderSetupHint();
       haptic(12); sfx.ui();
     });
 
-    ["firstToSets","legsToWinSet","firstServer"].forEach(id=>{
+    ["firstToSets","legsToWinSet"].forEach(id=>{
       el(id).addEventListener("change", ()=>{
         state.firstToSets  = +el("firstToSets").value;
         state.legsToWinSet = +el("legsToWinSet").value;
-        state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
         saveSettings();
         renderSetupHint();
         sfx.ui();
       });
+    });
+
+    el("firstServer").addEventListener("change", ()=>{
+      state.firstServerId = el("firstServer").value;
+      saveSettings();
+      renderSetupHint();
+      sfx.ui();
     });
 
     el("quickHelpBtn").addEventListener("click", ()=>{
@@ -1438,53 +1159,8 @@
 
     el("startBtn").addEventListener("click", startMatch);
 
-    attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
-    attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
-
-    el("undo").addEventListener("click", undo);
-    el("toggleLog").addEventListener("click", toggleLog);
-
-    el("saveResume").addEventListener("click", saveAndReturnToSetup);
-
-    el("resumeBtn").addEventListener("click", ()=>{
-      if(!loadMatch()){ showResumeUIIfNeeded(); return; }
-      show("game");
-      renderGame();
-      haptic(10); sfx.ui();
-    });
-
-    el("discardBtn").addEventListener("click", ()=>{
-      haptic(10); sfx.ui();
-      if(confirm("Gespeichertes Match wirklich verwerfen?")){
-        clearMatchStorage();
-        state.match.inProgress = false;
-        state.match.matchOver = false;
-        state.match.history = [];
-        showResumeUIIfNeeded();
-      }
-    });
-
-    el("shareBtn").addEventListener("click", shareResult);
-
-    el("winRevenge").addEventListener("click", ()=>{
-      resetMatchScores();
-      haptic(14); sfx.ui();
-    });
-
-    el("winToSetup").addEventListener("click", ()=>{
-      hideWinModal();
-      clearMatchStorage();
-      state.match.inProgress = false;
-      state.match.matchOver = false;
-      state.match.history = [];
-      showResumeUIIfNeeded();
-      show("setup");
-      haptic(10); sfx.ui();
-    });
-
-    el("winModal").addEventListener("click", (e)=>{
-      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
-    });
+    el("toggleLog")?.addEventListener("click", toggleLog);
+    el("endToSetup")?.addEventListener("click", endAndReturnToSetup);
   });
 </script>
 </body>
