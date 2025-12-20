@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#090c11" />
-  <title>Dart Set &amp; Leg Counter</title>
+  <title>Dart-Set-and-Leg-Counter</title>
 
   <style>
     :root{
@@ -15,66 +15,114 @@
       --fs-body:  clamp(15px, 4vw, 18px);
       --fs-meta:  clamp(12px, 3.3vw, 14px);
 
-      --fs-name: clamp(18px, 4.8vw, 22px);
-      --fs-col:  clamp(12px, 3.2vw, 13px);
-      --fs-num:  clamp(20px, 5.4vw, 26px);
+      --fs-name:  clamp(18px, 4.8vw, 22px);
+      --fs-col:   clamp(12px, 3.2vw, 13px);
+      --fs-num:   clamp(20px, 5.4vw, 26px);
 
-      /* Primärfarben (werden pro Player überschrieben) */
+      /* Dart-Optik Akzente (Spielerfarben, werden dynamisch gesetzt!) */
       --pA: #d61f26;
       --pB: #14a44d;
 
       --boardWhite: #f7f8fb;
       --boardBlack: #0b0f14;
+
+      /* Theme-Akzente (NICHT Spielerfarben) */
+      --accentA: #d61f26;  /* Theme-Rot */
+      --accentB: #14a44d;  /* Theme-Grün */
+
+      /* Theme-Flächen / Defaults */
+      --navbarBg: linear-gradient(180deg,
+        color-mix(in srgb, var(--panelA) 90%, transparent),
+        color-mix(in srgb, var(--panelB) 90%, transparent)
+      );
+      --primaryBg: var(--accentA);
+      --primaryText: #fff;
     }
 
     html[data-theme="dark"]{
       --bg0:#05070a;
       --bg1:#090c11;
-
       --panelA: rgba(9,11,15,.93);
       --panelB: rgba(13,16,21,.93);
-
       --text:#f7f8fb;
       --muted: rgba(247,248,251,.72);
       --line: rgba(247,248,251,.14);
-
       --shadow: 0 16px 36px rgba(0,0,0,.55);
-
       --inputBg: rgba(0,0,0,.40);
       --btnBg: rgba(255,255,255,.05);
-
       --tapBg: rgba(255,255,255,.03);
       --tapBgActive: rgba(255,255,255,.08);
-
       --dartOpacity: .22;
       --themeColor: #090c11;
+      --sbHeaderBg: rgba(255,255,255,.10); /* vollflächig, ohne Verlauf */
 
-      --sbHeaderBg: rgba(255,255,255,.07);
+      /* Theme-Akzente (konsistent) */
+      --accentA: #d61f26;
+      --accentB: #14a44d;
+
+      /* Flächen */
+      --navbarBg: linear-gradient(180deg,
+        color-mix(in srgb, var(--panelA) 90%, transparent),
+        color-mix(in srgb, var(--panelB) 90%, transparent)
+      );
+      --primaryBg: var(--accentA);
+      --primaryText: #fff;
     }
 
     html[data-theme="light"]{
       --bg0:#eef1f4;
       --bg1:#ffffff;
-
       --panelA: rgba(255,255,255,.96);
       --panelB: rgba(248,249,251,.96);
-
       --text:#0b0f14;
       --muted: rgba(11,15,20,.68);
       --line: rgba(11,15,20,.14);
-
       --shadow: 0 14px 28px rgba(0,0,0,.12);
-
       --inputBg: rgba(255,255,255,.92);
       --btnBg: rgba(11,15,20,.05);
-
       --tapBg: rgba(11,15,20,.03);
       --tapBgActive: rgba(11,15,20,.07);
-
       --dartOpacity: .12;
       --themeColor: #ffffff;
+      --sbHeaderBg: rgba(11,15,20,.08); /* vollflächig, ohne Verlauf */
 
-      --sbHeaderBg: rgba(11,15,20,.06);
+      --accentA: #d61f26;
+      --accentB: #14a44d;
+
+      --navbarBg: linear-gradient(180deg,
+        color-mix(in srgb, var(--panelA) 90%, transparent),
+        color-mix(in srgb, var(--panelB) 90%, transparent)
+      );
+      --primaryBg: var(--accentA);
+      --primaryText: #fff;
+    }
+
+    /* Neuer Theme: Dart (knallig) */
+    html[data-theme="dart"]{
+      --bg0: #0e7a3a;
+      --bg1: #14a44d;
+      --panelA: rgba(5,7,10,.96);
+      --panelB: rgba(11,15,20,.96);
+      --text: #f7f8fb;
+      --muted: rgba(247,248,251,.82);
+      --line: rgba(247,248,251,.26);
+      --shadow: 0 16px 36px rgba(0,0,0,.55);
+      --inputBg: rgba(0,0,0,.58);
+      --btnBg: rgba(0,0,0,.28);
+      --tapBg: rgba(0,0,0,.18);
+      --tapBgActive: rgba(0,0,0,.28);
+      --dartOpacity: .08;
+      --themeColor: #14a44d;
+      --sbHeaderBg: rgba(0,0,0,.28);
+
+      /* Theme-Akzente fix */
+      --accentA: #d61f26;
+      --accentB: #14a44d;
+
+      /* Knallflächen */
+      --navbarBg: #d61f26;
+      --primaryBg: #d61f26;
+      --primaryText: #ffffff;
     }
 
     *{ box-sizing:border-box; }
@@ -85,8 +133,8 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--pA) 16%, transparent), transparent 60%),
-        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--pB) 14%, transparent), transparent 60%),
+        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--accentA) 18%, transparent), transparent 60%),
+        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--accentB) 16%, transparent), transparent 60%),
         radial-gradient(900px 520px at 50% 110%, color-mix(in srgb, var(--boardBlack) 14%, transparent), transparent 62%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       padding:
@@ -98,6 +146,7 @@
 
     .wrap{ max-width: 980px; margin: 0 auto; position:relative; overflow-x: clip; }
 
+    /* Dart-Pfeil Hintergrund */
     .wrap::before{
       content:"";
       position:absolute;
@@ -106,7 +155,7 @@
       width: min(980px, 140vw);
       height: min(980px, 140vw);
       transform: translate(-50%,-50%) rotate(-18deg);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='v' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='.20'/%3E%3Cstop offset='55%25' stop-color='%23000000' stop-opacity='.12'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg opacity='.92'%3E%3Cpath d='M160 530 L540 150 L610 220 L230 600 Z' fill='%23ffffff' fill-opacity='.08'/%3E%3Cpath d='M540 150 L690 90 L740 140 L610 220 Z' fill='%23d61f26' fill-opacity='.22'/%3E%3Cpath d='M230 600 L610 220 L680 290 L300 670 Z' fill='%2314a44d' fill-opacity='.20'/%3E%3Cpath d='M300 670 L680 290 L810 420 L430 800 Z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/g%3E%3Ccircle cx='450' cy='450' r='430' fill='url(%23v)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='v' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='.20'/%3E%3Cstop offset='55%25' stop-color='%23000000' stop-opacity='.12'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg opacity='.92'%3E%3Cpath d='M160 530 L540 150 L610 220 L230 600 Z' fill='%23ffffff' fill-opacity='.10'/%3E%3Cpath d='M540 150 L690 90 L740 140 L610 220 Z' fill='%23d61f26' fill-opacity='.26'/%3E%3Cpath d='M230 600 L610 220 L680 290 L300 670 Z' fill='%2314a44d' fill-opacity='.24'/%3E%3Cpath d='M300 670 L680 290 L810 420 L430 800 Z' fill='%23ffffff' fill-opacity='.08'/%3E%3C/g%3E%3Ccircle cx='450' cy='450' r='430' fill='url(%23v)'/%3E%3C/svg%3E");
       background-size: cover;
       background-repeat: no-repeat;
       filter: blur(12px);
@@ -115,70 +164,67 @@
       z-index:0;
     }
 
-    .card{
-      position:relative;
-      z-index:1;
-      background: linear-gradient(180deg, var(--panelA), var(--panelB));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      margin-bottom: 18px;
-    }
-
-    .vstack{ display:grid; gap: 16px; }
-    .divider{ height:1px; background: color-mix(in srgb, var(--text) 10%, transparent); border-radius:999px; }
-
     .navbar{
       position: sticky;
       top: max(0px, env(safe-area-inset-top));
       z-index: 10;
       border-radius: var(--radius);
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--panelA) 90%, transparent), color-mix(in srgb, var(--panelB) 90%, transparent));
+      background: var(--navbarBg);
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
-      padding: 12px 14px;
+      padding: 10px 12px;
       margin-bottom: 22px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap: 12px;
+      gap: 10px;
     }
-
-    .brand{ display:flex; align-items:center; gap:12px; min-width: 0; flex: 1 1 auto; }
-
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+      flex: 1;
+    }
     .brandIcon{
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
       display:flex;
       align-items:center;
       justify-content:center;
       border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
-      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 14px 30px rgba(0,0,0,.35);
+      background:
+        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accentA) 22%, transparent), transparent 55%),
+        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--accentB) 18%, transparent), transparent 55%),
+        color-mix(in srgb, var(--btnBg) 92%, transparent);
       flex: 0 0 auto;
-      overflow:hidden;
-      padding: 8px;
     }
-    .brandIcon svg{ width:100%; height:100%; display:block; }
-
     .brandTitle{
       font-size: var(--fs-title);
       font-weight: 1100;
       letter-spacing: .2px;
       line-height: 1.12;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow: visible;
+      word-break: break-word;
     }
-
     .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
 
-    label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 8px; }
+    .card{
+      position:relative;
+      z-index:1;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin-bottom: 14px;
+    }
+
+    label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 
     input, select{
       width:100%;
@@ -193,11 +239,7 @@
     }
     input::placeholder{ color: color-mix(in srgb, var(--text) 45%, transparent); }
 
-    .meta{ color: var(--muted); font-size: var(--fs-meta); line-height:1.35; }
-
-    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .controls.stacked{ flex-direction: column; align-items: stretch; }
-    @media(min-width:560px){ .controls.stacked{ flex-direction: row; align-items:center; } }
+    .meta{ color: var(--muted); font-size: var(--fs-meta); margin-top: 10px; line-height:1.35; }
 
     button{
       appearance:none;
@@ -215,19 +257,26 @@
       box-shadow: 0 10px 20px rgba(0,0,0,.18);
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
-      width: 100%;
     }
-    @media(min-width:560px){ button{ width:auto; } }
     button:active{ transform: translateY(1px) scale(.99); }
 
     button.primary{
-      border-color: color-mix(in srgb, var(--pA) 58%, transparent);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--pA) 92%, white 0%), color-mix(in srgb, var(--pA) 70%, black 22%));
-      color: #fff;
+      border-color: color-mix(in srgb, var(--primaryBg) 58%, transparent);
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--primaryBg) 92%, white 0%),
+        color-mix(in srgb, var(--primaryBg) 70%, black 22%)
+      );
+      color: var(--primaryText);
     }
-    button.ghost{ box-shadow:none; background: var(--btnBg); }
-    button.small{ min-height: 40px; padding: 8px 10px; font-size: var(--fs-meta); border-radius: 999px; box-shadow:none; width:auto; }
 
+    button.ghost{ box-shadow:none; background: var(--btnBg); }
+    button.small{
+      min-height: 40px;
+      padding: 8px 10px;
+      font-size: var(--fs-meta);
+      border-radius: 999px;
+      box-shadow:none;
+    }
     .themeBtn{
       min-height: 40px;
       padding: 8px 10px;
@@ -239,26 +288,35 @@
       font-weight: 900;
       box-shadow:none;
       white-space: nowrap;
-      width: auto;
     }
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .spacer{ flex:1; }
 
     .hidden{ display:none!important; }
 
-    /* --- Setup Players --- */
-    .playerCard{ display:grid; gap: 16px; }
-    .playerBlock{ display:grid; gap: 10px; }
-    .playerLine{
+    /* ---- Setup: Spielerliste ---- */
+    .playersList{ display:grid; gap: 12px; }
+
+    .playerRow{
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border-radius: 14px;
+      padding: 10px;
       display:grid;
-      grid-template-columns: 56px minmax(0,1fr) auto;
-      gap: 12px;
+      gap: 10px;
+    }
+
+    .playerRowTop{
+      display:grid;
+      grid-template-columns: 48px 1fr 44px;
+      gap: 10px;
       align-items:center;
     }
-    .playerLine.noRemove{ grid-template-columns: 56px minmax(0,1fr); }
 
     .colorPickBtn{
-      width: 56px;
-      height: 56px;
-      min-height: 56px;
+      width: 48px;
+      height: 48px;
+      min-height: 48px;
       padding: 0;
       border-radius: 999px;
       display:inline-flex;
@@ -266,42 +324,39 @@
       justify-content:center;
       box-shadow:none;
       background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      border: 1px solid color-mix(in srgb, var(--text) 22%, transparent);
-      position: relative;
+      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
     }
     .colorPickBtn::after{
       content:"";
-      width: 22px;
-      height: 22px;
+      width: 18px;
+      height: 18px;
       border-radius: 999px;
-      border: 2px solid color-mix(in srgb, var(--text) 70%, transparent);
+      border: 2px solid color-mix(in srgb, var(--text) 65%, transparent);
       background: var(--dot, #fff);
       box-shadow: 0 10px 18px rgba(0,0,0,.18);
     }
 
-    .removeBtn{
-      width:auto;
+    .trashBtn{
       min-height: 44px;
       padding: 8px 10px;
-      border-radius: 999px;
-      font-size: var(--fs-meta);
+      border-radius: 12px;
       box-shadow:none;
-      white-space: nowrap;
+      font-size: 18px;
     }
 
     .palette{
       display:flex;
       flex-wrap:wrap;
       gap: 10px;
-      padding: 12px 12px;
+      padding: 10px 10px;
       border-radius: 14px;
       border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
       background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      margin-top: 10px;
     }
+
     .swatch{
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 999px;
       border: 2px solid color-mix(in srgb, var(--text) 28%, transparent);
       background: var(--c);
@@ -309,7 +364,7 @@
       align-items:center;
       justify-content:center;
       padding: 0;
-      min-height: 36px;
+      min-height: 34px;
       box-shadow:none;
       position: relative;
     }
@@ -317,140 +372,70 @@
       outline: 3px solid color-mix(in srgb, var(--text) 42%, transparent);
       outline-offset: 2px;
     }
-
-    /* WICHTIG: NICHT AUSGRAUEN -> X / Durchstreichung */
     .swatch.disabled{
+      opacity: .26;
       cursor: not-allowed;
-      opacity: 1;
-      filter: none;
+      filter: grayscale(65%);
     }
-    .swatch.disabled::before{
-      content:"";
-      position:absolute;
-      inset: 6px;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--panelA) 55%, transparent);
-    }
-    .swatch.disabled::after{
-      content:"✕";
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 18px;
-      font-weight: 1100;
-      color: color-mix(in srgb, var(--text) 92%, transparent);
-      text-shadow: 0 8px 18px rgba(0,0,0,.35);
-    }
-    .swatch.disabled .diag{
-      position:absolute;
-      left:6px; right:6px; top:50%;
-      height:2px;
-      background: color-mix(in srgb, var(--text) 82%, transparent);
-      transform: rotate(-35deg);
-      border-radius:999px;
-      opacity: .85;
-    }
-
     .swatch .check{
       font-size: 16px;
       line-height: 1;
-      opacity: .0;
+      opacity: 0;
       transform: translateY(-1px);
-      color: var(--checkColor, color-mix(in srgb, var(--text) 92%, transparent));
+      color: color-mix(in srgb, var(--text) 92%, transparent);
       text-shadow: 0 8px 18px rgba(0,0,0,.35);
-      position: relative;
-      z-index: 2;
     }
     .swatch.selected .check{ opacity: 1; }
 
-    /* Switches */
-    .row{ display:grid; grid-template-columns: 1fr; gap: 14px; }
-    @media(min-width:560px){ .row.cols2{ grid-template-columns: 1fr 1fr; } }
-
-    .switchRow{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 6px 0; }
-    .switchLabel{ font-size: var(--fs-meta); color: var(--muted); margin:0 0 2px; }
-    .switchTitle{ font-size: var(--fs-body); font-weight: 1000; }
-    .switch{ position: relative; width: 56px; height: 32px; flex: 0 0 auto; }
-    .switch input{ display:none; }
-    .slider{
-      position:absolute; inset:0;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
-      transition: .18s ease;
-    }
-    .slider::after{
-      content:"";
-      position:absolute; top: 50%; left: 6px;
-      width: 22px; height: 22px;
-      transform: translateY(-50%);
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--text) 92%, transparent);
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
-      transition: .18s ease;
-    }
-    .switch input:checked + .slider{
-      background: linear-gradient(180deg,
-        color-mix(in srgb, var(--pB) 55%, transparent),
-        color-mix(in srgb, var(--pB) 28%, transparent)
-      );
-      border-color: color-mix(in srgb, var(--pB) 45%, transparent);
-    }
-    .switch input:checked + .slider::after{
-      left: 28px;
-      background: #fff;
-    }
-
-    /* --- Scoreboard --- */
+    /* ---- Spiel: Scoreboard ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
     .sb-header{
       display:grid;
-      grid-template-columns: 86px minmax(0,1fr) 74px 74px;
+      grid-template-columns: 94px 1fr 74px 74px; /* mehr Abstand, kein Überlappen */
       align-items:center;
       padding: 10px 14px;
       border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: var(--sbHeaderBg);
-      column-gap: 8px;
+      background: var(--sbHeaderBg); /* vollflächig, ohne Verlauf */
+      column-gap: 10px;
     }
-    .sb-header .col{
-      text-align:center;
+    .sb-header .col, .sb-header .left{
       font-size: var(--fs-col);
-      color: color-mix(in srgb, var(--muted) 86%, transparent);
+      color: color-mix(in srgb, var(--muted) 92%, transparent);
       font-weight: 1000;
       letter-spacing: .2px;
       text-transform: uppercase;
     }
-    .sb-header .left{
-      text-align:left;
-      font-size: var(--fs-col);
-      color: color-mix(in srgb, var(--muted) 86%, transparent);
-      font-weight: 1000;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-    }
+    .sb-header .col{ text-align:center; }
+    .sb-header .left{ text-align:left; }
 
     .sb-row{
       display:grid;
-      grid-template-columns: 86px minmax(0,1fr) 74px 74px;
+      grid-template-columns: 94px 1fr 74px 74px;
       align-items:center;
       padding: 12px 14px;
       border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
       background: var(--tapBg);
-      column-gap: 8px;
-      touch-action: manipulation;
+      column-gap: 10px;
     }
     .sb-row:last-child{ border-bottom:none; }
 
-    .sb-row:active{
-      background:
-        linear-gradient(90deg,
-          color-mix(in srgb, var(--text) 10%, transparent),
-          var(--tapBgActive)
-        );
+    /* Spielerflächen bleiben dynamisch über --pA/--pB */
+    .sb-row.playerA{
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--pA) 52%, transparent),
+        color-mix(in srgb, var(--tapBg) 64%, transparent)
+      );
     }
+    .sb-row.playerB{
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--pB) 52%, transparent),
+        color-mix(in srgb, var(--tapBg) 64%, transparent)
+      );
+    }
+
+    /* iOS Tap sicher */
+    .tap{ touch-action: manipulation; }
 
     .serveCell{
       display:flex;
@@ -466,7 +451,6 @@
     .name{
       display:flex;
       align-items:center;
-      gap:10px;
       min-height: 44px;
       font-size: var(--fs-name);
       font-weight: 1100;
@@ -474,8 +458,6 @@
       min-width: 0;
     }
     .name span{
-      display:block;
-      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -508,6 +490,8 @@
       font-weight: 900;
     }
     .chipDot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .chipDot.a{ background: var(--pA); }
+    .chipDot.b{ background: var(--pB); }
 
     .hint{
       margin-top: 10px;
@@ -523,155 +507,17 @@
       border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
       border-radius: 14px;
       padding: 12px;
-      max-height: 190px;
+      max-height: 170px;
       overflow: auto;
       margin-top: 10px;
     }
 
-    /* --- Win modal --- */
-    .modalOverlay{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      background: rgba(0,0,0,.55);
-      z-index: 999;
-      backdrop-filter: blur(6px);
-    }
-    .modalOverlay.show{ display:flex; }
-
-    .modalCard{
-      width: min(620px, 100%);
-      border-radius: 20px;
-      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
-      box-shadow: 0 22px 60px rgba(0,0,0,.45);
-      overflow:hidden;
-      background: linear-gradient(180deg, var(--panelA), var(--panelB));
-    }
-    .modalTop{
-      padding: 14px 16px;
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--winColor) 28%, transparent),
-        color-mix(in srgb, var(--winColor) 10%, transparent)
-      );
-      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    /* ---- Fortsetzen Card ---- */
+    .resumeRow{
       display:flex;
-      align-items:center;
-      justify-content:space-between;
       gap:10px;
-    }
-    .modalTopRight{
-      display:flex;
       align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .modalTop .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: var(--fs-meta);
-      font-weight: 1000;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
-      background: color-mix(in srgb, var(--winColor) 18%, transparent);
-      white-space: nowrap;
-    }
-    .shareBtn{
-      min-height: 40px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: var(--fs-meta);
-      font-weight: 1000;
-      box-shadow:none;
-      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      width:auto;
-    }
-
-    .modalBody{ padding: 18px 16px 16px; }
-    .modalTitle{
-      font-size: clamp(22px, 6vw, 34px);
-      font-weight: 1100;
-      line-height: 1.1;
-      margin: 0 0 10px;
-    }
-    .modalSub{
-      font-size: var(--fs-body);
-      color: var(--muted);
-      margin: 0 0 14px;
-    }
-
-    .summaryGrid{
-      display:grid;
-      gap: 8px;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
-      margin: 12px 0 14px;
-    }
-    .summaryRow{
-      display:grid;
-      grid-template-columns: 1fr 90px 90px;
-      gap: 10px;
-      align-items:center;
-      font-size: var(--fs-meta);
-      color: var(--muted);
-      letter-spacing: .2px;
-      font-weight: 900;
-    }
-    .summaryRow .h{ text-align:center; opacity:.85; }
-    .summaryRow .n{
-      color: var(--text);
-      font-size: var(--fs-body);
-      font-weight: 1100;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .summaryRow .v{
-      text-align:center;
-      color: var(--text);
-      font-size: var(--fs-body);
-      font-weight: 1100;
-    }
-
-    .modalActions{ display:flex; gap:10px; flex-wrap:wrap; }
-    .modalActions button{ width:auto; }
-    .modalActions button.primary{
-      border-color: color-mix(in srgb, var(--winColor) 45%, transparent);
-      background: linear-gradient(180deg, color-mix(in srgb, var(--winColor) 92%, white 0%), color-mix(in srgb, var(--winColor) 72%, black 18%));
-    }
-
-    /* Footer */
-    .footer{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding: 10px 12px;
-    }
-    .avatar{
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      overflow:hidden;
-      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
-      flex: 0 0 auto;
-    }
-    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .presented{
-      font-size: var(--fs-meta);
-      color: var(--muted);
-      font-weight: 900;
-      line-height:1.25;
+      flex-wrap:wrap;
     }
   </style>
 </head>
@@ -683,24 +529,8 @@
   <div id="screenSetup">
     <div class="navbar">
       <div class="brand">
-        <div class="brandIcon" aria-hidden="true">
-          <!-- Inline Logo (leichtgewichtig, keine externe Datei nötig) -->
-          <svg viewBox="0 0 64 64" aria-hidden="true">
-            <defs>
-              <linearGradient id="g" x1="0" x2="1">
-                <stop offset="0" stop-color="#d61f26" stop-opacity=".95"/>
-                <stop offset="1" stop-color="#14a44d" stop-opacity=".95"/>
-              </linearGradient>
-            </defs>
-            <rect x="6" y="8" width="52" height="48" rx="12" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.20)"/>
-            <path d="M18 40 L36 22 L40 26 L22 44 Z" fill="url(#g)" opacity=".95"/>
-            <path d="M36 22 L46 18 L48 20 L40 26 Z" fill="#d61f26" opacity=".9"/>
-            <circle cx="46" cy="42" r="10" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.22)"/>
-            <path d="M41 42 h10" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
-            <path d="M46 37 v10" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="brandTitle">Dart Set &amp; Leg Counter</div>
+        <div class="brandIcon" aria-hidden="true">🎯</div>
+        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
       </div>
       <div class="topActions">
         <button class="themeBtn ghost" id="themeToggle" type="button" aria-label="Theme wechseln">
@@ -710,78 +540,79 @@
       </div>
     </div>
 
-    <div class="card vstack">
-      <div class="playerCard">
-        <div id="playersContainer"></div>
-
-        <div class="controls stacked">
-          <button class="ghost" id="addPlayerBtn" type="button">Weitere Spieler hinzufügen</button>
-        </div>
+    <div class="card hidden" id="resumeCard">
+      <div style="font-weight:1100; margin-bottom:6px;">Es gibt ein gespeichertes Match.</div>
+      <div class="meta" id="resumeMeta" style="margin-top:0;">—</div>
+      <div class="controls" style="margin-top:12px;">
+        <button class="primary" id="resumeBtn" type="button">Fortsetzen</button>
+        <button class="ghost" id="discardBtn" type="button">Neues Match anlegen</button>
       </div>
-
-      <div class="meta">Einstellungen werden gespeichert. (Min. 2 Spieler, max. 6)</div>
     </div>
 
-    <div class="card vstack">
-      <div class="row cols2">
-        <div>
-          <label for="firstToSets">First to (Sets)</label>
-          <select id="firstToSets"></select>
+    <div class="card">
+      <label>Spieler</label>
+      <div class="playersList" id="playersList"></div>
+
+      <div class="controls" style="margin-top:12px;">
+        <button class="ghost" id="addPlayer" type="button">+ Spieler hinzufügen</button>
+        <span class="spacer"></span>
+        <span class="meta" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
+      </div>
+      <div class="meta">Einstellungen werden gespeichert. (Namen bleiben als Vorschläge erhalten.)</div>
+    </div>
+
+    <div class="card">
+      <div class="controls" style="gap:12px;">
+        <div style="flex:1; min-width: 240px;">
+          <label for="pickA">Teilnehmer links</label>
+          <select id="pickA"></select>
         </div>
-        <div>
-          <label for="legsToWinSet">First to (Legs pro Set)</label>
-          <select id="legsToWinSet"></select>
+        <div style="flex:1; min-width: 240px;">
+          <label for="pickB">Teilnehmer rechts</label>
+          <select id="pickB"></select>
         </div>
       </div>
 
-      <div class="row cols2">
-        <div>
+      <div class="controls" style="gap:12px; margin-top:12px;">
+        <div style="flex:1; min-width: 240px;">
+          <label for="bestOfSets">Best of (Sets)</label>
+          <select id="bestOfSets">
+            <option value="5">Best of 5</option>
+            <option value="7">Best of 7</option>
+            <option value="15">Best of 15</option>
+          </select>
+        </div>
+        <div style="flex:1; min-width: 240px;">
+          <label for="legsToWinSet">Legs pro Set</label>
+          <select id="legsToWinSet">
+            <option value="3">First to 3 Legs</option>
+            <option value="5">First to 5 Legs</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="controls" style="gap:12px; margin-top:12px;">
+        <div style="flex:1; min-width: 240px;">
           <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
-          <select id="firstServer"></select>
+          <select id="firstServer">
+            <option value="A">Links</option>
+            <option value="B">Rechts</option>
+          </select>
         </div>
-        <div>
+        <div style="flex:1; min-width: 240px;">
           <label>&nbsp;</label>
-          <div class="meta" style="margin-top:0;">&nbsp;</div>
+          <div class="meta" id="formatHint" style="margin-top:0;"></div>
         </div>
       </div>
 
-      <div class="divider"></div>
-
-      <div class="row cols2">
-        <div class="switchRow">
-          <div>
-            <div class="switchLabel">Haptik</div>
-            <div class="switchTitle">Vibration bei Aktionen</div>
-          </div>
-          <label class="switch" aria-label="Haptik umschalten">
-            <input id="hapticToggle" type="checkbox" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="switchRow">
-          <div>
-            <div class="switchLabel">Sound</div>
-            <div class="switchTitle">Leg / Set / Jubel</div>
-          </div>
-          <label class="switch" aria-label="Sound umschalten">
-            <input id="soundToggle" type="checkbox" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="meta" id="formatHint"></div>
-
-      <div class="controls stacked" style="margin-top:4px;">
+      <div class="controls" style="margin-top:14px;">
         <button class="primary" id="startBtn" type="button">Spiel starten</button>
-        <button class="ghost hidden" id="resumeBtn" type="button">Zwischenstand fortsetzen</button>
         <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
       </div>
 
       <div class="meta" id="helpText" style="display:none;">
-        Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Einen Schritt zurück.<br>
-        Der ▶-Pfeil zeigt den aktuellen Anwurf (Rotation über alle Spieler).
+        Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Undo.<br>
+        Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
       </div>
     </div>
   </div>
@@ -790,23 +621,8 @@
   <div id="screenGame" class="hidden">
     <div class="navbar">
       <div class="brand">
-        <div class="brandIcon" aria-hidden="true">
-          <svg viewBox="0 0 64 64" aria-hidden="true">
-            <defs>
-              <linearGradient id="g2" x1="0" x2="1">
-                <stop offset="0" stop-color="#d61f26" stop-opacity=".95"/>
-                <stop offset="1" stop-color="#14a44d" stop-opacity=".95"/>
-              </linearGradient>
-            </defs>
-            <rect x="6" y="8" width="52" height="48" rx="12" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.20)"/>
-            <path d="M18 40 L36 22 L40 26 L22 44 Z" fill="url(#g2)" opacity=".95"/>
-            <path d="M36 22 L46 18 L48 20 L40 26 Z" fill="#d61f26" opacity=".9"/>
-            <circle cx="46" cy="42" r="10" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.22)"/>
-            <path d="M41 42 h10" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
-            <path d="M46 37 v10" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="brandTitle">Dart Set &amp; Leg Counter</div>
+        <div class="brandIcon" aria-hidden="true">🎯</div>
+        <div class="brandTitle">Dart-Set-and-Leg-Counter</div>
       </div>
       <div class="topActions">
         <button class="themeBtn ghost" id="themeToggle2" type="button" aria-label="Theme wechseln">
@@ -824,222 +640,108 @@
         <div class="col">LEGS</div>
       </div>
 
-      <div id="scoreRows"></div>
+      <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen links">
+        <div class="serveCell" id="serveA">▶</div>
+        <div class="name"><span id="titleA">Spieler</span></div>
+        <div class="num" id="setsA">0</div>
+        <div class="num" id="legsA">0</div>
+      </div>
+
+      <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen rechts">
+        <div class="serveCell" id="serveB">▶</div>
+        <div class="name"><span id="titleB">Spieler</span></div>
+        <div class="num" id="setsB">0</div>
+        <div class="num" id="legsB">0</div>
+      </div>
 
       <div style="padding:12px 14px;">
         <div class="badgeLine">
           <span class="pill" id="matchPill"></span>
           <span class="pill" id="legsPill"></span>
-          <span class="pill" id="playersPill"></span>
+          <span class="pill"><span class="chipDot a"></span><span id="pillA">Spieler links</span></span>
+          <span class="pill"><span class="chipDot b"></span><span id="pillB">Spieler rechts</span></span>
         </div>
 
-        <!-- Reihenfolge wie gewünscht -->
-        <div class="controls stacked" style="margin-top:12px;">
-          <button class="ghost" id="undo" type="button">Einen Schritt zurück</button>
-          <button class="ghost" id="saveCheckpoint" type="button">Zwischenstand speichern &amp; später fortsetzen</button>
-          <button class="ghost" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
-          <button class="ghost" id="resetToSetup" type="button">Neues Match</button>
+        <div class="controls" style="margin-top:12px;">
+          <button class="ghost" id="undo" type="button">Undo</button>
+          <button class="ghost" id="newMatch" type="button">Neues Match</button>
+          <span class="spacer"></span>
+          <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
         </div>
 
         <div class="log hidden" id="log"></div>
-        <div class="hint">Anwurf (▶) rotiert pro Leg über alle Spieler.</div>
+        <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <div class="card footer" aria-label="Präsentiert von">
-    <div class="avatar" aria-hidden="true">
-      <!-- Optional: setzen Sie hier Ihr Bild ab: assets/nico.jpg -->
-      <img src="assets/nico.jpg" alt="Profilbild" onerror="this.src='https://via.placeholder.com/72';">
-    </div>
-    <div class="presented">Diese App wird präsentiert von Nici (den aber jeder nur Nico nennt)</div>
-  </div>
-
-</div>
-
-<!-- WIN MODAL -->
-<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
-  <div class="modalCard" style="--winColor: var(--pA);">
-    <div class="modalTop">
-      <span class="tag" id="winTag">🏆 Match beendet</span>
-      <div class="modalTopRight">
-        <span style="font-weight:1000; color: var(--muted); font-size: var(--fs-meta);" id="winScore">—</span>
-        <button class="shareBtn" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
-      </div>
-    </div>
-    <div class="modalBody">
-      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
-      <p class="modalSub" id="winSub">Sie haben das Match gewonnen.</p>
-
-      <div class="summaryGrid" aria-label="Match-Zusammenfassung">
-        <div class="summaryRow" style="opacity:.85;">
-          <div></div>
-          <div class="h">Sets</div>
-          <div class="h">Legs</div>
-        </div>
-        <div id="winSummaryRows"></div>
-      </div>
-
-      <div class="modalActions">
-        <button class="primary" id="winRematch" type="button">Revanche</button>
-        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-  const STORAGE_KEY   = "dart_counter_setup_v2_multi";
-  const THEME_KEY     = "dart_counter_theme_v2";
-  const SETTINGS_KEY  = "dart_counter_toggles_v1";
-  const CHECKPOINT_KEY= "dart_counter_checkpoint_v2_multi";
+  const SETTINGS_KEY = "dart_counter_settings_v10";
+  const MATCH_KEY    = "dart_counter_match_v10";
+  const THEME_KEY    = "dart_counter_theme_v2";
 
-  const NAME_MAX = 22;
-  const MIN_PLAYERS = 2;
-  const MAX_PLAYERS = 6;
-
-  // keine Weiß/Schwarz, +2 Farben (Lila + Türkis)
   const COLOR_OPTIONS = [
     { key: "red",    name: "Rot",     hex: "#d61f26" },
     { key: "green",  name: "Grün",    hex: "#14a44d" },
+    { key: "black",  name: "Schwarz", hex: "#0b0f14" },
+    { key: "white",  name: "Weiß",    hex: "#f7f8fb" },
     { key: "blue",   name: "Blau",    hex: "#2f6bff" },
-    { key: "orange", name: "Orange",  hex: "#f97316" },
-    { key: "purple", name: "Lila",    hex: "#8b5cf6" },
-    { key: "cyan",   name: "Türkis",  hex: "#06b6d4" },
+    { key: "yellow", name: "Gelb",    hex: "#f2c230" },
     { key: "pink",   name: "Pink",    hex: "#ff3ea5" },
-    { key: "yellow", name: "Gelb",    hex: "#f2c230" }
+    { key: "orange", name: "Orange",  hex: "#f97316" },
+    { key: "gray",   name: "Grau",    hex: "#9ca3af" }
   ];
+
+  const el = (id) => document.getElementById(id);
+  const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
 
   const state = {
     players: [
-      { id: crypto.randomUUID?.() || "p1", name: "Spieler 1", color: COLOR_OPTIONS[0].hex, sets:0, legs:0, legsTotal:0 },
-      { id: crypto.randomUUID?.() || "p2", name: "Spieler 2", color: COLOR_OPTIONS[1].hex, sets:0, legs:0, legsTotal:0 }
+      { id: "p1", name: "", color: "#d61f26" },
+      { id: "p2", name: "", color: "#14a44d" }
     ],
+    pick: { A: "p1", B: "p2" },
+
+    bestOfSets: 5,
     firstToSets: 3,
     legsToWinSet: 3,
-    firstServerIdx: 0,  // index in players array
+    firstServer: "A",
 
-    history: [],
-    matchOver: false,
-
-    settings: { haptics:true, sound:true }
+    match: {
+      inProgress: false,
+      matchOver: false,
+      active: { A: "p1", B: "p2" },
+      sets: { A: 0, B: 0 },
+      legs: { A: 0, B: 0 },
+      legsTotal: { A: 0, B: 0 },
+      history: []
+    }
   };
 
-  const el = (id) => document.getElementById(id);
+  const other = (p) => (p === "A" ? "B" : "A");
+  const computeFirstTo = (bestOf) => Math.floor(bestOf / 2) + 1;
 
-  /* ----------------- HAPTIC ----------------- */
-  function haptic(pattern = 14) {
-    try {
-      if(!state.settings.haptics) return;
-      if (navigator.vibrate) navigator.vibrate(pattern);
-    } catch (_) {}
-  }
+  function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
-  /* ----------------- AUDIO ----------------- */
-  let audioCtx = null;
-  function ensureAudio(){
-    try{
-      if(!state.settings.sound) return;
-      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
-    }catch(_){}
-  }
-  function unlockAudioOnce(){ ensureAudio(); document.removeEventListener("pointerdown", unlockAudioOnce); }
-
-  function playBeep({freq=520, dur=0.06, gain=0.06, type="sine"} = {}){
-    if(!state.settings.sound) return;
-    ensureAudio();
-    if(!audioCtx) return;
-    const now = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(gain, now + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-    osc.connect(g);
-    g.connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + dur + 0.02);
-  }
-
-  function playLegSound(){
-    // leiser, kurz
-    playBeep({ freq: 520, dur: 0.055, gain: 0.045, type:"sine" });
-  }
-  function playSetSound(){
-    // etwas kräftiger, „belohnender“
-    playBeep({ freq: 660, dur: 0.12, gain: 0.085, type:"triangle" });
-  }
-
-  function playCheer(){
-    if(!state.settings.sound) return;
-    ensureAudio();
-    if(!audioCtx) return;
-
-    const now = audioCtx.currentTime;
-
-    const bufferSize = Math.floor(audioCtx.sampleRate * 0.25);
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * 0.6;
-
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = buffer;
-
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.setValueAtTime(0.0001, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
-    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
-    const noiseFilter = audioCtx.createBiquadFilter();
-    noiseFilter.type = "bandpass";
-    noiseFilter.frequency.setValueAtTime(1200, now);
-    noiseFilter.Q.setValueAtTime(0.8, now);
-
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(audioCtx.destination);
-
-    const tone = (freq, start, dur, gVal) => {
-      const osc = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(freq, start);
-
-      g.gain.setValueAtTime(0.0001, start);
-      g.gain.exponentialRampToValueAtTime(gVal, start + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-
-      osc.connect(g);
-      g.connect(audioCtx.destination);
-
-      osc.start(start);
-      osc.stop(start + dur + 0.02);
-    };
-
-    tone(440, now + 0.00, 0.20, 0.12);
-    tone(554, now + 0.06, 0.22, 0.10);
-    tone(659, now + 0.12, 0.22, 0.08);
-
-    noise.start(now);
-    noise.stop(now + 0.25);
-  }
-
-  /* ----------------- THEME ----------------- */
+  /* ---------- Theme (3 modes: dart/dark/light) ---------- */
   function setTheme(theme){
-    const t = (theme === "light") ? "light" : "dark";
+    const allowed = ["dart","dark","light"];
+    const t = allowed.includes(theme) ? theme : "dart";
+
     document.documentElement.setAttribute("data-theme", t);
 
     const meta = document.querySelector('meta[name="theme-color"]');
-    meta && meta.setAttribute("content",
-      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() || (t==="light" ? "#ffffff" : "#090c11")
+    meta && meta.setAttribute(
+      "content",
+      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() ||
+        (t==="light" ? "#ffffff" : (t==="dart" ? "#14a44d" : "#090c11"))
     );
 
-    const label = (t === "light") ? "Light" : "Dark";
-    const icon  = (t === "light") ? "☀️" : "🌙";
+    let label = "Dart", icon = "🎯";
+    if(t === "dark"){ label = "Dark"; icon = "🌙"; }
+    if(t === "light"){ label = "Light"; icon = "☀️"; }
 
     el("themeLabel").textContent  = label;
     el("themeLabel2").textContent = label;
@@ -1048,538 +750,457 @@
 
     try { localStorage.setItem(THEME_KEY, t); } catch(_) {}
   }
+
   function toggleTheme(){
-    const cur = document.documentElement.getAttribute("data-theme") || "dark";
-    setTheme(cur === "dark" ? "light" : "dark");
+    const cur = document.documentElement.getAttribute("data-theme") || "dart";
+    const order = ["dart","dark","light"];
+    const idx = order.indexOf(cur);
+    const next = order[(idx + 1 + order.length) % order.length];
+    setTheme(next);
     haptic(8);
   }
+
   function loadTheme(){
-    try{ setTheme(localStorage.getItem(THEME_KEY) || "dark"); }
-    catch(_){ setTheme("dark"); }
+    try { setTheme(localStorage.getItem(THEME_KEY) || "dart"); }
+    catch(_) { setTheme("dart"); }
   }
 
-  /* ----------------- HELPERS ----------------- */
-  function isLightHex(hex){
-    const h = (hex||"").replace("#","").trim();
-    if(h.length !== 6) return false;
-    const r = parseInt(h.slice(0,2),16);
-    const g = parseInt(h.slice(2,4),16);
-    const b = parseInt(h.slice(4,6),16);
-    const lum = 0.2126*r + 0.7152*g + 0.0722*b;
-    return lum > 170;
-  }
-
-  function uniqueUsedColors(exceptPlayerId=null){
-    const used = new Set();
-    state.players.forEach(p=>{
-      if(exceptPlayerId && p.id === exceptPlayerId) return;
-      used.add((p.color||"").toLowerCase());
-    });
-    return used;
-  }
-
-  function firstAvailableColor(excludeSet){
-    for(const c of COLOR_OPTIONS){
-      if(!excludeSet.has(c.hex.toLowerCase())) return c.hex;
-    }
-    return COLOR_OPTIONS[0].hex;
-  }
-
-  function applyAccentColors(){
-    // nur für Hintergrund-Akzente: Player 1 & 2
-    document.documentElement.style.setProperty("--pA", state.players[0]?.color || "#d61f26");
-    document.documentElement.style.setProperty("--pB", state.players[1]?.color || "#14a44d");
-  }
-
-  function fillRangeSelect(selectEl, unit, defVal){
-    selectEl.innerHTML = "";
-    for(let i=1;i<=7;i++){
-      const opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = `First to ${i} ${unit}`;
-      selectEl.appendChild(opt);
-    }
-    selectEl.value = String(defVal);
-  }
-
-  function renderSetupHint(){
-    const firstTo = +el("firstToSets").value;
-    const legsToWin = +el("legsToWinSet").value;
-    const starterIdx = +el("firstServer").value;
-    const starterName = state.players[starterIdx]?.name || `Spieler ${starterIdx+1}`;
-    el("formatHint").textContent =
-      `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: ${starterName}`;
-  }
-
-  function show(screen){
-    el("screenSetup").classList.toggle("hidden", screen !== "setup");
-    el("screenGame").classList.toggle("hidden", screen !== "game");
-    closeAllPalettes();
-  }
-
-  /* ----------------- LOG ----------------- */
-  function logLine(t){
-    const sep = "────────────────────\n";
-    el("log").textContent = t + "\n" + sep + el("log").textContent;
-  }
-
-  /* ----------------- SAVE/LOAD SETUP ----------------- */
-  function saveSetup(){
+  /* ---------- Persist ---------- */
+  function saveSettings(){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        players: state.players.map(p=>({ id:p.id, name:p.name, color:p.color })),
-        firstToSets: state.firstToSets,
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+        players: state.players,
+        pick: state.pick,
+        bestOfSets: state.bestOfSets,
         legsToWinSet: state.legsToWinSet,
-        firstServerIdx: state.firstServerIdx
+        firstServer: state.firstServer
       }));
     }catch(_){}
   }
 
-  function loadSetup(){
+  function loadSettings(){
     try{
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(SETTINGS_KEY);
       if(!raw) return;
       const s = JSON.parse(raw);
 
       if(Array.isArray(s.players) && s.players.length >= 2){
-        const cleaned = s.players.slice(0, MAX_PLAYERS).map((p, i)=>({
-          id: (p.id && String(p.id)) || (crypto.randomUUID?.() || ("p"+(i+1))),
-          name: (typeof p.name === "string" ? p.name : `Spieler ${i+1}`).slice(0, NAME_MAX),
-          color: (typeof p.color === "string" ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex),
-          sets:0, legs:0, legsTotal:0
+        state.players = s.players.map((p, i)=>({
+          id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
+          name: (typeof p.name === "string") ? p.name : "",
+          color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
         }));
-        while(cleaned.length < MIN_PLAYERS){
-          cleaned.push({
-            id: crypto.randomUUID?.() || ("p"+(cleaned.length+1)),
-            name: `Spieler ${cleaned.length+1}`,
-            color: COLOR_OPTIONS[cleaned.length % COLOR_OPTIONS.length].hex,
-            sets:0, legs:0, legsTotal:0
-          });
-        }
-        state.players = cleaned;
       }
 
-      state.firstToSets = [1,2,3,4,5,6,7].includes(+s.firstToSets) ? +s.firstToSets : state.firstToSets;
-      state.legsToWinSet= [1,2,3,4,5,6,7].includes(+s.legsToWinSet) ? +s.legsToWinSet : state.legsToWinSet;
-      state.firstServerIdx = Math.min(Math.max(+s.firstServerIdx || 0, 0), state.players.length-1);
+      if(s.pick && typeof s.pick.A === "string" && typeof s.pick.B === "string"){
+        state.pick.A = s.pick.A;
+        state.pick.B = s.pick.B;
+      }
+
+      state.bestOfSets   = [5,7,15].includes(+s.bestOfSets) ? +s.bestOfSets : state.bestOfSets;
+      state.legsToWinSet = [3,5].includes(+s.legsToWinSet) ? +s.legsToWinSet : state.legsToWinSet;
+      state.firstServer  = (s.firstServer === "B") ? "B" : "A";
+
+      state.firstToSets = computeFirstTo(state.bestOfSets);
+      dedupeInvalidPicks();
+      enforceUniqueColorsAll();
     }catch(_){}
   }
 
-  /* ----------------- TOGGLES ----------------- */
-  function loadToggles(){
+  function saveMatch(){
     try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if(raw){
-        const s = JSON.parse(raw);
-        state.settings.haptics = (s.haptics !== false);
-        state.settings.sound   = (s.sound !== false);
-      }
-    }catch(_){}
-    el("hapticToggle").checked = !!state.settings.haptics;
-    el("soundToggle").checked  = !!state.settings.sound;
-  }
-
-  function saveToggles(){
-    try{
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-        haptics: !!state.settings.haptics,
-        sound: !!state.settings.sound
+      localStorage.setItem(MATCH_KEY, JSON.stringify({
+        inProgress: state.match.inProgress,
+        matchOver: state.match.matchOver,
+        active: state.match.active,
+        sets: state.match.sets,
+        legs: state.match.legs,
+        legsTotal: state.match.legsTotal,
+        history: state.match.history,
+        bestOfSets: state.bestOfSets,
+        firstToSets: state.firstToSets,
+        legsToWinSet: state.legsToWinSet,
+        firstServer: state.firstServer
       }));
     }catch(_){}
   }
 
-  /* ----------------- SETUP: PLAYERS UI ----------------- */
-  const paletteOpen = new Map(); // playerId -> true/false
+  function loadMatch(){
+    try{
+      const raw = localStorage.getItem(MATCH_KEY);
+      if(!raw) return false;
+      const m = JSON.parse(raw);
+      if(!m || !m.inProgress) return false;
 
-  function closeAllPalettes(){
-    paletteOpen.clear();
-    document.querySelectorAll(".palette").forEach(p=>p.classList.add("hidden"));
-  }
+      state.match.inProgress = !!m.inProgress;
+      state.match.matchOver  = !!m.matchOver;
+      state.match.active     = m.active || state.match.active;
+      state.match.sets       = m.sets || state.match.sets;
+      state.match.legs       = m.legs || state.match.legs;
+      state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
+      state.match.history    = Array.isArray(m.history) ? m.history : [];
 
-  function togglePalette(playerId){
-    const pal = document.querySelector(`[data-pal-for="${playerId}"]`);
-    if(!pal) return;
+      if([5,7,15].includes(+m.bestOfSets)) state.bestOfSets = +m.bestOfSets;
+      state.firstToSets = computeFirstTo(state.bestOfSets);
+      if([3,5].includes(+m.legsToWinSet)) state.legsToWinSet = +m.legsToWinSet;
+      state.firstServer = (m.firstServer === "B") ? "B" : "A";
 
-    // close others
-    document.querySelectorAll(".palette").forEach(p=>{
-      if(p !== pal) p.classList.add("hidden");
-    });
-
-    pal.classList.toggle("hidden");
-    paletteOpen.set(playerId, !pal.classList.contains("hidden"));
-    haptic(8);
-  }
-
-  function buildPaletteFor(playerId){
-    const pal = document.querySelector(`[data-pal-for="${playerId}"]`);
-    if(!pal) return;
-    pal.innerHTML = "";
-
-    const used = uniqueUsedColors(playerId);
-
-    for(const c of COLOR_OPTIONS){
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "swatch";
-      btn.style.setProperty("--c", c.hex);
-      btn.style.setProperty("--checkColor", isLightHex(c.hex) ? "#0b0f14" : "");
-
-      const check = document.createElement("span");
-      check.className = "check";
-      check.textContent = "✓";
-
-      const diag = document.createElement("span");
-      diag.className = "diag";
-
-      btn.appendChild(check);
-      btn.appendChild(diag);
-
-      const isDisabled = used.has(c.hex.toLowerCase());
-      if(isDisabled) btn.classList.add("disabled");
-
-      btn.addEventListener("click", ()=>{
-        if(isDisabled) return;
-        const p = state.players.find(x=>x.id === playerId);
-        if(!p) return;
-        p.color = c.hex;
-        applyAccentColors();
-        renderPlayersSetup();   // refresh buttons + palettes state
-        saveSetup();
-        haptic(10);
-      });
-
-      pal.appendChild(btn);
+      return (state.match.inProgress && !state.match.matchOver);
+    }catch(_){
+      return false;
     }
   }
 
-  function renderPlayersSetup(){
-    const container = el("playersContainer");
-    container.innerHTML = "";
+  function clearMatchStorage(){
+    try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
+  }
+
+  /* ---------- Setup helpers ---------- */
+  function playerLabel(p, idx){
+    const name = (p.name || "").trim();
+    return name ? name : `Spieler ${idx+1}`;
+  }
+
+  function dedupeInvalidPicks(){
+    const ids = new Set(state.players.map(p=>p.id));
+    if(!ids.has(state.pick.A)) state.pick.A = state.players[0].id;
+    if(!ids.has(state.pick.B)) state.pick.B = state.players[1].id;
+    if(state.pick.A === state.pick.B){
+      const alt = state.players.find(p=>p.id !== state.pick.A);
+      state.pick.B = alt ? alt.id : state.pick.B;
+    }
+  }
+
+  function usedColors(exceptPlayerId=null){
+    const used = new Set();
+    for(const p of state.players){
+      if(exceptPlayerId && p.id === exceptPlayerId) continue;
+      used.add((p.color||"").toLowerCase());
+    }
+    return used;
+  }
+
+  function firstFreeColor(usedSet){
+    const found = COLOR_OPTIONS.find(c => !usedSet.has(c.hex.toLowerCase()));
+    return found ? found.hex : COLOR_OPTIONS[0].hex;
+  }
+
+  function enforceUniqueColorsAll(){
+    const seen = new Set();
+    for(const p of state.players){
+      const c = (p.color||"").toLowerCase();
+      if(!c || seen.has(c)){
+        const used = usedColors(p.id);
+        p.color = firstFreeColor(used);
+      }
+      seen.add(p.color.toLowerCase());
+    }
+  }
+
+  /* ---------- Render setup (players) ---------- */
+  let openPaletteFor = null;
+
+  function renderPlayers(){
+    const list = el("playersList");
+    list.innerHTML = "";
 
     state.players.forEach((p, idx)=>{
-      const block = document.createElement("div");
-      block.className = "playerBlock";
+      const row = document.createElement("div");
+      row.className = "playerRow";
 
-      const label = document.createElement("label");
-      label.textContent = `Spieler ${idx+1}`;
-      block.appendChild(label);
-
-      const line = document.createElement("div");
-      line.className = "playerLine" + ((idx < 2) ? " noRemove" : "");
+      const top = document.createElement("div");
+      top.className = "playerRowTop";
 
       const colorBtn = document.createElement("button");
       colorBtn.type = "button";
       colorBtn.className = "colorPickBtn";
       colorBtn.style.setProperty("--dot", p.color);
-      colorBtn.setAttribute("aria-label", `Farbe wählen Spieler ${idx+1}`);
-      colorBtn.addEventListener("click", ()=> togglePalette(p.id));
+      colorBtn.setAttribute("aria-label", `Farbe für Spieler ${idx+1} wählen`);
+      colorBtn.addEventListener("click", ()=>{
+        openPaletteFor = (openPaletteFor === p.id) ? null : p.id;
+        renderPlayers();
+        haptic(8);
+      });
 
       const input = document.createElement("input");
-      input.type = "text";
-      input.value = (p.name && p.name !== `Spieler ${idx+1}`) ? p.name : "";
-      input.placeholder = `Name Spieler ${idx+1}`;
-      input.maxLength = NAME_MAX;
-
-      // iOS/Android: „Fertig“ anregen + Enter -> blur
-      input.setAttribute("enterkeyhint", "done");
-      input.setAttribute("autocapitalize", "words");
-      input.setAttribute("autocomplete", "off");
-      input.setAttribute("spellcheck", "false");
-
-      input.addEventListener("keydown", (e)=>{
-        if(e.key === "Enter"){
-          e.preventDefault();
-          input.blur();
-          haptic(6);
-        }
-      });
-
+      input.placeholder = `Spieler ${idx+1}`;
+      input.value = (typeof p.name === "string") ? p.name : "";
       input.addEventListener("input", ()=>{
-        p.name = (input.value.trim() || `Spieler ${idx+1}`).slice(0, NAME_MAX);
-        saveSetup();
+        p.name = input.value;
+        saveSettings();
+        renderPickSelects();
+        renderSetupHint();
       });
 
-      line.appendChild(colorBtn);
-      line.appendChild(input);
+      const trash = document.createElement("button");
+      trash.type = "button";
+      trash.className = "trashBtn ghost";
+      trash.textContent = "🗑️";
+      trash.disabled = (state.players.length <= 2);
+      trash.title = "Spieler entfernen";
+      trash.addEventListener("click", ()=>{
+        if(state.players.length <= 2) return;
+        state.players = state.players.filter(x=>x.id !== p.id);
+        openPaletteFor = null;
+        dedupeInvalidPicks();
+        enforceUniqueColorsAll();
+        saveSettings();
+        renderPlayers();
+        renderPickSelects();
+        renderSetupHint();
+        haptic(12);
+      });
 
-      if(idx >= 2){
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.className = "ghost removeBtn";
-        remove.textContent = "Entfernen";
-        remove.addEventListener("click", ()=>{
-          removePlayer(p.id);
+      top.appendChild(colorBtn);
+      top.appendChild(input);
+      top.appendChild(trash);
+
+      row.appendChild(top);
+
+      if(openPaletteFor === p.id){
+        const pal = document.createElement("div");
+        pal.className = "palette";
+        const used = usedColors(p.id);
+
+        COLOR_OPTIONS.forEach(c=>{
+          const sw = document.createElement("button");
+          sw.type = "button";
+          sw.className = "swatch";
+          sw.style.setProperty("--c", c.hex);
+
+          const check = document.createElement("span");
+          check.className = "check";
+          check.textContent = "✓";
+          sw.appendChild(check);
+
+          const hex = c.hex.toLowerCase();
+          sw.classList.toggle("selected", hex === (p.color||"").toLowerCase());
+          sw.classList.toggle("disabled", used.has(hex));
+
+          sw.addEventListener("click", ()=>{
+            if(used.has(hex)) return;
+            p.color = c.hex;
+            enforceUniqueColorsAll();
+            saveSettings();
+            applyActiveColorsToCSS();
+            renderPlayers();
+            renderPickSelects();
+            haptic(10);
+          });
+
+          pal.appendChild(sw);
         });
-        line.appendChild(remove);
+
+        row.appendChild(pal);
       }
 
-      block.appendChild(line);
-
-      const pal = document.createElement("div");
-      pal.className = "palette hidden";
-      pal.setAttribute("data-pal-for", p.id);
-      block.appendChild(pal);
-
-      container.appendChild(block);
+      list.appendChild(row);
     });
 
-    // rebuild palettes and selected/disabled states
-    state.players.forEach(p=>{
-      buildPaletteFor(p.id);
-      refreshPaletteSelections(p.id);
-    });
-
-    // click outside palettes closes them
-    document.addEventListener("click", onDocClickClosePalettes, { passive:true });
-    updateAddPlayerBtn();
-    renderFirstServerOptions();
-    applyAccentColors();
+    document.addEventListener("click", onDocClickClosePalettes, { once: true });
   }
 
   function onDocClickClosePalettes(e){
-    const anyPalette = e.target.closest(".palette");
-    const colorBtn = e.target.closest(".colorPickBtn");
-    if(anyPalette || colorBtn) return;
-    closeAllPalettes();
+    const inPalette = e.target.closest(".palette") || e.target.closest(".colorPickBtn") || e.target.closest(".swatch");
+    if(!inPalette){
+      openPaletteFor = null;
+      renderPlayers();
+    }
   }
 
-  function refreshPaletteSelections(playerId){
-    const p = state.players.find(x=>x.id === playerId);
-    const pal = document.querySelector(`[data-pal-for="${playerId}"]`);
-    if(!p || !pal) return;
+  function renderPickSelects(){
+    const selA = el("pickA");
+    const selB = el("pickB");
 
-    const used = uniqueUsedColors(playerId);
-    const current = (p.color||"").toLowerCase();
+    const build = (sel, current) => {
+      sel.innerHTML = "";
+      state.players.forEach((p, idx)=>{
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = playerLabel(p, idx);
+        if(p.id === current) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    };
 
-    [...pal.querySelectorAll(".swatch")].forEach((sw, idx)=>{
-      const hex = COLOR_OPTIONS[idx].hex.toLowerCase();
-      sw.classList.toggle("selected", hex === current);
+    build(selA, state.pick.A);
+    build(selB, state.pick.B);
 
-      const isDisabled = used.has(hex);
-      sw.classList.toggle("disabled", isDisabled);
-    });
+    if(state.pick.A === state.pick.B){
+      const alt = state.players.find(p=>p.id !== state.pick.A);
+      if(alt) state.pick.B = alt.id;
+      build(selB, state.pick.B);
+    }
+
+    selA.onchange = ()=>{
+      state.pick.A = selA.value;
+      if(state.pick.A === state.pick.B){
+        const alt = state.players.find(p=>p.id !== state.pick.A);
+        if(alt) state.pick.B = alt.id;
+      }
+      saveSettings();
+      renderPickSelects();
+      applyActiveColorsToCSS();
+      renderSetupHint();
+    };
+
+    selB.onchange = ()=>{
+      state.pick.B = selB.value;
+      if(state.pick.B === state.pick.A){
+        const alt = state.players.find(p=>p.id !== state.pick.B);
+        if(alt) state.pick.A = alt.id;
+      }
+      saveSettings();
+      renderPickSelects();
+      applyActiveColorsToCSS();
+      renderSetupHint();
+    };
   }
 
-  function updateAddPlayerBtn(){
-    const btn = el("addPlayerBtn");
-    const canAdd = state.players.length < MAX_PLAYERS;
-    btn.disabled = !canAdd;
-    btn.textContent = canAdd ? "Weitere Spieler hinzufügen" : "Maximal 6 Spieler erreicht";
+  function renderSetupHint(){
+    state.firstToSets = computeFirstTo(state.bestOfSets);
+    const bestOf = +el("bestOfSets").value;
+    const firstTo = computeFirstTo(bestOf);
+    const legsToWin = +el("legsToWinSet").value;
+    const starter = el("firstServer").value === "B" ? "Rechts" : "Links";
+    el("formatHint").textContent =
+      `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: ${starter}`;
   }
 
-  function addPlayer(){
-    if(state.players.length >= MAX_PLAYERS) return;
-
-    const used = uniqueUsedColors();
-    const color = firstAvailableColor(used);
-
-    const idx = state.players.length;
-    state.players.push({
-      id: crypto.randomUUID?.() || ("p"+(idx+1)),
-      name: `Spieler ${idx+1}`,
-      color,
-      sets:0, legs:0, legsTotal:0
-    });
-
-    // falls firstServerIdx out-of-range (eigentlich nicht), clamp:
-    state.firstServerIdx = Math.min(state.firstServerIdx, state.players.length-1);
-
-    renderPlayersSetup();
-    saveSetup();
-    haptic(12);
+  function show(screen){
+    el("screenSetup").classList.toggle("hidden", screen !== "setup");
+    el("screenGame").classList.toggle("hidden", screen !== "game");
+    openPaletteFor = null;
+    renderPlayers();
   }
 
-  function removePlayer(playerId){
-    if(state.players.length <= MIN_PLAYERS) return;
-
-    const idx = state.players.findIndex(p=>p.id === playerId);
-    if(idx < 0) return;
-
-    state.players.splice(idx, 1);
-
-    // Startspieler sinnvoll clamped
-    if(state.firstServerIdx >= state.players.length) state.firstServerIdx = state.players.length - 1;
-
-    renderPlayersSetup();
-    saveSetup();
-    haptic(12);
+  /* ---------- Match logic (2 Spieler) ---------- */
+  function getPlayerById(id){
+    return state.players.find(p=>p.id === id) || state.players[0];
   }
 
-  function renderFirstServerOptions(){
-    const sel = el("firstServer");
-    sel.innerHTML = "";
-
-    state.players.forEach((p, idx)=>{
-      const opt = document.createElement("option");
-      opt.value = String(idx);
-      opt.textContent = p.name || `Spieler ${idx+1}`;
-      sel.appendChild(opt);
-    });
-
-    sel.value = String(Math.min(Math.max(state.firstServerIdx, 0), state.players.length-1));
-  }
-
-  /* ----------------- GAME LOGIC ----------------- */
-  function resetMatchState(){
-    state.matchOver = false;
-    state.history = [];
-    state.players.forEach(p=>{
-      p.sets = 0;
-      p.legs = 0;
-      p.legsTotal = 0;
-    });
-    el("log").textContent = "";
-    hideWinModal();
+  function applyActiveColorsToCSS(){
+    const pA = getPlayerById(state.pick.A);
+    const pB = getPlayerById(state.pick.B);
+    document.documentElement.style.setProperty("--pA", pA.color || "#d61f26");
+    document.documentElement.style.setProperty("--pB", pB.color || "#14a44d");
   }
 
   function snapshot(){
-    state.history.push(JSON.parse(JSON.stringify({
-      players: state.players,
+    state.match.history.push(JSON.parse(JSON.stringify({
+      inProgress: state.match.inProgress,
+      matchOver: state.match.matchOver,
+      active: state.match.active,
+      sets: state.match.sets,
+      legs: state.match.legs,
+      legsTotal: state.match.legsTotal,
+      bestOfSets: state.bestOfSets,
       firstToSets: state.firstToSets,
       legsToWinSet: state.legsToWinSet,
-      firstServerIdx: state.firstServerIdx,
-      matchOver: state.matchOver
+      firstServer: state.firstServer
     })));
-    if(state.history.length > 120) state.history.shift();
+    if(state.match.history.length > 80) state.match.history.shift();
   }
 
-  function totalLegsPlayed(){
-    return state.players.reduce((sum,p)=>sum + (p.legsTotal||0), 0);
+  function logLine(t){
+    el("log").textContent = t + "\n" + el("log").textContent;
   }
 
-  function computeThrowerIndex(){
-    const n = state.players.length;
-    if(n <= 0) return 0;
-    // Rotation über das ganze Match (fair & simpel)
-    return (state.firstServerIdx + totalLegsPlayed()) % n;
+  function currentSetNumber(){ return state.match.sets.A + state.match.sets.B + 1; }
+  function currentLegNumberWithinSet(){ return state.match.legs.A + state.match.legs.B + 1; }
+
+  function computeThrower(){
+    const setNo = currentSetNumber();
+    const setStarter = (setNo % 2 === 1) ? state.firstServer : other(state.firstServer);
+    const legNo = currentLegNumberWithinSet();
+    return (legNo % 2 === 1) ? setStarter : other(setStarter);
   }
 
-  function renderScoreboard(){
-    const rows = el("scoreRows");
-    rows.innerHTML = "";
+  function renderGame(){
+    const pLeft  = getPlayerById(state.match.active.A);
+    const pRight = getPlayerById(state.match.active.B);
 
-    const throwerIdx = computeThrowerIndex();
-    state.players.forEach((p, idx)=>{
-      const row = document.createElement("div");
-      row.className = "sb-row";
-      row.setAttribute("role","button");
-      row.setAttribute("aria-label", `Leg gewonnen ${p.name}`);
+    document.documentElement.style.setProperty("--pA", pLeft.color  || "#d61f26");
+    document.documentElement.style.setProperty("--pB", pRight.color || "#14a44d");
 
-      // farbiger Verlauf pro Spieler
-      row.style.background = `linear-gradient(90deg, ${mixColor(p.color, 0.44)}, ${mixTapBg(0.68)})`;
+    el("titleA").textContent = (pLeft.name||"").trim()  || "Spieler";
+    el("titleB").textContent = (pRight.name||"").trim() || "Spieler";
+    el("pillA").textContent  = (pLeft.name||"").trim()  || "Spieler links";
+    el("pillB").textContent  = (pRight.name||"").trim() || "Spieler rechts";
 
-      const serve = document.createElement("div");
-      serve.className = "serveCell" + ((idx === throwerIdx) ? "" : " none");
-      serve.textContent = "▶";
+    el("setsA").textContent = state.match.sets.A;
+    el("setsB").textContent = state.match.sets.B;
+    el("legsA").textContent = state.match.legs.A;
+    el("legsB").textContent = state.match.legs.B;
 
-      const name = document.createElement("div");
-      name.className = "name";
-      const span = document.createElement("span");
-      span.textContent = p.name || `Spieler ${idx+1}`;
-      name.appendChild(span);
+    el("matchPill").textContent = `Best of ${state.bestOfSets} (First to ${state.firstToSets})`;
+    el("legsPill").textContent  = `Legs/Set: First to ${state.legsToWinSet}`;
 
-      const sets = document.createElement("div");
-      sets.className = "num";
-      sets.textContent = String(p.sets||0);
+    const thrower = computeThrower();
+    el("serveA").classList.toggle("none", thrower !== "A");
+    el("serveB").classList.toggle("none", thrower !== "B");
 
-      const legs = document.createElement("div");
-      legs.className = "num";
-      legs.textContent = String(p.legs||0);
-
-      row.appendChild(serve);
-      row.appendChild(name);
-      row.appendChild(sets);
-      row.appendChild(legs);
-
-      attachTapAndLongPress(row, ()=> addLeg(idx), undo);
-
-      rows.appendChild(row);
-    });
-
-    el("matchPill").textContent = `Match: First to ${state.firstToSets} Sets`;
-    el("legsPill").textContent  = `Set: First to ${state.legsToWinSet} Legs`;
-    el("playersPill").textContent = `Spieler: ${state.players.length}`;
+    saveMatch();
   }
 
-  function mixColor(hex, alpha){
-    // fallback simple rgba; hex always #RRGGBB
-    const h = (hex||"#ffffff").replace("#","");
-    const r = parseInt(h.slice(0,2),16);
-    const g = parseInt(h.slice(2,4),16);
-    const b = parseInt(h.slice(4,6),16);
-    return `rgba(${r},${g},${b},${alpha})`;
-  }
-  function mixTapBg(alpha){
-    // tapBg is theme dependent; approximate via computed style
-    const bg = getComputedStyle(document.documentElement).getPropertyValue("--tapBg").trim();
-    // if it's rgba already, use it; else fallback
-    return bg || `rgba(255,255,255,${alpha})`;
-  }
-
-  function finishMatchIfNeeded(winnerIdx){
-    if(state.players[winnerIdx].sets >= state.firstToSets){
-      showWinModal(winnerIdx);
+  function finishMatchIfNeeded(player){
+    if(state.match.sets[player] >= state.firstToSets){
+      state.match.matchOver = true;
+      state.match.inProgress = false;
+      saveMatch();
+      alert(`Match beendet! Ergebnis: ${state.match.sets.A}-${state.match.sets.B} Sets`);
       return true;
     }
     return false;
   }
 
-  function awardSet(winnerIdx){
-    state.players[winnerIdx].sets += 1;
-
-    // Set gewonnen Sound
-    playSetSound();
-
-    // Legs im Set reset für alle
-    state.players.forEach(p=> p.legs = 0);
-
-    logLine(`Set an ${state.players[winnerIdx].name} — Sets: ${setsScoreString()}`);
-    finishMatchIfNeeded(winnerIdx);
+  function awardSet(player){
+    state.match.sets[player] += 1;
+    state.match.legs.A = 0;
+    state.match.legs.B = 0;
+    logLine(`Set an ${player === "A" ? el("titleA").textContent : el("titleB").textContent} — Sets: ${state.match.sets.A}-${state.match.sets.B}`);
+    finishMatchIfNeeded(player);
   }
 
-  function setsScoreString(){
-    return state.players.map(p=>p.sets).join("-");
-  }
-
-  function addLeg(playerIdx){
-    if(state.matchOver) return;
-    if(el("winModal").classList.contains("show")) return;
-
+  function addLeg(player){
+    if(state.match.matchOver) return;
     snapshot();
-
-    const p = state.players[playerIdx];
-    p.legs += 1;
-    p.legsTotal += 1;
-
-    // Leg Sound (leise)
-    playLegSound();
-
+    state.match.legs[player] += 1;
+    state.match.legsTotal[player] += 1;
     haptic(12);
-    logLine(`Leg an ${p.name} — Legs: ${state.players.map(x=>x.legs).join("-")}`);
+    logLine(`Leg an ${player === "A" ? el("titleA").textContent : el("titleB").textContent} — Legs: ${state.match.legs.A}-${state.match.legs.B}`);
 
-    if(p.legs >= state.legsToWinSet){
-      awardSet(playerIdx);
-      if(state.matchOver){ renderScoreboard(); return; }
+    if(state.match.legs[player] >= state.legsToWinSet){
+      awardSet(player);
+      if(state.match.matchOver){ renderGame(); return; }
     }
-
-    renderScoreboard();
+    renderGame();
   }
 
   function undo(){
-    if(state.matchOver) return;
-    const prev = state.history.pop();
+    if(state.match.matchOver) return;
+    const prev = state.match.history.pop();
     if(!prev) return;
 
-    state.players = prev.players;
-    state.firstToSets = prev.firstToSets;
-    state.legsToWinSet = prev.legsToWinSet;
-    state.firstServerIdx = prev.firstServerIdx;
-    state.matchOver = prev.matchOver;
+    state.match.inProgress = prev.inProgress;
+    state.match.matchOver  = prev.matchOver;
+    state.match.active     = prev.active;
+    state.match.sets       = prev.sets;
+    state.match.legs       = prev.legs;
+    state.match.legsTotal  = prev.legsTotal;
 
-    applyAccentColors();
-    haptic(18);
-    logLine("Einen Schritt zurück.");
-    renderScoreboard();
+    state.bestOfSets   = prev.bestOfSets;
+    state.firstToSets  = prev.firstToSets;
+    state.legsToWinSet = prev.legsToWinSet;
+    state.firstServer  = prev.firstServer;
+
+    el("bestOfSets").value   = String(state.bestOfSets);
+    el("legsToWinSet").value = String(state.legsToWinSet);
+    el("firstServer").value  = state.firstServer;
+
+    haptic(10);
+    logLine("Undo.");
+    renderGame();
   }
 
   function toggleLog(){
@@ -1590,183 +1211,6 @@
     haptic(8);
   }
 
-  function resetToSetup(){
-    haptic(10);
-    if(confirm("Zum Setup zurückkehren und neues Match vorbereiten?")){
-      hideWinModal();
-      state.matchOver = false;
-      show("setup");
-    }
-  }
-
-  /* ----------------- WIN MODAL ----------------- */
-  function showWinModal(winnerIdx){
-    state.matchOver = true;
-
-    const winner = state.players[winnerIdx];
-    const modal = el("winModal");
-    const card = modal.querySelector(".modalCard");
-    card.style.setProperty("--winColor", winner.color);
-
-    el("winTitle").textContent = `Glückwunsch ${winner.name}!`;
-    el("winSub").textContent = "Sie haben das Match gewonnen.";
-    el("winScore").textContent = `Sets: ${setsScoreString()}`;
-
-    // summary rows
-    const summary = el("winSummaryRows");
-    summary.innerHTML = "";
-    state.players.forEach(p=>{
-      const row = document.createElement("div");
-      row.className = "summaryRow";
-
-      const n = document.createElement("div");
-      n.className = "n";
-      const dot = document.createElement("span");
-      dot.className = "chipDot";
-      dot.style.background = p.color;
-      dot.style.width = "10px";
-      dot.style.height = "10px";
-      dot.style.borderRadius = "999px";
-      dot.style.flex = "0 0 auto";
-      n.appendChild(dot);
-      n.appendChild(document.createTextNode(p.name));
-
-      const s = document.createElement("div");
-      s.className = "v";
-      s.textContent = String(p.sets);
-
-      const l = document.createElement("div");
-      l.className = "v";
-      l.textContent = String(p.legsTotal);
-
-      row.appendChild(n);
-      row.appendChild(s);
-      row.appendChild(l);
-      summary.appendChild(row);
-    });
-
-    modal.classList.add("show");
-
-    // Match-Jubel
-    playCheer();
-    haptic([35, 55, 35]);
-
-    try{ localStorage.removeItem(CHECKPOINT_KEY); }catch(_){}
-    updateResumeButton();
-  }
-
-  function hideWinModal(){
-    el("winModal").classList.remove("show");
-  }
-
-  function buildShareText(){
-    const header = "🎯 Dart Set & Leg Counter";
-    const names = state.players.map(p=>p.name).join(" vs ");
-    const sets = `Sets: ${setsScoreString()}`;
-    const legs = `Legs (gesamt): ${state.players.map(p=>p.legsTotal).join("-")}`;
-    const format = `Format: First to ${state.firstToSets} Sets · Legs/Set: ${state.legsToWinSet}`;
-    return [header, names, sets, legs, format].join("\n");
-  }
-
-  async function shareResult(){
-    const text = buildShareText();
-    try{
-      if(navigator.share){
-        await navigator.share({ text, title: "Dart Ergebnis" });
-        haptic(16);
-        return;
-      }
-    }catch(_){}
-    try{
-      if(navigator.clipboard?.writeText){
-        await navigator.clipboard.writeText(text);
-        alert("Ergebnis in die Zwischenablage kopiert.");
-        haptic(16);
-        return;
-      }
-    }catch(_){}
-    prompt("Ergebnis kopieren:", text);
-  }
-
-  /* ----------------- CHECKPOINT ----------------- */
-  function hasCheckpoint(){
-    try{ return !!localStorage.getItem(CHECKPOINT_KEY); }catch(_){ return false; }
-  }
-  function updateResumeButton(){
-    el("resumeBtn").classList.toggle("hidden", !hasCheckpoint());
-  }
-
-  function saveCheckpoint(){
-    try{
-      const payload = {
-        ts: Date.now(),
-        players: state.players,
-        firstToSets: state.firstToSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServerIdx: state.firstServerIdx,
-        matchOver: state.matchOver,
-        logText: el("log").textContent || "",
-        settings: state.settings
-      };
-      localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(payload));
-      haptic([20, 30, 20]);
-      alert("Zwischenstand gespeichert. Sie können später über „Zwischenstand fortsetzen“ weitermachen.");
-    }catch(_){
-      alert("Konnte Zwischenstand nicht speichern (LocalStorage nicht verfügbar).");
-    }
-    updateResumeButton();
-  }
-
-  function resumeCheckpoint(){
-    let raw = null;
-    try{ raw = localStorage.getItem(CHECKPOINT_KEY); }catch(_){}
-    if(!raw){ alert("Kein gespeicherter Zwischenstand gefunden."); updateResumeButton(); return; }
-
-    try{
-      const p = JSON.parse(raw);
-
-      if(p.settings){
-        state.settings.haptics = (p.settings.haptics !== false);
-        state.settings.sound   = (p.settings.sound !== false);
-        el("hapticToggle").checked = !!state.settings.haptics;
-        el("soundToggle").checked  = !!state.settings.sound;
-        saveToggles();
-      }
-
-      if(Array.isArray(p.players) && p.players.length >= 2){
-        state.players = p.players.slice(0, MAX_PLAYERS);
-      }
-
-      state.firstToSets = +p.firstToSets || state.firstToSets;
-      state.legsToWinSet = +p.legsToWinSet || state.legsToWinSet;
-      state.firstServerIdx = Math.min(Math.max(+p.firstServerIdx || 0, 0), state.players.length-1);
-
-      state.matchOver = false;
-      state.history = [];
-
-      el("log").textContent = p.logText || "";
-      el("log").classList.add("hidden");
-      el("toggleLog").textContent = "Verlauf anzeigen";
-      el("toggleLog").setAttribute("aria-expanded","false");
-
-      // sync setup controls to match resumed
-      el("firstToSets").value = String(state.firstToSets);
-      el("legsToWinSet").value = String(state.legsToWinSet);
-
-      renderPlayersSetup();
-      renderSetupHint();
-
-      applyAccentColors();
-      renderScoreboard();
-      show("game");
-      haptic(18);
-      ensureAudio();
-    }catch(_){
-      alert("Zwischenstand ist beschädigt und konnte nicht geladen werden.");
-    }
-  }
-
-  /* ----------------- INPUT: attach tap/longpress ----------------- */
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
@@ -1797,60 +1241,104 @@
     targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
-  /* ----------------- START ----------------- */
-  document.addEventListener("DOMContentLoaded", () => {
-    document.addEventListener("pointerdown", unlockAudioOnce, { once:true });
+  function clearSelectedNamesInSetup(){
+    const a = state.players.find(p=>p.id === state.pick.A);
+    const b = state.players.find(p=>p.id === state.pick.B);
+    if(a) a.name = "";
+    if(b) b.name = "";
+    saveSettings();
+  }
 
-    fillRangeSelect(el("firstToSets"), "Sets", state.firstToSets);
-    fillRangeSelect(el("legsToWinSet"), "Legs", state.legsToWinSet);
+  function startMatch(){
+    state.bestOfSets   = +el("bestOfSets").value;
+    state.firstToSets  = computeFirstTo(state.bestOfSets);
+    state.legsToWinSet = +el("legsToWinSet").value;
+    state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
 
+    dedupeInvalidPicks();
+
+    state.match.inProgress = true;
+    state.match.matchOver = false;
+    state.match.active = { A: state.pick.A, B: state.pick.B };
+    state.match.sets = { A: 0, B: 0 };
+    state.match.legs = { A: 0, B: 0 };
+    state.match.legsTotal = { A: 0, B: 0 };
+    state.match.history = [];
+    el("log").textContent = "";
+
+    const pLeft  = getPlayerById(state.pick.A);
+    const pRight = getPlayerById(state.pick.B);
+
+    logLine(`Start: ${playerLabel(pLeft, 0)} vs ${playerLabel(pRight, 1)} — Best of ${state.bestOfSets} — Legs/Set: ${state.legsToWinSet} — Anwurf: ${state.firstServer === "A" ? "Links" : "Rechts"}`);
+    el("log").classList.add("hidden");
+    el("toggleLog").textContent = "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded","false");
+
+    saveSettings();
+    saveMatch();
+    renderGame();
+    haptic(12);
+    show("game");
+  }
+
+  function showResumeUIIfNeeded(){
+    const has = loadMatch();
+    if(has){
+      const pLeft  = getPlayerById(state.match.active.A);
+      const pRight = getPlayerById(state.match.active.B);
+      el("resumeMeta").textContent =
+        `${(pLeft.name||"").trim()||"Spieler links"} vs ${(pRight.name||"").trim()||"Spieler rechts"} · Sets ${state.match.sets.A}-${state.match.sets.B} · Legs ${state.match.legs.A}-${state.match.legs.B}`;
+      el("resumeCard").classList.remove("hidden");
+    }else{
+      el("resumeCard").classList.add("hidden");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
     loadTheme();
-    loadToggles();
-    loadSetup();
+    loadSettings();
 
-    // Apply loaded values to selects
-    el("firstToSets").value = String(state.firstToSets);
+    el("bestOfSets").value   = String(state.bestOfSets);
     el("legsToWinSet").value = String(state.legsToWinSet);
+    el("firstServer").value  = state.firstServer;
 
-    renderPlayersSetup();
-    renderFirstServerOptions();
-    el("firstServer").value = String(state.firstServerIdx);
-
-    applyAccentColors();
+    enforceUniqueColorsAll();
+    renderPlayers();
+    renderPickSelects();
+    applyActiveColorsToCSS();
     renderSetupHint();
 
-    el("addPlayerBtn").addEventListener("click", addPlayer);
+    showResumeUIIfNeeded();
 
-    el("firstToSets").addEventListener("change", ()=>{
-      state.firstToSets = +el("firstToSets").value;
-      saveSetup();
-      renderSetupHint();
-      haptic(8);
-    });
-    el("legsToWinSet").addEventListener("change", ()=>{
-      state.legsToWinSet = +el("legsToWinSet").value;
-      saveSetup();
-      renderSetupHint();
-      haptic(8);
-    });
-    el("firstServer").addEventListener("change", ()=>{
-      state.firstServerIdx = +el("firstServer").value;
-      saveSetup();
-      renderSetupHint();
-      haptic(8);
-    });
+    el("themeToggle").addEventListener("click", toggleTheme);
+    el("themeToggle2").addEventListener("click", toggleTheme);
 
-    el("hapticToggle").addEventListener("change", ()=>{
-      state.settings.haptics = el("hapticToggle").checked;
-      saveToggles();
-      haptic(10);
+    el("addPlayer").addEventListener("click", ()=>{
+      if(state.players.length >= COLOR_OPTIONS.length){
+        alert("Maximale Spieleranzahl erreicht (entspricht Anzahl verfügbarer Farben).");
+        return;
+      }
+      const used = usedColors(null);
+      const newColor = firstFreeColor(used);
+      state.players.push({ id: uid(), name: "", color: newColor });
+      enforceUniqueColorsAll();
+      saveSettings();
+      renderPlayers();
+      renderPickSelects();
+      haptic(12);
     });
 
-    el("soundToggle").addEventListener("change", ()=>{
-      state.settings.sound = el("soundToggle").checked;
-      saveToggles();
-      haptic(8);
-      ensureAudio();
+    ["bestOfSets","legsToWinSet","firstServer"].forEach(id=>{
+      el(id).addEventListener("change", ()=>{
+        if(id === "bestOfSets"){
+          state.bestOfSets = +el("bestOfSets").value;
+          state.firstToSets = computeFirstTo(state.bestOfSets);
+        }
+        if(id === "legsToWinSet") state.legsToWinSet = +el("legsToWinSet").value;
+        if(id === "firstServer") state.firstServer = el("firstServer").value === "B" ? "B" : "A";
+        saveSettings();
+        renderSetupHint();
+      });
     });
 
     el("quickHelpBtn").addEventListener("click", ()=>{
@@ -1859,54 +1347,55 @@
       haptic(8);
     });
 
-    el("startBtn").addEventListener("click", ()=>{
-      ensureAudio();
+    el("startBtn").addEventListener("click", startMatch);
 
-      // apply names/colors already in state from setup UI
-      // reset match fields only
-      resetMatchState();
-
-      logLine(`Start: ${state.players.map(p=>p.name).join(" vs ")} — First to ${state.firstToSets} Sets — Legs/Set: ${state.legsToWinSet} — Anwurf Start: ${state.players[state.firstServerIdx]?.name || "Spieler 1"}`);
-      el("log").classList.add("hidden");
-      el("toggleLog").textContent = "Verlauf anzeigen";
-      el("toggleLog").setAttribute("aria-expanded","false");
-
-      renderScoreboard();
-      haptic(14);
-      show("game");
-    });
-
-    el("resumeBtn").addEventListener("click", resumeCheckpoint);
+    attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
+    attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
 
     el("undo").addEventListener("click", undo);
-    el("saveCheckpoint").addEventListener("click", saveCheckpoint);
     el("toggleLog").addEventListener("click", toggleLog);
-    el("resetToSetup").addEventListener("click", resetToSetup);
 
-    el("themeToggle").addEventListener("click", toggleTheme);
-    el("themeToggle2").addEventListener("click", toggleTheme);
-
-    el("winRematch").addEventListener("click", ()=>{
-      resetMatchState();
-      logLine("Neues Match gestartet.");
-      renderScoreboard();
-      haptic(18);
-    });
-
-    el("winToSetup").addEventListener("click", ()=>{
-      hideWinModal();
-      state.matchOver = false;
-      show("setup");
+    el("newMatch").addEventListener("click", ()=>{
       haptic(10);
+      if(confirm("Neues Match anlegen? (Match wird verworfen und Setup geöffnet)")){
+        state.match.inProgress = false;
+        state.match.matchOver = false;
+        state.match.history = [];
+        clearMatchStorage();
+
+        clearSelectedNamesInSetup();
+
+        renderPlayers();
+        renderPickSelects();
+        applyActiveColorsToCSS();
+        renderSetupHint();
+        show("setup");
+      }
     });
 
-    el("shareBtn").addEventListener("click", shareResult);
-
-    el("winModal").addEventListener("click", (e)=>{
-      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
+    el("resumeBtn").addEventListener("click", ()=>{
+      if(!loadMatch()){
+        showResumeUIIfNeeded();
+        return;
+      }
+      haptic(12);
+      show("game");
+      renderGame();
     });
 
-    updateResumeButton();
+    el("discardBtn").addEventListener("click", ()=>{
+      haptic(10);
+      if(confirm("Gespeichertes Match verwerfen und neues Match anlegen?")){
+        clearMatchStorage();
+        state.match.inProgress = false;
+        state.match.matchOver = false;
+        state.match.history = [];
+        clearSelectedNamesInSetup();
+        showResumeUIIfNeeded();
+        renderPlayers();
+        renderPickSelects();
+      }
+    });
   });
 </script>
 </body>
