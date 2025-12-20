@@ -1145,32 +1145,32 @@
   }
 
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
-    const LONG = 450;
-    let timer = null;
-    let longDone = false;
+  const LONG = 450;
+  let timer = null;
+  let longDone = false;
 
-    const clear = () => { if(timer) clearTimeout(timer); timer = null; };
-    const start = () => {
-      longDone = false;
-      clear();
-      timer = setTimeout(() => { longDone = true; onLongPress(); }, LONG);
-    };
-    const end = () => {
-      clear();
-      if(!longDone) onTap();
-    };
+  const clear = () => { if(timer) clearTimeout(timer); timer = null; };
 
-    targetEl.addEventListener("pointerdown", start, { passive:true });
-    targetEl.addEventListener("pointerup", end);
-    targetEl.addEventListener("pointercancel", clear);
-    targetEl.addEventListener("pointerleave", clear);
+  const start = () => {
+    longDone = false;
+    clear();
+    timer = setTimeout(() => { longDone = true; onLongPress(); }, LONG);
+  };
 
-    targetEl.addEventListener("touchstart", start, { passive:true });
-    targetEl.addEventListener("touchend", end);
-    targetEl.addEventListener("touchcancel", clear);
+  const end = () => {
+    clear();
+    if(!longDone) onTap();
+  };
 
-    targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
-  }
+  // NUR Pointer-Events (Touch wird darüber bereits abgedeckt)
+  targetEl.addEventListener("pointerdown", start, { passive:true });
+  targetEl.addEventListener("pointerup", end);
+  targetEl.addEventListener("pointercancel", clear);
+  targetEl.addEventListener("pointerleave", clear);
+
+  // Optional: Kontextmenü (Long-Press) deaktivieren
+  targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
+}
 
   function renderGame(){
     applyFirstTwoColorsToCSS();
