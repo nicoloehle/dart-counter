@@ -1,1569 +1,373 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#b8161c" />
-  <title>Dart Set &amp; Leg Counter</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dart Set & Leg Counter</title>
 
-  <style>
-    :root{
-      --radius:18px;
-      --tap: 56px;
+<style>
+/* =======================
+   BASIS / FARBEN
+======================= */
+:root{
+  --dart-red:#b8161c;
+  --dart-green:#0f7a2b;
+  --dart-black:#0b0f14;
+  --dart-white:#f7f8fb;
 
-      --fs-title: clamp(18px, 4.6vw, 26px);
-      --fs-body:  clamp(15px, 4vw, 18px);
-      --fs-meta:  clamp(12px, 3.3vw, 14px);
+  --bg:var(--dart-green);
+  --panel:#11151d;
+  --panel-border:rgba(255,255,255,.15);
 
-      --fs-name:  clamp(18px, 4.8vw, 22px);
-      --fs-col:   clamp(12px, 3.2vw, 13px);
-      --fs-num:   clamp(20px, 5.4vw, 26px);
+  --text:#fff;
+  --muted:rgba(255,255,255,.8);
 
-      --dartRed:   #b8161c;
-      --dartRedHi: #ff3a41;
-      --dartGreen: #0f7a2b;
+  --radius:18px;
+}
 
-      --dartBlack: #0b0f14;
-      --dartWhite: #f7f8fb;
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
 
-      --bg: var(--dartGreen);
-      --text: var(--dartWhite);
-      --muted: rgba(247,248,251,.80);
+button,input,select{
+  font-family:inherit;
+  font-size:16px;
+}
 
-      --panelA: rgba(10,13,18,.94);
-      --panelB: rgba(16,20,27,.94);
-      --panelEdge: rgba(255,255,255,.16);
-      --shadow: 0 18px 40px rgba(0,0,0,.45);
+.hidden{display:none!important}
 
-      --inputBg: rgba(0,0,0,.32);
+/* =======================
+   NAVBAR
+======================= */
+.navbar{
+  background:var(--dart-red);
+  padding:12px 14px;
+  border-radius:18px;
+  margin:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 14px 28px rgba(0,0,0,.3);
+}
 
-      --pA: #d61f26;
-      --pB: #14a44d;
-    }
+.logoImg{
+  width:44px;
+  height:auto;
+  aspect-ratio:1/1;
+  border-radius:12px;
+  object-fit:contain;
+  background:rgba(0,0,0,.2);
+}
 
-    *{ box-sizing:border-box; }
-    html, body{ height:100%; overflow-x:hidden; }
+.brandTitle{
+  font-size:20px;
+  font-weight:900;
+  line-height:1.2;
+}
 
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      padding:
-        max(14px, env(safe-area-inset-top))
-        max(14px, env(safe-area-inset-right))
-        max(14px, env(safe-area-inset-bottom))
-        max(14px, env(safe-area-inset-left));
-    }
+/* =======================
+   LAYOUT
+======================= */
+.wrap{
+  max-width:960px;
+  margin:0 auto;
+  padding-bottom:40px;
+}
 
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      min-height: 100%;
-      display:flex;
-      flex-direction:column;
-      position:relative;
-      overflow-x: clip;
-    }
+.card{
+  background:var(--panel);
+  border:1px solid var(--panel-border);
+  border-radius:var(--radius);
+  padding:14px;
+  margin:14px;
+  box-shadow:0 16px 30px rgba(0,0,0,.35);
+}
 
-    .wrap::before{
-      content:"";
-      position:absolute;
-      inset:-140px;
-      pointer-events:none;
-      opacity:.22;
-      background-image:
-        radial-gradient(circle at 18% 22%, rgba(255,255,255,.18), transparent 42%),
-        radial-gradient(circle at 82% 30%, rgba(0,0,0,.26), transparent 46%),
-        radial-gradient(circle at 50% 85%, rgba(255,255,255,.10), transparent 52%),
-        repeating-conic-gradient(from 18deg,
-          rgba(255,255,255,.10) 0 10deg,
-          transparent 10deg 18deg),
-        repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 8px, transparent 8px 22px);
-      mix-blend-mode: overlay;
-      filter: blur(1.2px);
-      z-index:0;
-    }
+/* =======================
+   SETUP
+======================= */
+.playersList{
+  display:grid;
+  gap:12px;
+}
 
-    .main{ position:relative; z-index:1; flex:1; }
+.playerRow{
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:14px;
+  padding:10px;
+  display:grid;
+  gap:10px;
+}
 
-    .navbar{
-      position: sticky;
-      top: max(0px, env(safe-area-inset-top));
-      z-index: 10;
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,.20);
-      background: linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
-      box-shadow: 0 16px 34px rgba(0,0,0,.28);
-      padding: 10px 12px;
-      margin-bottom: 22px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
+.playerRowTop{
+  display:grid;
+  grid-template-columns:44px 1fr 44px;
+  gap:10px;
+  align-items:center;
+}
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-      flex: 1;
-    }
+.colorBtn{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:2px solid #fff;
+  background:var(--c);
+  cursor:pointer;
+}
 
-    .logoImg{
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.26);
-      background: rgba(0,0,0,.18);
-      flex: 0 0 auto;
-      object-fit: cover;
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-    }
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#0003;
+  color:#fff;
+}
 
-    .brandTitle{
-      font-size: var(--fs-title);
-      font-weight: 1200;
-      letter-spacing: .2px;
-      line-height: 1.12;
-      color: #fff;
-      text-shadow: 0 10px 20px rgba(0,0,0,.22);
-      white-space: normal;
-      word-break: break-word;
-    }
+input::placeholder{color:#ccc}
 
-    .card{
-      border-radius: var(--radius);
-      padding: 14px;
-      margin-bottom: 14px;
-      border: 1px solid var(--panelEdge);
-      background:
-        radial-gradient(900px 260px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
-        radial-gradient(900px 300px at 0% 100%, rgba(0,0,0,.28), transparent 58%),
-        linear-gradient(180deg, var(--panelA), var(--panelB));
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      position:relative;
-      overflow:hidden;
-    }
+input{
+  enterkeyhint:done;
+}
 
-    /* FIX: Setup-Anwurf soll nicht "frei" auf grün liegen */
-    .card.compact{ padding: 12px 14px; }
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
 
-    label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
+button{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#0004;
+  color:#fff;
+  padding:12px 14px;
+  cursor:pointer;
+  font-weight:700;
+}
 
-    input, select{
-      width:100%;
-      font-size: var(--fs-body);
-      padding: 12px;
-      min-height: var(--tap);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: var(--inputBg);
-      color: var(--text);
-      outline:none;
-    }
-    input::placeholder{ color: rgba(255,255,255,.55); }
+button.primary{
+  background:var(--dart-red);
+}
 
-    .meta{ color: var(--muted); font-size: var(--fs-meta); margin-top: 10px; line-height:1.35; }
+button.small{
+  padding:8px 10px;
+  font-size:14px;
+}
 
-    button{
-      appearance:none;
-      border: 1px solid rgba(255,255,255,.18);
-      background:
-        radial-gradient(140px 85px at 30% 25%, rgba(255,255,255,.14), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      color: var(--text);
-      border-radius: 14px;
-      padding: 12px 12px;
-      min-height: var(--tap);
-      font-size: var(--fs-body);
-      font-weight: 950;
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action: manipulation;
-      box-shadow: 0 12px 24px rgba(0,0,0,.18);
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    button:active{ transform: translateY(1px) scale(.99); }
+/* =======================
+   SCOREBOARD
+======================= */
+.scoreHeader,.scoreRow{
+  display:grid;
+  grid-template-columns:64px 1fr 70px 70px;
+  align-items:center;
+  gap:8px;
+}
 
-    button.primary{
-      border-color: rgba(255,255,255,.24);
-      background:
-        radial-gradient(160px 95px at 30% 25%, rgba(255,255,255,.18), transparent 64%),
-        linear-gradient(180deg, var(--dartRedHi), var(--dartRed));
-      color:#fff;
-      box-shadow: 0 16px 30px rgba(0,0,0,.22);
-    }
+.scoreHeader{
+  background:#fff;
+  color:#000;
+  padding:10px;
+  font-weight:900;
+  text-transform:uppercase;
+}
 
-    button.ghost{
-      box-shadow:none;
-      background:
-        radial-gradient(140px 85px at 30% 25%, rgba(255,255,255,.10), transparent 62%),
-        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.10));
-    }
+.scoreRow{
+  padding:12px 10px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
 
-    button.small{
-      min-height: 40px;
-      padding: 8px 10px;
-      font-size: var(--fs-meta);
-      border-radius: 999px;
-      box-shadow:none;
-    }
+.serveCell{
+  background:#000;
+  text-align:center;
+  font-size:18px;
+}
 
-    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .spacer{ flex:1; }
-    .hidden{ display:none!important; }
+.nameCell{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-weight:800;
+}
 
-    .playersList{ display:grid; gap: 12px; }
+.num{
+  text-align:center;
+  font-size:22px;
+  font-weight:900;
+}
 
-    .playerRow{
-      border: 1px solid rgba(255,255,255,.14);
-      background:
-        radial-gradient(260px 140px at 25% 15%, rgba(255,255,255,.08), transparent 65%),
-        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.10));
-      border-radius: 14px;
-      padding: 10px;
-      display:grid;
-      gap: 10px;
-      position:relative;
-      overflow:hidden;
-    }
+/* =======================
+   FOOTER
+======================= */
+.footer{
+  display:flex;
+  justify-content:center;
+  padding:20px 14px;
+}
 
-    .playerRowTop{
-      display:grid;
-      grid-template-columns: 48px 1fr 44px;
-      gap: 10px;
-      align-items:center;
-      position:relative;
-      z-index:1;
-    }
+.footerCard{
+  background:#0004;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  gap:14px;
+  align-items:center;
+  max-width:960px;
+  width:100%;
+}
 
-    .colorPickBtn{
-      width: 48px;
-      height: 48px;
-      min-height: 48px;
-      padding: 0;
-      border-radius: 999px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:none;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.22);
-    }
-    .colorPickBtn::after{
-      content:"";
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.78);
-      background: var(--dot, #fff);
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
-    }
+.footerImg{
+  width:84px;
+  height:auto;
+  border-radius:14px;
+  object-fit:contain;
+}
 
-    .trashBtn{
-      min-height: 44px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      box-shadow:none;
-      font-size: 18px;
-    }
-
-    .palette{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 10px;
-      padding: 10px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.20);
-      position:relative;
-      z-index:1;
-    }
-
-    .swatch{
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.24);
-      background: var(--c);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding: 0;
-      min-height: 34px;
-      box-shadow:none;
-      position: relative;
-      overflow:hidden;
-    }
-    .swatch.selected{
-      outline: 3px solid rgba(255,255,255,.42);
-      outline-offset: 2px;
-    }
-    .swatch.taken{
-      opacity: .95;
-      cursor: not-allowed;
-      filter: none;
-    }
-    .swatch.taken::after{
-      content:"";
-      position:absolute;
-      inset:-6px;
-      background:
-        linear-gradient(135deg,
-          transparent 47%,
-          rgba(255,255,255,.92) 48%,
-          rgba(255,255,255,.92) 52%,
-          transparent 53%);
-      opacity: .9;
-      pointer-events:none;
-    }
-    .swatch .check{
-      font-size: 16px;
-      line-height: 1;
-      opacity: 0;
-      transform: translateY(-1px);
-      color: rgba(255,255,255,.96);
-      text-shadow: 0 8px 18px rgba(0,0,0,.35);
-    }
-    .swatch.selected .check{ opacity: 1; }
-
-    .scoreboard{ padding: 0; overflow:hidden; }
-
-    .sb-header{
-      display:grid;
-      grid-template-columns: 86px 1fr 70px 70px;
-      align-items:center;
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(0,0,0,.10);
-      background: rgba(255,255,255,.92);
-      column-gap: 10px;
-      position:relative;
-    }
-    .sb-header::after{
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--dartRed) 0 50%, #1ad35f 50% 100%);
-      opacity:.95;
-    }
-    .sb-header .col, .sb-header .left{
-      font-size: var(--fs-col);
-      color: rgba(11,15,20,.92);
-      font-weight: 1200;
-      letter-spacing: .28px;
-      text-transform: uppercase;
-      position:relative;
-      z-index:1;
-    }
-    .sb-header .col{ text-align:center; }
-    .sb-header .left{ text-align:left; }
-
-    .sb-row{
-      display:grid;
-      grid-template-columns: 86px 1fr 70px 70px;
-      align-items:stretch;
-      padding: 0;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      column-gap: 10px;
-      background: rgba(255,255,255,.03);
-    }
-    .sb-row:last-child{ border-bottom:none; }
-
-    .tap{ touch-action: manipulation; }
-
-    .sb-row.playerDyn{
-      background:
-        radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--rowColor) 32%, transparent), transparent 70%),
-        linear-gradient(90deg,
-          color-mix(in srgb, var(--rowColor) 68%, transparent),
-          rgba(255,255,255,.03)
-        );
-    }
-
-    .serveCell{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 18px;
-      font-weight: 1200;
-      color: rgba(255,255,255,.96);
-      background: rgba(0,0,0,.38);
-      border-right: 1px solid rgba(255,255,255,.10);
-      padding: 12px 0;
-      min-height: 64px;
-    }
-    .serveCell.none{ opacity: 0; }
-
-    .name{
-      display:flex;
-      align-items:center;
-      min-height: 64px;
-      font-size: var(--fs-name);
-      font-weight: 1200;
-      letter-spacing: .2px;
-      min-width: 0;
-      padding: 12px 0;
-    }
-    .name span{
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .num{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: var(--fs-num);
-      font-weight: 1200;
-      letter-spacing: .3px;
-      padding: 12px 0;
-      min-height: 64px;
-    }
-
-    .badgeLine{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: var(--fs-meta);
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background:
-        radial-gradient(120px 50px at 30% 25%, rgba(255,255,255,.10), transparent 60%),
-        linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.16));
-      font-weight: 950;
-    }
-
-    .hint{
-      margin-top: 10px;
-      font-size: var(--fs-meta);
-      color: rgba(255,255,255,.78);
-    }
-
-    .log{
-      white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 14px;
-      padding: 12px;
-      max-height: 190px;
-      overflow: auto;
-      margin-top: 10px;
-    }
-
-    .modalOverlay{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      background: rgba(0,0,0,.55);
-      z-index: 999;
-      backdrop-filter: blur(6px);
-    }
-    .modalOverlay.show{ display:flex; }
-
-    .modalCard{
-      width: min(560px, 100%);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: 0 22px 60px rgba(0,0,0,.45);
-      overflow:hidden;
-      background: linear-gradient(180deg, var(--panelA), var(--panelB));
-    }
-    .modalTop{
-      padding: 14px 16px;
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--winColor) 28%, transparent),
-        color-mix(in srgb, var(--winColor) 10%, transparent)
-      );
-      border-bottom: 1px solid rgba(255,255,255,.12);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .modalTop .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: var(--fs-meta);
-      font-weight: 1100;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
-      background: color-mix(in srgb, var(--winColor) 18%, transparent);
-    }
-    .modalBody{ padding: 18px 16px 16px; }
-    .modalTitle{
-      font-size: clamp(22px, 6vw, 34px);
-      font-weight: 1200;
-      line-height: 1.1;
-      margin: 0 0 10px;
-    }
-    .modalSub{
-      font-size: var(--fs-body);
-      color: var(--muted);
-      margin: 0 0 14px;
-    }
-    .modalActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .shareBtn{
-      min-height: 40px;
-      padding: 8px 10px;
-      font-size: var(--fs-meta);
-      border-radius: 999px;
-      box-shadow:none;
-    }
-
-    .footer{
-      position:relative;
-      z-index:1;
-      margin-top: 18px;
-      padding: 16px 0 4px;
-      color: rgba(255,255,255,.82);
-      font-size: var(--fs-meta);
-      display:flex;
-      justify-content:center;
-    }
-    .footerCard{
-      width: min(980px, 100%);
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      box-shadow: 0 12px 28px rgba(0,0,0,.25);
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      padding: 12px;
-    }
-    .footerImg{
-      width: 84px;
-      height: 54px;
-      border-radius: 14px;
-      object-fit: cover;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.16);
-      flex: 0 0 auto;
-    }
-    .footerText{ min-width: 0; line-height: 1.25; }
-    .footerText strong{ color: rgba(255,255,255,.98); }
-
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: max(16px, env(safe-area-inset-bottom));
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.70);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.18);
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-size: var(--fs-meta);
-      z-index: 1000;
-      display:none;
-      max-width: min(520px, calc(100vw - 24px));
-      text-align:center;
-    }
-    .toast.show{ display:block; }
-
-    @media (max-width: 420px){
-      .sb-header{ grid-template-columns: 76px 1fr 60px 60px; }
-      .sb-row{ grid-template-columns: 76px 1fr 60px 60px; }
-    }
-  </style>
+.footerText{
+  font-size:14px;
+  line-height:1.35;
+}
+</style>
 </head>
 
 <body>
 <div class="wrap">
-  <div class="main">
 
-    <div id="screenSetup">
-      <div class="navbar">
-        <div class="brand">
-          <img class="logoImg" id="topLogo" alt="Logo"
-               src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Crect x='6' y='6' width='76' height='76' rx='18' fill='%230b0f14'/%3E%3Ccircle cx='44' cy='44' r='28' fill='%23ffffff' fill-opacity='.10'/%3E%3Cpath d='M18 56 L50 24 L58 32 L26 64 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M50 24 L70 16 L74 20 L58 32 Z' fill='%23d61f26' fill-opacity='.38'/%3E%3Cpath d='M26 64 L58 32 L66 40 L34 72 Z' fill='%2314a44d' fill-opacity='.34'/%3E%3C/svg%3E" />
-          <div class="brandTitle">Dart Set &amp; Leg Counter</div>
-        </div>
-      </div>
-
-      <div class="card hidden" id="resumeCard">
-        <div style="font-weight:1100; margin-bottom:6px; position:relative; z-index:1;">Es gibt ein gespeichertes Match.</div>
-        <div class="meta" id="resumeMeta" style="margin-top:0; position:relative; z-index:1;">—</div>
-        <div class="controls" style="margin-top:12px; position:relative; z-index:1;">
-          <button class="primary" id="resumeBtn" type="button">Fortsetzen</button>
-          <button class="ghost" id="discardBtn" type="button">Match verwerfen</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <label style="position:relative; z-index:1;">Spieler (min. 2 · max. 6)</label>
-        <div class="playersList" id="playersList" style="position:relative; z-index:1;"></div>
-
-        <div class="controls" style="margin-top:12px; position:relative; z-index:1;">
-          <button class="ghost" id="addPlayer" type="button">+ Spieler hinzufügen</button>
-          <span class="spacer"></span>
-          <span class="meta" id="playerCountHint" style="margin-top:0;">Farben sind nur einmal wählbar.</span>
-        </div>
-        <div class="meta" style="position:relative; z-index:1;">Einstellungen werden gespeichert. (Match kann später fortgesetzt werden.)</div>
-      </div>
-
-      <div class="card">
-        <div class="controls" style="gap:12px; position:relative; z-index:1;">
-          <div style="flex:1; min-width: 240px;">
-            <label for="firstToSets">Sets (First to)</label>
-            <select id="firstToSets"></select>
-          </div>
-          <div style="flex:1; min-width: 240px;">
-            <label for="legsToWinSet">Legs (First to)</label>
-            <select id="legsToWinSet"></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- FIX: Anwurf in eigener Card, nicht frei auf grün -->
-      <div class="card compact">
-        <div style="position:relative; z-index:1;">
-          <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
-          <select id="firstServer"></select>
-
-          <div class="meta" id="formatHint"></div>
-
-          <div class="controls" style="margin-top:14px;">
-            <button class="primary" id="startBtn" type="button">Spiel starten</button>
-            <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
-          </div>
-
-          <div class="meta" id="helpText" style="display:none;">
-            Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck = Rückgängig.<br>
-            Der ▶-Pfeil zeigt den Anwurf fürs nächste Leg.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="screenGame" class="hidden">
-      <div class="navbar">
-        <div class="brand">
-          <img class="logoImg" alt="Logo" src="" id="topLogo2" />
-          <div class="brandTitle">Dart Set &amp; Leg Counter</div>
-        </div>
-      </div>
-
-      <div class="card scoreboard">
-        <div class="sb-header">
-          <div class="col">ANWURF</div>
-          <div class="left">NAME</div>
-          <div class="col">SETS</div>
-          <div class="col">LEGS</div>
-        </div>
-
-        <div id="scoreRows"></div>
-
-        <div style="padding:12px 14px; position:relative; z-index:1;">
-          <div class="badgeLine">
-            <span class="pill" id="setsPill"></span>
-            <span class="pill" id="legsPill"></span>
-          </div>
-
-          <div class="controls" style="margin-top:12px;">
-            <button class="ghost" id="undo" type="button">Rückgängig</button>
-            <button class="primary" id="saveResume" type="button">Speichern &amp; später fortsetzen</button>
-            <span class="spacer"></span>
-            <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
-          </div>
-
-          <div class="controls" style="margin-top:10px;">
-            <button class="ghost" id="endToSetup" type="button">Beenden &amp; zurück zum Setup</button>
-          </div>
-
-          <div class="log hidden" id="log"></div>
-          <div class="hint">Anwurf (▶) rotiert automatisch pro Leg und pro Set durch die Spieler.</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <footer class="footer" aria-label="Footer">
-    <div class="footerCard">
-      <img class="footerImg" id="footerImg" alt="Dart Gimmick"
-           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='108' viewBox='0 0 168 108'%3E%3Crect width='168' height='108' rx='22' fill='%230b0f14'/%3E%3Ccircle cx='130' cy='38' r='44' fill='%23ffffff' fill-opacity='.07'/%3E%3Cpath d='M22 78 L82 18 L92 28 L32 88 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M82 18 L118 8 L124 14 L92 28 Z' fill='%23d61f26' fill-opacity='.42'/%3E%3Cpath d='M32 88 L92 28 L102 38 L42 98 Z' fill='%2314a44d' fill-opacity='.38'/%3E%3C/svg%3E" />
-      <div class="footerText">
-        <strong>Der Counter wird dir bereitgestellt von Nici (den aber jeder leider nur Nico nennt)</strong><br><br>
-        Viel Spaß beim Spielen und auf das ein oder andere Spaßgetränk! 🍻
-      </div>
-    </div>
-  </footer>
-
+<!-- NAVBAR -->
+<div class="navbar">
+  <img src="assets/logo.png" class="logoImg" alt="Logo">
+  <div class="brandTitle">Dart Set &amp; Leg Counter</div>
 </div>
 
-<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
-  <div class="modalCard" style="--winColor: var(--pA);">
-    <div class="modalTop">
-      <span class="tag" id="winTag">🏆 Match beendet</span>
-      <span style="font-weight:1100; color: rgba(255,255,255,.82); font-size: var(--fs-meta);" id="winScore">—</span>
-    </div>
-    <div class="modalBody">
-      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
-      <p class="modalSub" id="winSub">—</p>
+<!-- SETUP -->
+<div class="card" id="setup">
+  <div class="playersList" id="playersList"></div>
 
-      <div class="modalActions">
-        <button class="primary" id="winRematch" type="button">Revanche</button>
-        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
-        <button class="ghost shareBtn" id="winShare" type="button" title="Teilen">📤 Teilen</button>
-      </div>
-    </div>
+  <div class="controls">
+    <button id="addPlayer">+ Spieler</button>
+  </div>
+
+  <div class="controls">
+    <select id="firstToSets"></select>
+    <select id="legsToWin"></select>
+  </div>
+
+  <div class="controls">
+    <button class="primary" id="start">Spiel starten</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- GAME -->
+<div class="card hidden" id="game">
+  <div class="scoreHeader">
+    <div>Anwurf</div>
+    <div>Name</div>
+    <div>Sets</div>
+    <div>Legs</div>
+  </div>
+  <div id="scoreRows"></div>
+
+  <div class="controls">
+    <button id="undo">Rückgängig</button>
+    <button class="primary" id="save">Speichern &amp; später fortsetzen</button>
+    <button id="back">Beenden &amp; zurück zum Setup</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footerCard">
+    <img src="assets/nico.jpg" class="footerImg" alt="Nico">
+    <div class="footerText">
+      <strong>Der Counter wird dir bereitgestellt von Nici (den aber jeder leider nur Nico nennt)</strong><br><br>
+      Viel Spaß beim Spielen und auf das ein oder andere Spaßgetränk! 🍻
+    </div>
+  </div>
+</footer>
+
+</div>
 
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v23";
-  const MATCH_KEY    = "dart_counter_match_v23";
-  const APP_URL      = "https://nicoloehle.github.io/dart-counter/";
+/* =======================
+   JAVASCRIPT (STABIL)
+======================= */
+const players=[];
+const maxPlayers=6;
+const minPlayers=2;
 
-  const MIN_PLAYERS = 2;
-  const MAX_PLAYERS = 6;
+const colors=["#d61f26","#14a44d","#f2c230","#f97316","#ff3ea5","#7c3aed","#2f6bff","#1e3a8a","#7a4a2e"];
 
-  const COLOR_OPTIONS = [
-    { key: "red",      name: "Rot",        hex: "#d61f26" },
-    { key: "green",    name: "Grün",       hex: "#14a44d" },
-    { key: "yellow",   name: "Gelb",       hex: "#f2c230" },
-    { key: "orange",   name: "Orange",     hex: "#f97316" },
-    { key: "pink",     name: "Pink",       hex: "#ff3ea5" },
-    { key: "violet",   name: "Violett",    hex: "#7c3aed" },
-    { key: "blue",     name: "Blau",       hex: "#2f6bff" },
-    { key: "darkblue", name: "Dunkelblau", hex: "#1e3a8a" },
-    { key: "brown",    name: "Braun",      hex: "#7a4a2e" }
-  ];
-
-  const el = (id) => document.getElementById(id);
-  const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
-
-  function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
-
-  let audioCtx = null;
-  function ensureAudio(){
-    if(audioCtx) return;
-    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-    catch(_){ audioCtx = null; }
-  }
-  function beep(freq=520, ms=45, type="sine", gain=0.05){
-    try{
-      ensureAudio();
-      if(!audioCtx) return;
-      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type; o.frequency.value = freq; g.gain.value = gain;
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start(); setTimeout(()=>{ try{o.stop();}catch(_){} }, ms);
-    }catch(_){}
-  }
-  const sfx = {
-    tap(){ beep(520, 40, "sine", 0.045); },
-    undo(){ beep(260, 60, "triangle", 0.05); },
-    set(){ beep(740, 70, "square", 0.04); },
-    ui(){  beep(420, 35, "sine", 0.035); },
-    win(){ beep(880, 110, "triangle", 0.05); }
-  };
-
-  function toast(msg){
-    const t = el("toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 1600);
-  }
-
-  const state = {
-    players: [
-      { id: "p1", name: "", color: "#d61f26" },
-      { id: "p2", name: "", color: "#14a44d" }
-    ],
-    firstToSets: 3,
-    legsToWinSet: 3,
-    firstServerId: "p1",
-
-    match: {
-      inProgress:false,
-      matchOver:false,
-      sets:{},
-      legs:{},
-      legsTotal:{},
-      history:[],
-      setNo:1
-    }
-  };
-
-  function playerName(p, fallback){ const n=(p?.name||"").trim(); return n ? n : fallback; }
-  function getPlayerById(id){ return state.players.find(p => p.id === id) || null; }
-
-  function syncLogos(){
-    const src = el("topLogo")?.getAttribute("src") || "";
-    if(el("topLogo2")) el("topLogo2").setAttribute("src", src);
-  }
-
-  function usedColors(exceptId=null){
-    const used = new Set();
-    for(const p of state.players){
-      if(exceptId && p.id === exceptId) continue;
-      used.add((p.color||"").toLowerCase());
-    }
-    return used;
-  }
-  function firstFreeColor(usedSet){
-    const found = COLOR_OPTIONS.find(c => !usedSet.has(c.hex.toLowerCase()));
-    return found ? found.hex : COLOR_OPTIONS[0].hex;
-  }
-  function enforceUniqueColorsAll(){
-    const seen = new Set();
-    for(const p of state.players){
-      const c = (p.color||"").toLowerCase();
-      if(!c || seen.has(c)){
-        const used = usedColors(p.id);
-        p.color = firstFreeColor(used);
-      }
-      seen.add(p.color.toLowerCase());
-    }
-  }
-  function applyFirstTwoColorsToCSS(){
-    const p1 = state.players[0] || { color:"#d61f26" };
-    const p2 = state.players[1] || { color:"#14a44d" };
-    document.documentElement.style.setProperty("--pA", p1.color || "#d61f26");
-    document.documentElement.style.setProperty("--pB", p2.color || "#14a44d");
-  }
-
-  function saveSettings(){
-    try{
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-        players: state.players,
-        firstToSets: state.firstToSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServerId: state.firstServerId,
-        logoSrc: el("topLogo")?.getAttribute("src") || "",
-        footerSrc: el("footerImg")?.getAttribute("src") || ""
-      }));
-    }catch(_){}
-  }
-
-  function loadSettings(){
-    try{
-      const raw = localStorage.getItem(SETTINGS_KEY);
-      if(!raw) return;
-      const s = JSON.parse(raw);
-
-      if(Array.isArray(s.players) && s.players.length >= MIN_PLAYERS){
-        state.players = s.players.slice(0, MAX_PLAYERS).map((p, i)=>({
-          id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
-          name: (typeof p.name === "string") ? p.name : "",
-          color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
-        }));
-        while(state.players.length < MIN_PLAYERS){
-          state.players.push({ id: uid(), name: "", color: firstFreeColor(usedColors(null)) });
-        }
-      }
-
-      state.firstToSets  = Number.isFinite(+s.firstToSets) ? Math.min(7, Math.max(1, +s.firstToSets)) : state.firstToSets;
-      state.legsToWinSet = Number.isFinite(+s.legsToWinSet) ? Math.min(7, Math.max(1, +s.legsToWinSet)) : state.legsToWinSet;
-
-      if(typeof s.firstServerId === "string" && s.firstServerId && getPlayerById(s.firstServerId)){
-        state.firstServerId = s.firstServerId;
-      }else{
-        state.firstServerId = state.players[0]?.id || "p1";
-      }
-
-      if(typeof s.logoSrc === "string" && s.logoSrc) el("topLogo").setAttribute("src", s.logoSrc);
-      if(typeof s.footerSrc === "string" && s.footerSrc) el("footerImg").setAttribute("src", s.footerSrc);
-      syncLogos();
-
-      enforceUniqueColorsAll();
-    }catch(_){}
-  }
-
-  function fillOneToSeven(selectEl, defaultVal){
-    selectEl.innerHTML = "";
-    for(let i=1;i<=7;i++){
-      const opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = String(i);
-      if(i === defaultVal) opt.selected = true;
-      selectEl.appendChild(opt);
-    }
-  }
-
-  function updateFirstServerSelect(){
-    const sel = el("firstServer");
-    const current = state.firstServerId;
-    sel.innerHTML = "";
-    state.players.forEach((p, idx)=>{
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = playerName(p, `Spieler ${idx+1}`);
-      sel.appendChild(opt);
+function renderPlayers(){
+  const list=document.getElementById("playersList");
+  list.innerHTML="";
+  players.forEach((p,i)=>{
+    const row=document.createElement("div");
+    row.className="playerRow";
+    row.innerHTML=`
+      <div class="playerRowTop">
+        <div class="colorBtn" style="--c:${p.color}"></div>
+        <input placeholder="Spieler ${i+1}" value="${p.name||""}">
+        ${i>=2?'<button onclick="removePlayer('+i+')">🗑️</button>':"<div></div>"}
+      </div>`;
+    const input=row.querySelector("input");
+    input.enterKeyHint="done";
+    input.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){input.blur();}
     });
-    if(getPlayerById(current)){
-      sel.value = current;
-    }else{
-      sel.value = state.players[0]?.id || "";
-      state.firstServerId = sel.value || state.firstServerId;
-      saveSettings();
-    }
-  }
-
-  function renderSetupHint(){
-    const sets = +el("firstToSets").value;
-    const legs = +el("legsToWinSet").value;
-    const starter = getPlayerById(el("firstServer").value);
-    el("formatHint").textContent =
-      `Match: First to ${sets} Sets · Set: First to ${legs} Legs · Anwurf Start: ${playerName(starter, "Spieler 1")}`;
-  }
-
-  function show(screen){
-    el("screenSetup").classList.toggle("hidden", screen !== "setup");
-    el("screenGame").classList.toggle("hidden", screen !== "game");
-    openPaletteFor = null;
-    renderPlayers();
-    updateFirstServerSelect();
-    renderResumeCard();
-  }
-
-  let openPaletteFor = null;
-
-  function updatePlayerCountUI(){
-    const n = state.players.length;
-    const btn = el("addPlayer");
-    const hint = el("playerCountHint");
-    const canAdd = n < MAX_PLAYERS;
-
-    btn.disabled = !canAdd;
-    btn.style.opacity = canAdd ? "1" : ".55";
-    hint.textContent = `Spieler: ${n}/${MAX_PLAYERS} · Farben sind nur einmal wählbar.`;
-  }
-
-  function renderPlayers(){
-    const list = el("playersList");
-    list.innerHTML = "";
-
-    state.players.forEach((p, idx)=>{
-      const row = document.createElement("div");
-      row.className = "playerRow";
-
-      const top = document.createElement("div");
-      top.className = "playerRowTop";
-
-      const colorBtn = document.createElement("button");
-      colorBtn.type = "button";
-      colorBtn.className = "colorPickBtn";
-      colorBtn.style.setProperty("--dot", p.color);
-      colorBtn.addEventListener("click", ()=>{
-        openPaletteFor = (openPaletteFor === p.id) ? null : p.id;
-        renderPlayers();
-        updateFirstServerSelect();
-        haptic(8); sfx.ui();
-      });
-
-      const input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = `Spieler ${idx+1}`;
-      input.value = (typeof p.name === "string") ? p.name : "";
-
-      // ✅ Done/Fertig auf Handy + Enter schließt Feld
-      input.setAttribute("enterkeyhint", "done");
-      input.setAttribute("inputmode", "text");
-      input.setAttribute("autocomplete", "name");
-      input.setAttribute("autocapitalize", "words");
-      input.setAttribute("autocorrect", "off");
-      input.setAttribute("spellcheck", "false");
-
-      input.addEventListener("keydown", (e)=>{
-        if(e.key === "Enter"){
-          e.preventDefault();
-          input.blur();
-        }
-      });
-
-      input.addEventListener("input", ()=>{
-        p.name = input.value;
-        saveSettings();
-        updateFirstServerSelect();
-      });
-      input.addEventListener("blur", ()=>{
-        p.name = input.value;
-        saveSettings();
-        updateFirstServerSelect();
-      });
-
-      let rightEl = document.createElement("div");
-      if(state.players.length > MIN_PLAYERS && idx >= MIN_PLAYERS){
-        const trash = document.createElement("button");
-        trash.type = "button";
-        trash.className = "trashBtn ghost";
-        trash.textContent = "🗑️";
-        trash.addEventListener("click", ()=>{
-          state.players = state.players.filter(x=>x.id !== p.id);
-          openPaletteFor = null;
-
-          if(!getPlayerById(state.firstServerId)){
-            state.firstServerId = state.players[0]?.id || "p1";
-          }
-
-          enforceUniqueColorsAll();
-          saveSettings();
-          applyFirstTwoColorsToCSS();
-          renderPlayers();
-          updateFirstServerSelect();
-          renderSetupHint();
-          updatePlayerCountUI();
-          haptic(12); sfx.ui();
-        });
-        rightEl = trash;
-      }
-
-      top.appendChild(colorBtn);
-      top.appendChild(input);
-      top.appendChild(rightEl);
-      row.appendChild(top);
-
-      if(openPaletteFor === p.id){
-        const pal = document.createElement("div");
-        pal.className = "palette";
-        const used = usedColors(p.id);
-
-        COLOR_OPTIONS.forEach(c=>{
-          const sw = document.createElement("button");
-          sw.type = "button";
-          sw.className = "swatch";
-          sw.style.setProperty("--c", c.hex);
-
-          const check = document.createElement("span");
-          check.className = "check";
-          check.textContent = "✓";
-          sw.appendChild(check);
-
-          const hex = c.hex.toLowerCase();
-          const isSelected = hex === (p.color||"").toLowerCase();
-          const isTaken = used.has(hex) && !isSelected;
-
-          sw.classList.toggle("selected", isSelected);
-          sw.classList.toggle("taken", isTaken);
-
-          sw.addEventListener("click", ()=>{
-            if(isTaken) return;
-            p.color = c.hex;
-            enforceUniqueColorsAll();
-            saveSettings();
-            applyFirstTwoColorsToCSS();
-            renderPlayers();
-            updateFirstServerSelect();
-            haptic(10); sfx.ui();
-          });
-
-          pal.appendChild(sw);
-        });
-
-        row.appendChild(pal);
-      }
-
-      list.appendChild(row);
-    });
-
-    updatePlayerCountUI();
-  }
-
-  document.addEventListener("pointerdown", (e)=>{
-    if(!openPaletteFor) return;
-    const inside = e.target.closest(".palette") || e.target.closest(".colorPickBtn") || e.target.closest(".swatch");
-    if(!inside){
-      openPaletteFor = null;
-      renderPlayers();
-    }
-  }, { passive: true });
-
-  function initScoresForPlayers(){
-    state.match.sets = {};
-    state.match.legs = {};
-    state.match.legsTotal = {};
-    state.players.forEach(p=>{
-      state.match.sets[p.id] = 0;
-      state.match.legs[p.id] = 0;
-      state.match.legsTotal[p.id] = 0;
-    });
-    state.match.setNo = 1;
-  }
-
-  function snapshot(){
-    state.match.history.push(JSON.parse(JSON.stringify({
-      players: state.players,
-      firstToSets: state.firstToSets,
-      legsToWinSet: state.legsToWinSet,
-      firstServerId: state.firstServerId,
-      match: state.match
-    })));
-    if(state.match.history.length > 80) state.match.history.shift();
-  }
-
-  function logLine(t){
-    const prev = el("log").textContent || "";
-    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
-    el("log").textContent = t + sep + prev;
-  }
-
-  function currentLegNumberWithinSet(){
-    return Object.values(state.match.legs).reduce((a,b)=>a+(+b||0), 0) + 1;
-  }
-
-  function computeThrowerId(){
-    const n = state.players.length;
-    const startIdx = Math.max(0, state.players.findIndex(p=>p.id === state.firstServerId));
-    const setStarterIdx = (startIdx + ((state.match.setNo - 1) % n)) % n;
-    const legOffset = (currentLegNumberWithinSet() - 1) % n;
-    return state.players[(setStarterIdx + legOffset) % n]?.id || state.players[0]?.id || null;
-  }
-
-  function attachTapAndLongPress(targetEl, onTap, onLongPress){
-  const LONG = 450;
-  let timer = null;
-  let longDone = false;
-
-  const clear = () => { if(timer) clearTimeout(timer); timer = null; };
-
-  const start = () => {
-    longDone = false;
-    clear();
-    timer = setTimeout(() => { longDone = true; onLongPress(); }, LONG);
-  };
-
-  const end = () => {
-    clear();
-    if(!longDone) onTap();
-  };
-
-  // NUR Pointer-Events (Touch wird darüber bereits abgedeckt)
-  targetEl.addEventListener("pointerdown", start, { passive:true });
-  targetEl.addEventListener("pointerup", end);
-  targetEl.addEventListener("pointercancel", clear);
-  targetEl.addEventListener("pointerleave", clear);
-
-  // Optional: Kontextmenü (Long-Press) deaktivieren
-  targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
+    input.addEventListener("input",()=>p.name=input.value);
+    list.appendChild(row);
+  });
 }
 
-  function renderGame(){
-    applyFirstTwoColorsToCSS();
-
-    const rows = el("scoreRows");
-    rows.innerHTML = "";
-    const throwerId = computeThrowerId();
-
-    state.players.forEach((p, idx)=>{
-      const row = document.createElement("div");
-      row.className = "sb-row tap playerDyn";
-      row.style.setProperty("--rowColor", p.color || "#ffffff");
-
-      const serve = document.createElement("div");
-      serve.className = "serveCell";
-      serve.textContent = "▶";
-      serve.classList.toggle("none", p.id !== throwerId);
-
-      const name = document.createElement("div");
-      name.className = "name";
-      const span = document.createElement("span");
-      span.textContent = playerName(p, `Spieler ${idx+1}`);
-      name.appendChild(span);
-
-      const sets = document.createElement("div");
-      sets.className = "num";
-      sets.textContent = String(state.match.sets[p.id] ?? 0);
-
-      const legs = document.createElement("div");
-      legs.className = "num";
-      legs.textContent = String(state.match.legs[p.id] ?? 0);
-
-      row.appendChild(serve);
-      row.appendChild(name);
-      row.appendChild(sets);
-      row.appendChild(legs);
-
-      attachTapAndLongPress(row, ()=>addLeg(p.id), undo);
-      rows.appendChild(row);
-    });
-
-    el("setsPill").textContent = `Sets: First to ${state.firstToSets}`;
-    el("legsPill").textContent = `Legs/Set: First to ${state.legsToWinSet}`;
-  }
-
-  function scoreSummarySets(){
-    return state.players.map(p => `${playerName(p,"")}:${state.match.sets[p.id]||0}`).join(" · ");
-  }
-  function scoreSummaryLegs(){
-    return state.players.map(p => `${playerName(p,"")}:${state.match.legs[p.id]||0}`).join(" · ");
-  }
-
-  function finishMatch(winnerId){
-    state.match.matchOver = true;
-    try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
-    showWinModal(winnerId);
-    renderGame();
-  }
-
-  function awardSet(playerId){
-    state.match.sets[playerId] = (state.match.sets[playerId] || 0) + 1;
-    for(const p of state.players){
-      state.match.legs[p.id] = 0;
-    }
-    logLine(`Set an ${playerName(getPlayerById(playerId), "Spieler")} — Sets: ${scoreSummarySets()}`);
-    sfx.set(); haptic(18);
-
-    state.match.setNo += 1;
-
-    if((state.match.sets[playerId] || 0) >= state.firstToSets){
-      finishMatch(playerId);
-    }
-  }
-
-  function addLeg(playerId){
-    if(state.match.matchOver) return;
-
-    snapshot();
-
-    state.match.legs[playerId] = (state.match.legs[playerId] || 0) + 1;
-    state.match.legsTotal[playerId] = (state.match.legsTotal[playerId] || 0) + 1;
-
-    haptic(12); sfx.tap();
-    logLine(`Leg an ${playerName(getPlayerById(playerId),"Spieler")} — Legs: ${scoreSummaryLegs()}`);
-
-    if((state.match.legs[playerId] || 0) >= state.legsToWinSet){
-      awardSet(playerId);
-    }
-
-    renderGame();
-  }
-
-  function undo(){
-    if(state.match.matchOver) return;
-    const prev = state.match.history.pop();
-    if(!prev) return;
-
-    state.players = prev.players;
-    state.firstToSets = prev.firstToSets;
-    state.legsToWinSet = prev.legsToWinSet;
-    state.firstServerId = prev.firstServerId;
-    state.match = prev.match;
-
-    enforceUniqueColorsAll();
-    applyFirstTwoColorsToCSS();
-    saveSettings();
-
-    haptic(10); sfx.undo();
-    logLine("Rückgängig.");
-    renderGame();
-  }
-
-  function toggleLog(){
-    el("log").classList.toggle("hidden");
-    const vis = !el("log").classList.contains("hidden");
-    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
-    el("toggleLog").setAttribute("aria-expanded", String(vis));
-    haptic(8); sfx.ui();
-  }
-
-  function endAndReturnToSetup(){
-    if(confirm("Spiel beenden und zum Setup zurück?")){
-      show("setup");
-      haptic(10); sfx.ui();
-    }
-  }
-
-  function showWinModal(winnerId){
-    const winner = getPlayerById(winnerId);
-    const modal = el("winModal");
-    const card = modal.querySelector(".modalCard");
-    const winColor = winner?.color || "#d61f26";
-    card.style.setProperty("--winColor", winColor);
-
-    el("winTitle").textContent = `Glückwunsch ${playerName(winner,"Spieler")}!`;
-    el("winScore").textContent = `Ergebnis: ${scoreSummarySets()}`;
-    el("winSub").textContent =
-      `Legs gesamt: ` + state.players.map(p => `${playerName(p,"")}: ${state.match.legsTotal[p.id]||0}`).join(" · ");
-
-    modal.classList.add("show");
-    haptic(40); sfx.win();
-  }
-  function hideWinModal(){ el("winModal").classList.remove("show"); }
-
-  function loadSavedMatch(){
-    try{
-      const raw = localStorage.getItem(MATCH_KEY);
-      if(!raw) return null;
-      return JSON.parse(raw);
-    }catch(_){ return null; }
-  }
-
-  function renderResumeCard(){
-    const saved = loadSavedMatch();
-    const card = el("resumeCard");
-    if(!saved || !saved.match || saved.match.matchOver){
-      card.classList.add("hidden");
-      return;
-    }
-    card.classList.remove("hidden");
-    const dt = new Date(saved.savedAt || Date.now());
-    const names = (saved.players || []).map((p,i)=> (p.name||`Spieler ${i+1}`)).join(" · ");
-    el("resumeMeta").textContent =
-      `${names} — gespeichert: ${dt.toLocaleString()}`;
-  }
-
-  function resumeSavedMatch(){
-    const saved = loadSavedMatch();
-    if(!saved) return;
-
-    state.players = (saved.players || state.players).slice(0, MAX_PLAYERS);
-    state.firstToSets = saved.firstToSets || state.firstToSets;
-    state.legsToWinSet = saved.legsToWinSet || state.legsToWinSet;
-    state.firstServerId = saved.firstServerId || (state.players[0]?.id);
-
-    state.match = saved.match || state.match;
-    state.match.inProgress = true;
-    state.match.matchOver = !!state.match.matchOver;
-
-    enforceUniqueColorsAll();
-    applyFirstTwoColorsToCSS();
-    saveSettings();
-    updateFirstServerSelect();
-
-    show("game");
-    renderGame();
-    toast("▶️ Match fortgesetzt");
-    haptic(14); sfx.ui();
-  }
-
-  function discardSavedMatch(){
-    if(confirm("Gespeichertes Match wirklich verwerfen?")){
-      try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
-      renderResumeCard();
-      toast("🗑️ Gespeichertes Match entfernt");
-      haptic(10); sfx.ui();
-    }
-  }
-
-  // ✅ Button-Bestätigung beim Speichern
-  function saveMatchToStorage(){
-    const btn = el("saveResume");
-    const oldText = btn.textContent;
-
-    btn.disabled = true;
-    btn.textContent = "Speichere …";
-
-    try{
-      const payload = {
-        savedAt: Date.now(),
-        players: state.players,
-        firstToSets: state.firstToSets,
-        legsToWinSet: state.legsToWinSet,
-        firstServerId: state.firstServerId,
-        match: state.match
-      };
-      localStorage.setItem(MATCH_KEY, JSON.stringify(payload));
-
-      btn.textContent = "Gespeichert ✓";
-      toast("✅ Match gespeichert. Sie können später fortsetzen.");
-      haptic(18); sfx.ui();
-      renderResumeCard();
-
-      setTimeout(()=>{
-        btn.disabled = false;
-        btn.textContent = oldText;
-      }, 1100);
-
-    }catch(_){
-      btn.disabled = false;
-      btn.textContent = oldText;
-      toast("❌ Speichern fehlgeschlagen.");
-    }
-  }
-
-  function buildShareText(){
-    const names = state.players.map((p,i)=>playerName(p,`Spieler ${i+1}`));
-    const sets = state.players.map((p,i)=>`${names[i]}: ${state.match.sets[p.id]||0}`).join(" · ");
-    const legsTotal = state.players.map((p,i)=>`${names[i]}: ${state.match.legsTotal[p.id]||0}`).join(" · ");
-    return [
-      "🎯 Dart Set & Leg Counter",
-      "",
-      "📌 Ergebnis (Sets):",
-      sets,
-      "",
-      "📌 Legs gesamt:",
-      legsTotal,
-      "",
-      `⚙️ Matchformat: First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs`,
-      "",
-      `👉 App öffnen: ${APP_URL}`
-    ].join("\n");
-  }
-
-  async function shareResult(){
-    const text = buildShareText();
-    try{
-      if(navigator.share){
-        await navigator.share({ title:"Dart Set & Leg Counter", text, url: APP_URL });
-      }else{
-        await navigator.clipboard.writeText(text);
-        toast("📋 In die Zwischenablage kopiert");
-      }
-    }catch(_){
-      try{
-        await navigator.clipboard.writeText(text);
-        toast("📋 In die Zwischenablage kopiert");
-      }catch(__){
-        alert(text);
-      }
-    }
-  }
-
-  function startMatch(){
-    if(state.players.length < MIN_PLAYERS){
-      alert("Mindestens 2 Spieler erforderlich.");
-      return;
-    }
-    if(state.players.length > MAX_PLAYERS){
-      alert("Maximal 6 Spieler erlaubt.");
-      state.players = state.players.slice(0, MAX_PLAYERS);
-    }
-
-    state.firstToSets  = +el("firstToSets").value;
-    state.legsToWinSet = +el("legsToWinSet").value;
-    state.firstServerId = el("firstServer").value || state.players[0].id;
-
-    state.match.inProgress = true;
-    state.match.matchOver = false;
-    state.match.history = [];
-    initScoresForPlayers();
-    el("log").textContent = "";
-
-    logLine(`Start — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
-    saveSettings();
-
-    haptic(12); sfx.ui();
-    show("game");
-    renderGame();
-  }
-
-  document.addEventListener("DOMContentLoaded", ()=>{
-    document.addEventListener("pointerdown", ()=>ensureAudio(), { once:true, passive:true });
-
-    loadSettings();
-    syncLogos();
-
-    fillOneToSeven(el("firstToSets"), state.firstToSets);
-    fillOneToSeven(el("legsToWinSet"), state.legsToWinSet);
-
-    enforceUniqueColorsAll();
-    applyFirstTwoColorsToCSS();
-
-    renderPlayers();
-    updateFirstServerSelect();
-    el("firstServer").value = state.firstServerId;
-
-    renderSetupHint();
-    renderResumeCard();
-
-    el("addPlayer").addEventListener("click", ()=>{
-      if(state.players.length >= MAX_PLAYERS){
-        toast("Maximal 6 Spieler erlaubt.");
-        return;
-      }
-      const used = usedColors(null);
-      const newColor = firstFreeColor(used);
-      state.players.push({ id: uid(), name: "", color: newColor });
-      enforceUniqueColorsAll();
-      saveSettings();
-      renderPlayers();
-      updateFirstServerSelect();
-      renderSetupHint();
-      haptic(12); sfx.ui();
-    });
-
-    ["firstToSets","legsToWinSet"].forEach(id=>{
-      el(id).addEventListener("change", ()=>{
-        state.firstToSets  = +el("firstToSets").value;
-        state.legsToWinSet = +el("legsToWinSet").value;
-        saveSettings();
-        renderSetupHint();
-        sfx.ui();
-      });
-    });
-
-    el("firstServer").addEventListener("change", ()=>{
-      state.firstServerId = el("firstServer").value;
-      saveSettings();
-      renderSetupHint();
-      sfx.ui();
-    });
-
-    el("quickHelpBtn").addEventListener("click", ()=>{
-      const t = el("helpText");
-      t.style.display = (t.style.display === "none") ? "block" : "none";
-      haptic(8); sfx.ui();
-    });
-
-    el("startBtn").addEventListener("click", startMatch);
-
-    el("toggleLog").addEventListener("click", toggleLog);
-    el("undo").addEventListener("click", undo);
-    el("endToSetup").addEventListener("click", endAndReturnToSetup);
-
-    el("saveResume").addEventListener("click", saveMatchToStorage);
-    el("resumeBtn").addEventListener("click", resumeSavedMatch);
-    el("discardBtn").addEventListener("click", discardSavedMatch);
-
-    el("winRematch").addEventListener("click", ()=>{
-      hideWinModal();
-      state.match.matchOver = false;
-      state.match.history = [];
-      initScoresForPlayers();
-      el("log").textContent = "";
-      logLine(`Revanche — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
-      renderGame();
-      haptic(14); sfx.ui();
-    });
-
-    el("winToSetup").addEventListener("click", ()=>{
-      hideWinModal();
-      state.match.matchOver = false;
-      show("setup");
-      haptic(10); sfx.ui();
-    });
-
-    el("winShare").addEventListener("click", shareResult);
-
-    el("winModal").addEventListener("click", (e)=>{
-      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
-    });
-  });
+function addPlayer(){
+  if(players.length>=maxPlayers)return;
+  players.push({name:"",color:colors[players.length%colors.length],sets:0,legs:0});
+  renderPlayers();
+}
+
+function removePlayer(i){
+  if(players.length<=minPlayers)return;
+  players.splice(i,1);
+  renderPlayers();
+}
+
+document.getElementById("addPlayer").onclick=addPlayer;
+
+for(let i=0;i<2;i++)addPlayer();
+
+/* Sets/Legs */
+const s=document.getElementById("firstToSets");
+const l=document.getElementById("legsToWin");
+for(let i=1;i<=7;i++){
+  s.innerHTML+=`<option>${i}</option>`;
+  l.innerHTML+=`<option>${i}</option>`;
+}
+
+document.getElementById("start").onclick=()=>{
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+};
+
+document.getElementById("back").onclick=()=>{
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("setup").classList.remove("hidden");
+};
+
+document.getElementById("save").onclick=()=>{
+  const btn=document.getElementById("save");
+  btn.textContent="Gespeichert ✓";
+  setTimeout(()=>btn.textContent="Speichern & später fortsetzen",1200);
+};
 </script>
 </body>
 </html>
