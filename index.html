@@ -19,24 +19,12 @@
       --fs-col:   clamp(12px, 3.2vw, 13px);
       --fs-num:   clamp(20px, 5.4vw, 26px);
 
-      /* Dart-Optik Akzente (Spielerfarben, werden dynamisch gesetzt!) */
+      /* Dart-Optik Akzente */
       --pA: #d61f26;
       --pB: #14a44d;
 
       --boardWhite: #f7f8fb;
       --boardBlack: #0b0f14;
-
-      /* Theme-Akzente (NICHT Spielerfarben) */
-      --accentA: #d61f26;  /* Theme-Rot */
-      --accentB: #14a44d;  /* Theme-Grün */
-
-      /* Theme-Flächen / Defaults */
-      --navbarBg: linear-gradient(180deg,
-        color-mix(in srgb, var(--panelA) 90%, transparent),
-        color-mix(in srgb, var(--panelB) 90%, transparent)
-      );
-      --primaryBg: var(--accentA);
-      --primaryText: #fff;
     }
 
     html[data-theme="dark"]{
@@ -55,18 +43,6 @@
       --dartOpacity: .22;
       --themeColor: #090c11;
       --sbHeaderBg: rgba(255,255,255,.10); /* vollflächig, ohne Verlauf */
-
-      /* Theme-Akzente (konsistent) */
-      --accentA: #d61f26;
-      --accentB: #14a44d;
-
-      /* Flächen */
-      --navbarBg: linear-gradient(180deg,
-        color-mix(in srgb, var(--panelA) 90%, transparent),
-        color-mix(in srgb, var(--panelB) 90%, transparent)
-      );
-      --primaryBg: var(--accentA);
-      --primaryText: #fff;
     }
 
     html[data-theme="light"]{
@@ -85,44 +61,6 @@
       --dartOpacity: .12;
       --themeColor: #ffffff;
       --sbHeaderBg: rgba(11,15,20,.08); /* vollflächig, ohne Verlauf */
-
-      --accentA: #d61f26;
-      --accentB: #14a44d;
-
-      --navbarBg: linear-gradient(180deg,
-        color-mix(in srgb, var(--panelA) 90%, transparent),
-        color-mix(in srgb, var(--panelB) 90%, transparent)
-      );
-      --primaryBg: var(--accentA);
-      --primaryText: #fff;
-    }
-
-    /* Neuer Theme: Dart (knallig) */
-    html[data-theme="dart"]{
-      --bg0: #0e7a3a;
-      --bg1: #14a44d;
-      --panelA: rgba(5,7,10,.96);
-      --panelB: rgba(11,15,20,.96);
-      --text: #f7f8fb;
-      --muted: rgba(247,248,251,.82);
-      --line: rgba(247,248,251,.26);
-      --shadow: 0 16px 36px rgba(0,0,0,.55);
-      --inputBg: rgba(0,0,0,.58);
-      --btnBg: rgba(0,0,0,.28);
-      --tapBg: rgba(0,0,0,.18);
-      --tapBgActive: rgba(0,0,0,.28);
-      --dartOpacity: .08;
-      --themeColor: #14a44d;
-      --sbHeaderBg: rgba(0,0,0,.28);
-
-      /* Theme-Akzente fix */
-      --accentA: #d61f26;
-      --accentB: #14a44d;
-
-      /* Knallflächen */
-      --navbarBg: #d61f26;
-      --primaryBg: #d61f26;
-      --primaryText: #ffffff;
     }
 
     *{ box-sizing:border-box; }
@@ -133,8 +71,8 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--accentA) 18%, transparent), transparent 60%),
-        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--accentB) 16%, transparent), transparent 60%),
+        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--pA) 18%, transparent), transparent 60%),
+        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--pB) 16%, transparent), transparent 60%),
         radial-gradient(900px 520px at 50% 110%, color-mix(in srgb, var(--boardBlack) 14%, transparent), transparent 62%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       padding:
@@ -170,7 +108,7 @@
       z-index: 10;
       border-radius: var(--radius);
       border: 1px solid var(--line);
-      background: var(--navbarBg);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panelA) 90%, transparent), color-mix(in srgb, var(--panelB) 90%, transparent));
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       padding: 10px 12px;
@@ -196,8 +134,8 @@
       justify-content:center;
       border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
       background:
-        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accentA) 22%, transparent), transparent 55%),
-        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--accentB) 18%, transparent), transparent 55%),
+        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--pA) 22%, transparent), transparent 55%),
+        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--pB) 18%, transparent), transparent 55%),
         color-mix(in srgb, var(--btnBg) 92%, transparent);
       flex: 0 0 auto;
     }
@@ -259,16 +197,11 @@
       -webkit-tap-highlight-color: transparent;
     }
     button:active{ transform: translateY(1px) scale(.99); }
-
     button.primary{
-      border-color: color-mix(in srgb, var(--primaryBg) 58%, transparent);
-      background: linear-gradient(180deg,
-        color-mix(in srgb, var(--primaryBg) 92%, white 0%),
-        color-mix(in srgb, var(--primaryBg) 70%, black 22%)
-      );
-      color: var(--primaryText);
+      border-color: color-mix(in srgb, var(--pA) 58%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--pA) 92%, white 0%), color-mix(in srgb, var(--pA) 70%, black 22%));
+      color: #fff;
     }
-
     button.ghost{ box-shadow:none; background: var(--btnBg); }
     button.small{
       min-height: 40px;
@@ -420,7 +353,7 @@
     }
     .sb-row:last-child{ border-bottom:none; }
 
-    /* Spielerflächen bleiben dynamisch über --pA/--pB */
+    /* kräftigere Spielerflächen */
     .sb-row.playerA{
       background: linear-gradient(90deg,
         color-mix(in srgb, var(--pA) 52%, transparent),
@@ -725,44 +658,30 @@
 
   function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
-  /* ---------- Theme (3 modes: dart/dark/light) ---------- */
+  /* ---------- Theme ---------- */
   function setTheme(theme){
-    const allowed = ["dart","dark","light"];
-    const t = allowed.includes(theme) ? theme : "dart";
-
+    const t = (theme === "light") ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", t);
-
     const meta = document.querySelector('meta[name="theme-color"]');
-    meta && meta.setAttribute(
-      "content",
-      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() ||
-        (t==="light" ? "#ffffff" : (t==="dart" ? "#14a44d" : "#090c11"))
+    meta && meta.setAttribute("content",
+      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() || (t==="light" ? "#ffffff" : "#090c11")
     );
-
-    let label = "Dart", icon = "🎯";
-    if(t === "dark"){ label = "Dark"; icon = "🌙"; }
-    if(t === "light"){ label = "Light"; icon = "☀️"; }
-
+    const label = (t === "light") ? "Light" : "Dark";
+    const icon  = (t === "light") ? "☀️" : "🌙";
     el("themeLabel").textContent  = label;
     el("themeLabel2").textContent = label;
     el("themeIcon").textContent   = icon;
     el("themeIcon2").textContent  = icon;
-
     try { localStorage.setItem(THEME_KEY, t); } catch(_) {}
   }
-
   function toggleTheme(){
-    const cur = document.documentElement.getAttribute("data-theme") || "dart";
-    const order = ["dart","dark","light"];
-    const idx = order.indexOf(cur);
-    const next = order[(idx + 1 + order.length) % order.length];
-    setTheme(next);
+    const cur = document.documentElement.getAttribute("data-theme") || "dark";
+    setTheme(cur === "dark" ? "light" : "dark");
     haptic(8);
   }
-
   function loadTheme(){
-    try { setTheme(localStorage.getItem(THEME_KEY) || "dart"); }
-    catch(_) { setTheme("dart"); }
+    try { setTheme(localStorage.getItem(THEME_KEY) || "dark"); }
+    catch(_) { setTheme("dark"); }
   }
 
   /* ---------- Persist ---------- */
@@ -785,6 +704,7 @@
       const s = JSON.parse(raw);
 
       if(Array.isArray(s.players) && s.players.length >= 2){
+        // Wichtig: Namen bleiben erlaubt, aber NIE automatisch ins Input "vorausgefüllt", außer es ist wirklich gespeichert.
         state.players = s.players.map((p, i)=>({
           id: (typeof p.id === "string" && p.id) ? p.id : ("p"+(i+1)),
           name: (typeof p.name === "string") ? p.name : "",
@@ -840,6 +760,7 @@
       state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
       state.match.history    = Array.isArray(m.history) ? m.history : [];
 
+      // Format aus Match übernehmen (damit Fortsetzen exakt passt)
       if([5,7,15].includes(+m.bestOfSets)) state.bestOfSets = +m.bestOfSets;
       state.firstToSets = computeFirstTo(state.bestOfSets);
       if([3,5].includes(+m.legsToWinSet)) state.legsToWinSet = +m.legsToWinSet;
@@ -924,9 +845,10 @@
 
       const input = document.createElement("input");
       input.placeholder = `Spieler ${idx+1}`;
+      // WICHTIG: Kein Default-Text im value für neu hinzugefügte Spieler
       input.value = (typeof p.name === "string") ? p.name : "";
       input.addEventListener("input", ()=>{
-        p.name = input.value;
+        p.name = input.value; // kann leer sein
         saveSettings();
         renderPickSelects();
         renderSetupHint();
@@ -936,10 +858,11 @@
       trash.type = "button";
       trash.className = "trashBtn ghost";
       trash.textContent = "🗑️";
-      trash.disabled = (state.players.length <= 2);
+      trash.disabled = (state.players.length <= 2); // min. 2 Spieler behalten
       trash.title = "Spieler entfernen";
       trash.addEventListener("click", ()=>{
         if(state.players.length <= 2) return;
+        // Wenn entfernte Person gerade ausgewählt ist, Picks reparieren
         state.players = state.players.filter(x=>x.id !== p.id);
         openPaletteFor = null;
         dedupeInvalidPicks();
@@ -978,11 +901,11 @@
           sw.classList.toggle("disabled", used.has(hex));
 
           sw.addEventListener("click", ()=>{
-            if(used.has(hex)) return;
+            if(used.has(hex)) return; // Farben nur einmal wählbar
             p.color = c.hex;
             enforceUniqueColorsAll();
             saveSettings();
-            applyActiveColorsToCSS();
+            applyActiveColorsToCSS(); // falls aktiver Pick geändert
             renderPlayers();
             renderPickSelects();
             haptic(10);
@@ -997,6 +920,7 @@
       list.appendChild(row);
     });
 
+    // Klick außerhalb schließt Palette
     document.addEventListener("click", onDocClickClosePalettes, { once: true });
   }
 
@@ -1026,6 +950,7 @@
     build(selA, state.pick.A);
     build(selB, state.pick.B);
 
+    // Falls gleich, reparieren
     if(state.pick.A === state.pick.B){
       const alt = state.players.find(p=>p.id !== state.pick.A);
       if(alt) state.pick.B = alt.id;
@@ -1120,6 +1045,7 @@
     const pLeft  = getPlayerById(state.match.active.A);
     const pRight = getPlayerById(state.match.active.B);
 
+    // Farben fürs Match
     document.documentElement.style.setProperty("--pA", pLeft.color  || "#d61f26");
     document.documentElement.style.setProperty("--pB", pRight.color || "#14a44d");
 
@@ -1211,6 +1137,7 @@
     haptic(8);
   }
 
+  /* iOS-sicher: Tap + Longpress */
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
@@ -1241,7 +1168,10 @@
     targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
+  /* ---------- New match behavior (wichtig für Ihre Anforderung) ---------- */
   function clearSelectedNamesInSetup(){
+    // „Neues Match anlegen“ soll neue Namen erlauben, ohne „alten Namen löschen“.
+    // Daher leeren wir die beiden aktuell ausgewählten Teilnehmer im Setup.
     const a = state.players.find(p=>p.id === state.pick.A);
     const b = state.players.find(p=>p.id === state.pick.B);
     if(a) a.name = "";
@@ -1250,6 +1180,7 @@
   }
 
   function startMatch(){
+    // Setup übernehmen
     state.bestOfSets   = +el("bestOfSets").value;
     state.firstToSets  = computeFirstTo(state.bestOfSets);
     state.legsToWinSet = +el("legsToWinSet").value;
@@ -1257,6 +1188,7 @@
 
     dedupeInvalidPicks();
 
+    // Match init
     state.match.inProgress = true;
     state.match.matchOver = false;
     state.match.active = { A: state.pick.A, B: state.pick.B };
@@ -1284,6 +1216,7 @@
   function showResumeUIIfNeeded(){
     const has = loadMatch();
     if(has){
+      // Text bauen
       const pLeft  = getPlayerById(state.match.active.A);
       const pRight = getPlayerById(state.match.active.B);
       el("resumeMeta").textContent =
@@ -1294,20 +1227,24 @@
     }
   }
 
+  /* ---------- Wiring ---------- */
   document.addEventListener("DOMContentLoaded", ()=>{
     loadTheme();
     loadSettings();
 
+    // Setup selects initial
     el("bestOfSets").value   = String(state.bestOfSets);
     el("legsToWinSet").value = String(state.legsToWinSet);
     el("firstServer").value  = state.firstServer;
 
+    // Setup render
     enforceUniqueColorsAll();
     renderPlayers();
     renderPickSelects();
     applyActiveColorsToCSS();
     renderSetupHint();
 
+    // Resume?
     showResumeUIIfNeeded();
 
     el("themeToggle").addEventListener("click", toggleTheme);
@@ -1320,7 +1257,7 @@
       }
       const used = usedColors(null);
       const newColor = firstFreeColor(used);
-      state.players.push({ id: uid(), name: "", color: newColor });
+      state.players.push({ id: uid(), name: "", color: newColor }); // name leer -> kein „erst löschen“
       enforceUniqueColorsAll();
       saveSettings();
       renderPlayers();
@@ -1349,6 +1286,7 @@
 
     el("startBtn").addEventListener("click", startMatch);
 
+    // iOS-sicheres Scoring
     attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
     attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
 
@@ -1358,13 +1296,16 @@
     el("newMatch").addEventListener("click", ()=>{
       haptic(10);
       if(confirm("Neues Match anlegen? (Match wird verworfen und Setup geöffnet)")){
+        // Match verwerfen
         state.match.inProgress = false;
         state.match.matchOver = false;
         state.match.history = [];
         clearMatchStorage();
 
+        // Wichtig: damit Sie NICHT die alten Namen im neuen Match haben:
         clearSelectedNamesInSetup();
 
+        // Setup neu rendern
         renderPlayers();
         renderPickSelects();
         applyActiveColorsToCSS();
@@ -1373,6 +1314,7 @@
       }
     });
 
+    // Resume-Buttons
     el("resumeBtn").addEventListener("click", ()=>{
       if(!loadMatch()){
         showResumeUIIfNeeded();
