@@ -35,22 +35,19 @@
       --panelA: rgba(10,13,18,.94);
       --panelB: rgba(16,20,27,.94);
       --panelEdge: rgba(255,255,255,.16);
-      --line: rgba(247,248,251,.16);
       --shadow: 0 18px 40px rgba(0,0,0,.45);
 
       --inputBg: rgba(0,0,0,.32);
 
       --btnEdge: rgba(255,255,255,.18);
-
       --tapBg: rgba(255,255,255,.04);
 
-      /* Scoreboard Header: “Board Score Leiste” */
-      --sbHeaderBg: rgba(255,255,255,.92);
+      /* Scoreboard Header */
       --sbHeaderText: rgba(11,15,20,.92);
 
-      /* Pill look */
-      --pillBg: rgba(0,0,0,.22);
-      --pillEdge: rgba(255,255,255,.16);
+      /* Player colors (default) */
+      --pA: #d61f26;
+      --pB: #14a44d;
     }
 
     *{ box-sizing:border-box; }
@@ -78,7 +75,6 @@
       overflow-x: clip;
     }
 
-    /* Hintergrund: Dartboard-Feeling */
     .wrap::before{
       content:"";
       position:absolute;
@@ -100,7 +96,6 @@
 
     .main{ position:relative; z-index:1; flex:1; }
 
-    /* Navbar: kräftig Rot, vollflächig */
     .navbar{
       position: sticky;
       top: max(0px, env(safe-area-inset-top));
@@ -149,12 +144,10 @@
 
     .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
 
-    /* Panels: subtiler Dartboard-Rahmen */
     .card{
       border-radius: var(--radius);
       padding: 14px;
       margin-bottom: 14px;
-
       border: 1px solid var(--panelEdge);
       background:
         radial-gradient(900px 260px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
@@ -166,7 +159,6 @@
       overflow:hidden;
     }
 
-    /* feine Segmentlinien im Panel */
     .card::before{
       content:"";
       position:absolute;
@@ -197,10 +189,9 @@
 
     .meta{ color: var(--muted); font-size: var(--fs-meta); margin-top: 10px; line-height:1.35; }
 
-    /* Buttons: “Dartboard-Button” */
     button{
       appearance:none;
-      border: 1px solid var(--btnEdge);
+      border: 1px solid rgba(255,255,255,.18);
       background:
         radial-gradient(140px 85px at 30% 25%, rgba(255,255,255,.14), transparent 62%),
         linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
@@ -216,11 +207,6 @@
       box-shadow: 0 12px 24px rgba(0,0,0,.18);
       cursor:pointer;
       -webkit-tap-highlight-color: transparent;
-    }
-    button:hover{
-      background:
-        radial-gradient(160px 95px at 30% 25%, rgba(255,255,255,.16), transparent 64%),
-        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
     }
     button:active{ transform: translateY(1px) scale(.99); }
 
@@ -349,7 +335,6 @@
       outline: 3px solid rgba(255,255,255,.42);
       outline-offset: 2px;
     }
-
     .swatch.taken{
       opacity: .95;
       cursor: not-allowed;
@@ -368,7 +353,6 @@
       opacity: .9;
       pointer-events:none;
     }
-
     .swatch .check{
       font-size: 16px;
       line-height: 1;
@@ -382,10 +366,9 @@
     /* ---- Spiel: Scoreboard ---- */
     .scoreboard{ padding: 0; overflow:hidden; }
 
-    /* ✅ Spaltenbreite angepasst: mehr Platz für Namen */
     .sb-header{
       display:grid;
-      grid-template-columns: 86px 1fr 70px 70px; /* Anwurf / Name / Sets / Legs */
+      grid-template-columns: 86px 1fr 70px 70px;
       align-items:center;
       padding: 10px 14px;
       border-bottom: 1px solid rgba(0,0,0,.10);
@@ -393,18 +376,6 @@
         linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
       column-gap: 10px;
       position:relative;
-    }
-    .sb-header::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background:
-        linear-gradient(90deg,
-          rgba(0,0,0,.00) 0%,
-          rgba(0,0,0,.08) 40%,
-          rgba(0,0,0,.00) 100%);
-      opacity:.55;
     }
     .sb-header::after{
       content:"";
@@ -431,7 +402,7 @@
 
     .sb-row{
       display:grid;
-      grid-template-columns: 86px 1fr 70px 70px; /* ✅ */
+      grid-template-columns: 86px 1fr 70px 70px;
       align-items:center;
       padding: 12px 14px;
       border-bottom: 1px solid rgba(255,255,255,.10);
@@ -442,7 +413,6 @@
 
     .tap{ touch-action: manipulation; }
 
-    /* Spielerfarben bleiben wie bisher (per JS setzt --pA/--pB) – etwas kräftiger */
     .sb-row.playerA{
       background:
         radial-gradient(520px 120px at 0% 50%, color-mix(in srgb, var(--pA) 32%, transparent), transparent 70%),
@@ -493,7 +463,6 @@
       letter-spacing: .3px;
     }
 
-    /* Pills */
     .badgeLine{
       display:flex;
       flex-wrap:wrap;
@@ -509,21 +478,11 @@
       gap:8px;
       padding: 8px 11px;
       border-radius: 999px;
-      border: 1px solid var(--pillEdge);
+      border: 1px solid rgba(255,255,255,.16);
       background:
         radial-gradient(120px 50px at 30% 25%, rgba(255,255,255,.10), transparent 60%),
         linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.16));
       font-weight: 950;
-    }
-    .pill::before{
-      content:"";
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.20);
-      border: 1px solid rgba(255,255,255,.18);
-      box-shadow: 0 6px 12px rgba(0,0,0,.18);
-      display:inline-block;
     }
 
     .hint{
@@ -581,21 +540,6 @@
       justify-content:space-between;
       gap:10px;
     }
-    .modalTopLeft{
-      display:flex; gap:10px; align-items:center; min-width:0;
-    }
-    .modalTop .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size: var(--fs-meta);
-      font-weight: 1100;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
-      background: color-mix(in srgb, var(--winColor) 18%, transparent);
-      white-space: nowrap;
-    }
     .shareBtn{
       min-height: 40px;
       padding: 8px 10px;
@@ -637,8 +581,6 @@
       border-bottom: 1px dashed rgba(255,255,255,.18);
     }
     .summaryRow:last-child{ border-bottom:none; }
-    .summaryKey{ color: rgba(255,255,255,.72); font-weight: 950; }
-    .summaryVal{ font-weight: 1200; text-align:right; }
 
     .modalActions{
       display:flex;
@@ -726,19 +668,12 @@
       <div class="card">
         <div class="controls" style="gap:12px; position:relative; z-index:1;">
           <div style="flex:1; min-width: 240px;">
-            <label for="bestOfSets">Best of (Sets)</label>
-            <select id="bestOfSets">
-              <option value="5">Best of 5</option>
-              <option value="7">Best of 7</option>
-              <option value="15">Best of 15</option>
-            </select>
+            <label for="firstToSets">Sets (First to)</label>
+            <select id="firstToSets"></select>
           </div>
           <div style="flex:1; min-width: 240px;">
-            <label for="legsToWinSet">Legs pro Set</label>
-            <select id="legsToWinSet">
-              <option value="3">First to 3 Legs</option>
-              <option value="5">First to 5 Legs</option>
-            </select>
+            <label for="legsToWinSet">Legs (First to)</label>
+            <select id="legsToWinSet"></select>
           </div>
         </div>
 
@@ -802,13 +737,13 @@
 
         <div style="padding:12px 14px; position:relative; z-index:1;">
           <div class="badgeLine">
-            <span class="pill" id="matchPill"></span>
+            <span class="pill" id="setsPill"></span>
             <span class="pill" id="legsPill"></span>
           </div>
 
           <div class="controls" style="margin-top:12px;">
             <button class="ghost" id="undo" type="button">Rückgängig</button>
-            <button class="ghost" id="toSetup" type="button">Zum Setup</button>
+            <button class="primary" id="saveResume" type="button">Speichern &amp; später fortsetzen</button>
             <span class="spacer"></span>
             <button class="ghost small" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
           </div>
@@ -826,8 +761,8 @@
       <img class="footerImg" id="footerImg" alt="Dart Gimmick"
            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='108' viewBox='0 0 168 108'%3E%3Crect width='168' height='108' rx='22' fill='%230b0f14'/%3E%3Ccircle cx='130' cy='38' r='44' fill='%23ffffff' fill-opacity='.07'/%3E%3Cpath d='M22 78 L82 18 L92 28 L32 88 Z' fill='%23ffffff' fill-opacity='.12'/%3E%3Cpath d='M82 18 L118 8 L124 14 L92 28 Z' fill='%23d61f26' fill-opacity='.42'/%3E%3Cpath d='M32 88 L92 28 L102 38 L42 98 Z' fill='%2314a44d' fill-opacity='.38'/%3E%3C/svg%3E" />
       <div class="footerText">
-        <strong>Diese App wird dir bereitgestellt von Niki (den aber jeder Leiter nur Niko nennt)</strong><br>
-        Viel Spaß beim Darten!
+        <strong>Der Counter wird dir bereitgestellt von Nici (den aber jeder leider nur Nico nennt)</strong><br><br>
+        Viel Spaß beim Spielen und auf das ein oder andere Spaßgetränk! 🍻
       </div>
     </div>
   </footer>
@@ -838,10 +773,7 @@
 <div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
   <div class="modalCard" style="--winColor: var(--pA);">
     <div class="modalTop">
-      <div class="modalTopLeft">
-        <span class="tag" id="winTag">🏆 Match beendet</span>
-        <span style="font-weight:1000; color: rgba(255,255,255,.82); font-size: var(--fs-meta);" id="winScore">—</span>
-      </div>
+      <span class="tag" id="winTag">🏆 Match beendet</span>
       <button class="shareBtn ghost" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
     </div>
     <div class="modalBody">
@@ -859,25 +791,27 @@
 </div>
 
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v17";
-  const MATCH_KEY    = "dart_counter_match_v17";
+  const SETTINGS_KEY = "dart_counter_settings_v19";
+  const MATCH_KEY    = "dart_counter_match_v19";
 
+  const APP_URL = "https://nicoloehle.github.io/dart-counter/";
+
+  /* Farben sortiert (Dart-Style -> warm/knallig -> dunkler) */
   const COLOR_OPTIONS = [
-    { key: "red",    name: "Rot",     hex: "#d61f26" },
-    { key: "green",  name: "Grün",    hex: "#14a44d" },
-    { key: "black",  name: "Schwarz", hex: "#0b0f14" },
-    { key: "white",  name: "Weiß",    hex: "#f7f8fb" },
-    { key: "blue",   name: "Blau",    hex: "#2f6bff" },
-    { key: "yellow", name: "Gelb",    hex: "#f2c230" },
-    { key: "pink",   name: "Pink",    hex: "#ff3ea5" },
-    { key: "orange", name: "Orange",  hex: "#f97316" },
-    { key: "gray",   name: "Grau",    hex: "#9ca3af" }
+    { key: "red",      name: "Rot",        hex: "#d61f26" },
+    { key: "green",    name: "Grün",       hex: "#14a44d" },
+    { key: "yellow",   name: "Gelb",       hex: "#f2c230" },
+    { key: "orange",   name: "Orange",     hex: "#f97316" },
+    { key: "pink",     name: "Pink",       hex: "#ff3ea5" },
+    { key: "violet",   name: "Violett",    hex: "#7c3aed" },
+    { key: "blue",     name: "Blau",       hex: "#2f6bff" },
+    { key: "darkblue", name: "Dunkelblau", hex: "#1e3a8a" },
+    { key: "brown",    name: "Braun",      hex: "#7a4a2e" }
   ];
 
   const el = (id) => document.getElementById(id);
   const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
   const other = (p) => (p === "A" ? "B" : "A");
-  const computeFirstTo = (bestOf) => Math.floor(bestOf / 2) + 1;
 
   function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
@@ -913,7 +847,6 @@
       { id: "p1", name: "", color: "#d61f26" },
       { id: "p2", name: "", color: "#14a44d" }
     ],
-    bestOfSets: 5,
     firstToSets: 3,
     legsToWinSet: 3,
     firstServer: "A",
@@ -971,7 +904,7 @@
     try{
       localStorage.setItem(SETTINGS_KEY, JSON.stringify({
         players: state.players,
-        bestOfSets: state.bestOfSets,
+        firstToSets: state.firstToSets,
         legsToWinSet: state.legsToWinSet,
         firstServer: state.firstServer,
         logoSrc: el("topLogo")?.getAttribute("src") || "",
@@ -992,10 +925,9 @@
           color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
         }));
       }
-      state.bestOfSets   = [5,7,15].includes(+s.bestOfSets) ? +s.bestOfSets : state.bestOfSets;
-      state.legsToWinSet = [3,5].includes(+s.legsToWinSet) ? +s.legsToWinSet : state.legsToWinSet;
+      state.firstToSets  = Number.isFinite(+s.firstToSets) ? Math.min(7, Math.max(1, +s.firstToSets)) : state.firstToSets;
+      state.legsToWinSet = Number.isFinite(+s.legsToWinSet) ? Math.min(7, Math.max(1, +s.legsToWinSet)) : state.legsToWinSet;
       state.firstServer  = (s.firstServer === "B") ? "B" : "A";
-      state.firstToSets = computeFirstTo(state.bestOfSets);
 
       if(typeof s.logoSrc === "string" && s.logoSrc) el("topLogo").setAttribute("src", s.logoSrc);
       if(typeof s.footerSrc === "string" && s.footerSrc) el("footerImg").setAttribute("src", s.footerSrc);
@@ -1014,7 +946,6 @@
         legs: state.match.legs,
         legsTotal: state.match.legsTotal,
         history: state.match.history,
-        bestOfSets: state.bestOfSets,
         firstToSets: state.firstToSets,
         legsToWinSet: state.legsToWinSet,
         firstServer: state.firstServer
@@ -1035,10 +966,9 @@
       state.match.legsTotal  = m.legsTotal || state.match.legsTotal;
       state.match.history    = Array.isArray(m.history) ? m.history : [];
 
-      if([5,7,15].includes(+m.bestOfSets)) state.bestOfSets = +m.bestOfSets;
-      state.firstToSets = computeFirstTo(state.bestOfSets);
-      if([3,5].includes(+m.legsToWinSet)) state.legsToWinSet = +m.legsToWinSet;
-      state.firstServer = (m.firstServer === "B") ? "B" : "A";
+      state.firstToSets  = Number.isFinite(+m.firstToSets) ? Math.min(7, Math.max(1, +m.firstToSets)) : state.firstToSets;
+      state.legsToWinSet = Number.isFinite(+m.legsToWinSet) ? Math.min(7, Math.max(1, +m.legsToWinSet)) : state.legsToWinSet;
+      state.firstServer  = (m.firstServer === "B") ? "B" : "A";
 
       return (state.match.inProgress && !state.match.matchOver);
     }catch(_){ return false; }
@@ -1156,13 +1086,23 @@
     }
   }, { passive: true });
 
+  function fillOneToSeven(selectEl, defaultVal){
+    selectEl.innerHTML = "";
+    for(let i=1;i<=7;i++){
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = String(i);
+      if(i === defaultVal) opt.selected = true;
+      selectEl.appendChild(opt);
+    }
+  }
+
   function renderSetupHint(){
-    const bestOf = +el("bestOfSets").value;
-    const firstTo = computeFirstTo(bestOf);
-    const legsToWin = +el("legsToWinSet").value;
+    const sets = +el("firstToSets").value;
+    const legs = +el("legsToWinSet").value;
     const starter = el("firstServer").value === "B" ? "Spieler 2" : "Spieler 1";
     el("formatHint").textContent =
-      `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: ${starter}`;
+      `Match: First to ${sets} Sets · Set: First to ${legs} Legs · Anwurf Start: ${starter}`;
   }
 
   function show(screen){
@@ -1201,7 +1141,7 @@
     el("legsA").textContent = state.match.legs.A;
     el("legsB").textContent = state.match.legs.B;
 
-    el("matchPill").textContent = `Best of ${state.bestOfSets} (First to ${state.firstToSets})`;
+    el("setsPill").textContent = `Sets: First to ${state.firstToSets}`;
     el("legsPill").textContent  = `Legs/Set: First to ${state.legsToWinSet}`;
 
     const thrower = computeThrower();
@@ -1218,13 +1158,34 @@
       sets: state.match.sets,
       legs: state.match.legs,
       legsTotal: state.match.legsTotal,
-      bestOfSets: state.bestOfSets,
       firstToSets: state.firstToSets,
       legsToWinSet: state.legsToWinSet,
       firstServer: state.firstServer
     })));
     if(state.match.history.length > 80) state.match.history.shift();
     saveMatch();
+  }
+
+  function formatShareText(){
+    const p1 = getP1(), p2 = getP2();
+    const n1 = playerName(p1,"Spieler 1");
+    const n2 = playerName(p2,"Spieler 2");
+
+    const setsLine = `🏆 Sets: ${n1} ${state.match.sets.A} — ${state.match.sets.B} ${n2}`;
+    const legsLine = `🎯 Legs (gesamt): ${n1} ${state.match.legsTotal.A} — ${state.match.legsTotal.B} ${n2}`;
+    const formatLine = `⚙️ Format: First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs`;
+    const promoLine = `✨ Counter ausprobieren: ${APP_URL}`;
+
+    return [
+      "🎯 Dart Set & Leg Counter",
+      "",
+      setsLine,
+      legsLine,
+      formatLine,
+      "",
+      "🍻 Viel Spaß beim Spielen!",
+      promoLine
+    ].join("\n");
   }
 
   function showWinModal(winner){
@@ -1241,14 +1202,14 @@
 
     el("winTitle").textContent = `Glückwunsch ${winnerName}!`;
     el("winSub").textContent = "Sie haben das Match gewonnen.";
-    el("winScore").textContent = `${state.match.sets.A}-${state.match.sets.B} Sets`;
 
     const n1 = playerName(p1, "Spieler 1");
     const n2 = playerName(p2, "Spieler 2");
     el("winSummary").innerHTML = `
-      <div class="summaryRow"><div class="summaryKey">Ergebnis (Sets)</div><div class="summaryVal">${n1}: ${state.match.sets.A} · ${n2}: ${state.match.sets.B}</div></div>
-      <div class="summaryRow"><div class="summaryKey">Legs (gesamt)</div><div class="summaryVal">${n1}: ${state.match.legsTotal.A} · ${n2}: ${state.match.legsTotal.B}</div></div>
-      <div class="summaryRow"><div class="summaryKey">Format</div><div class="summaryVal">Best of ${state.bestOfSets} · Legs/Set ${state.legsToWinSet}</div></div>
+      <div class="summaryRow"><div>Ergebnis (Sets)</div><div>${n1}: ${state.match.sets.A} · ${n2}: ${state.match.sets.B}</div></div>
+      <div class="summaryRow"><div>Legs (gesamt)</div><div>${n1}: ${state.match.legsTotal.A} · ${n2}: ${state.match.legsTotal.B}</div></div>
+      <div class="summaryRow"><div>Format</div><div>First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs</div></div>
+      <div class="summaryRow"><div>App</div><div><span style="opacity:.95;">${APP_URL}</span></div></div>
     `;
 
     modal.classList.add("show");
@@ -1307,12 +1268,11 @@
     state.match.legs       = prev.legs;
     state.match.legsTotal  = prev.legsTotal;
 
-    state.bestOfSets   = prev.bestOfSets;
     state.firstToSets  = prev.firstToSets;
     state.legsToWinSet = prev.legsToWinSet;
     state.firstServer  = prev.firstServer;
 
-    el("bestOfSets").value   = String(state.bestOfSets);
+    el("firstToSets").value  = String(state.firstToSets);
     el("legsToWinSet").value = String(state.legsToWinSet);
     el("firstServer").value  = state.firstServer;
 
@@ -1365,18 +1325,10 @@
   }
 
   async function shareResult(){
-    const p1 = getP1(), p2 = getP2();
-    const n1 = playerName(p1,"Spieler 1");
-    const n2 = playerName(p2,"Spieler 2");
-    const text =
-      `🎯 Dart Set & Leg Counter\n` +
-      `Ergebnis: ${n1} ${state.match.sets.A}-${state.match.sets.B} ${n2} (Sets)\n` +
-      `Legs gesamt: ${n1} ${state.match.legsTotal.A}-${state.match.legsTotal.B} ${n2}\n` +
-      `Format: Best of ${state.bestOfSets} · Legs/Set ${state.legsToWinSet}`;
-
+    const text = formatShareText();
     try{
       if(navigator.share){
-        await navigator.share({ title: "Dart Ergebnis", text });
+        await navigator.share({ title: "Dart Ergebnis", text, url: APP_URL });
       }else if(navigator.clipboard && navigator.clipboard.writeText){
         await navigator.clipboard.writeText(text);
         alert("Ergebnis kopiert – Sie können es jetzt z.B. in WhatsApp einfügen.");
@@ -1401,8 +1353,7 @@
   }
 
   function startMatch(){
-    state.bestOfSets   = +el("bestOfSets").value;
-    state.firstToSets  = computeFirstTo(state.bestOfSets);
+    state.firstToSets  = +el("firstToSets").value;
     state.legsToWinSet = +el("legsToWinSet").value;
     state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
 
@@ -1415,7 +1366,7 @@
     el("log").textContent = "";
 
     const p1 = getP1(), p2 = getP2();
-    logLine(`Start: ${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} — Best of ${state.bestOfSets} — Legs/Set: ${state.legsToWinSet} — Anwurf: ${(state.firstServer==="A") ? "Spieler 1" : "Spieler 2"}`);
+    logLine(`Start: ${playerName(p1,"Spieler 1")} vs ${playerName(p2,"Spieler 2")} — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs — Anwurf: ${(state.firstServer==="A") ? "Spieler 1" : "Spieler 2"}`);
 
     el("log").classList.add("hidden");
     el("toggleLog").textContent = "Verlauf anzeigen";
@@ -1428,6 +1379,14 @@
     show("game");
   }
 
+  function saveAndReturnToSetup(){
+    saveSettings();
+    saveMatch();
+    showResumeUIIfNeeded();
+    show("setup");
+    haptic(10); sfx.ui();
+  }
+
   document.addEventListener("DOMContentLoaded", ()=>{
     document.addEventListener("pointerdown", ()=>ensureAudio(), { once:true, passive:true });
 
@@ -1435,10 +1394,10 @@
     loadSettings();
     syncLogos();
 
-    el("bestOfSets").value   = String(state.bestOfSets);
-    el("legsToWinSet").value = String(state.legsToWinSet);
+    fillOneToSeven(el("firstToSets"), state.firstToSets);
+    fillOneToSeven(el("legsToWinSet"), state.legsToWinSet);
+
     el("firstServer").value  = state.firstServer;
-    state.firstToSets = computeFirstTo(state.bestOfSets);
 
     enforceUniqueColorsAll();
     applyP1P2ColorsToCSS();
@@ -1460,14 +1419,11 @@
       haptic(12); sfx.ui();
     });
 
-    ["bestOfSets","legsToWinSet","firstServer"].forEach(id=>{
+    ["firstToSets","legsToWinSet","firstServer"].forEach(id=>{
       el(id).addEventListener("change", ()=>{
-        if(id === "bestOfSets"){
-          state.bestOfSets = +el("bestOfSets").value;
-          state.firstToSets = computeFirstTo(state.bestOfSets);
-        }
-        if(id === "legsToWinSet") state.legsToWinSet = +el("legsToWinSet").value;
-        if(id === "firstServer") state.firstServer = el("firstServer").value === "B" ? "B" : "A";
+        state.firstToSets  = +el("firstToSets").value;
+        state.legsToWinSet = +el("legsToWinSet").value;
+        state.firstServer  = (el("firstServer").value === "B") ? "B" : "A";
         saveSettings();
         renderSetupHint();
         sfx.ui();
@@ -1488,12 +1444,7 @@
     el("undo").addEventListener("click", undo);
     el("toggleLog").addEventListener("click", toggleLog);
 
-    el("toSetup").addEventListener("click", ()=>{
-      saveMatch();
-      showResumeUIIfNeeded();
-      show("setup");
-      haptic(8); sfx.ui();
-    });
+    el("saveResume").addEventListener("click", saveAndReturnToSetup);
 
     el("resumeBtn").addEventListener("click", ()=>{
       if(!loadMatch()){ showResumeUIIfNeeded(); return; }
