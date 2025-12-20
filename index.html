@@ -22,7 +22,7 @@
       --dartRed:   #b8161c;
       --dartRedHi: #ff3a41;
       --dartGreen: #0f7a2b;
-      --dartGreenHi:#1ad35f;
+
       --dartBlack: #0b0f14;
       --dartWhite: #f7f8fb;
 
@@ -36,8 +36,6 @@
       --shadow: 0 18px 40px rgba(0,0,0,.45);
 
       --inputBg: rgba(0,0,0,.32);
-
-      --sbHeaderText: rgba(11,15,20,.92);
 
       --pA: #d61f26;
       --pB: #14a44d;
@@ -135,8 +133,6 @@
       word-break: break-word;
     }
 
-    .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
-
     .card{
       border-radius: var(--radius);
       padding: 14px;
@@ -151,6 +147,9 @@
       position:relative;
       overflow:hidden;
     }
+
+    /* FIX: Setup-Anwurf soll nicht "frei" auf grün liegen */
+    .card.compact{ padding: 12px 14px; }
 
     label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 
@@ -340,8 +339,7 @@
       align-items:center;
       padding: 10px 14px;
       border-bottom: 1px solid rgba(0,0,0,.10);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      background: rgba(255,255,255,.92);
       column-gap: 10px;
       position:relative;
     }
@@ -350,13 +348,12 @@
       position:absolute;
       left:0; right:0; bottom:0;
       height: 3px;
-      background:
-        linear-gradient(90deg, var(--dartRed) 0 50%, var(--dartGreenHi) 50% 100%);
+      background: linear-gradient(90deg, var(--dartRed) 0 50%, #1ad35f 50% 100%);
       opacity:.95;
     }
     .sb-header .col, .sb-header .left{
       font-size: var(--fs-col);
-      color: var(--sbHeaderText);
+      color: rgba(11,15,20,.92);
       font-weight: 1200;
       letter-spacing: .28px;
       text-transform: uppercase;
@@ -369,11 +366,11 @@
     .sb-row{
       display:grid;
       grid-template-columns: 86px 1fr 70px 70px;
-      align-items:center;
-      padding: 12px 14px;
+      align-items:stretch;
+      padding: 0;
       border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
       column-gap: 10px;
+      background: rgba(255,255,255,.03);
     }
     .sb-row:last-child{ border-bottom:none; }
 
@@ -394,19 +391,23 @@
       justify-content:center;
       font-size: 18px;
       font-weight: 1200;
-      opacity: .95;
       color: rgba(255,255,255,.96);
+      background: rgba(0,0,0,.38);
+      border-right: 1px solid rgba(255,255,255,.10);
+      padding: 12px 0;
+      min-height: 64px;
     }
     .serveCell.none{ opacity: 0; }
 
     .name{
       display:flex;
       align-items:center;
-      min-height: 44px;
+      min-height: 64px;
       font-size: var(--fs-name);
       font-weight: 1200;
       letter-spacing: .2px;
       min-width: 0;
+      padding: 12px 0;
     }
     .name span{
       white-space: nowrap;
@@ -415,10 +416,14 @@
     }
 
     .num{
-      text-align:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       font-size: var(--fs-num);
       font-weight: 1200;
       letter-spacing: .3px;
+      padding: 12px 0;
+      min-height: 64px;
     }
 
     .badgeLine{
@@ -462,6 +467,76 @@
       margin-top: 10px;
     }
 
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+    .modalOverlay.show{ display:flex; }
+
+    .modalCard{
+      width: min(560px, 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+    }
+    .modalTop{
+      padding: 14px 16px;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--winColor) 28%, transparent),
+        color-mix(in srgb, var(--winColor) 10%, transparent)
+      );
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalTop .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 1100;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
+      background: color-mix(in srgb, var(--winColor) 18%, transparent);
+    }
+    .modalBody{ padding: 18px 16px 16px; }
+    .modalTitle{
+      font-size: clamp(22px, 6vw, 34px);
+      font-weight: 1200;
+      line-height: 1.1;
+      margin: 0 0 10px;
+    }
+    .modalSub{
+      font-size: var(--fs-body);
+      color: var(--muted);
+      margin: 0 0 14px;
+    }
+    .modalActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .shareBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      font-size: var(--fs-meta);
+      border-radius: 999px;
+      box-shadow:none;
+    }
+
     .footer{
       position:relative;
       z-index:1;
@@ -495,6 +570,29 @@
     }
     .footerText{ min-width: 0; line-height: 1.25; }
     .footerText strong{ color: rgba(255,255,255,.98); }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.70);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-size: var(--fs-meta);
+      z-index: 1000;
+      display:none;
+      max-width: min(520px, calc(100vw - 24px));
+      text-align:center;
+    }
+    .toast.show{ display:block; }
+
+    @media (max-width: 420px){
+      .sb-header{ grid-template-columns: 76px 1fr 60px 60px; }
+      .sb-row{ grid-template-columns: 76px 1fr 60px 60px; }
+    }
   </style>
 </head>
 
@@ -502,7 +600,6 @@
 <div class="wrap">
   <div class="main">
 
-    <!-- SETUP -->
     <div id="screenSetup">
       <div class="navbar">
         <div class="brand">
@@ -535,7 +632,7 @@
 
       <div class="card">
         <div class="controls" style="gap:12px; position:relative; z-index:1;">
-          <divrow = "flex:1; min-width: 240px;">
+          <div style="flex:1; min-width: 240px;">
             <label for="firstToSets">Sets (First to)</label>
             <select id="firstToSets"></select>
           </div>
@@ -544,31 +641,29 @@
             <select id="legsToWinSet"></select>
           </div>
         </div>
+      </div>
 
-        <div class="controls" style="gap:12px; margin-top:12px; position:relative; z-index:1;">
-          <div style="flex:1; min-width: 240px;">
-            <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
-            <select id="firstServer"></select>
+      <!-- FIX: Anwurf in eigener Card, nicht frei auf grün -->
+      <div class="card compact">
+        <div style="position:relative; z-index:1;">
+          <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
+          <select id="firstServer"></select>
+
+          <div class="meta" id="formatHint"></div>
+
+          <div class="controls" style="margin-top:14px;">
+            <button class="primary" id="startBtn" type="button">Spiel starten</button>
+            <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
           </div>
-          <div style="flex:1; min-width: 240px;">
-            <label>&nbsp;</label>
-            <div class="meta" id="formatHint" style="margin-top:0;"></div>
+
+          <div class="meta" id="helpText" style="display:none;">
+            Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck = Rückgängig.<br>
+            Der ▶-Pfeil zeigt den Anwurf fürs nächste Leg.
           </div>
-        </div>
-
-        <div class="controls" style="margin-top:14px; position:relative; z-index:1;">
-          <button class="primary" id="startBtn" type="button">Spiel starten</button>
-          <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
-        </div>
-
-        <div class="meta" id="helpText" style="display:none; position:relative; z-index:1;">
-          Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Rückgängig.<br>
-          Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
         </div>
       </div>
     </div>
 
-    <!-- GAME -->
     <div id="screenGame" class="hidden">
       <div class="navbar">
         <div class="brand">
@@ -625,10 +720,31 @@
 
 </div>
 
+<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
+  <div class="modalCard" style="--winColor: var(--pA);">
+    <div class="modalTop">
+      <span class="tag" id="winTag">🏆 Match beendet</span>
+      <span style="font-weight:1100; color: rgba(255,255,255,.82); font-size: var(--fs-meta);" id="winScore">—</span>
+    </div>
+    <div class="modalBody">
+      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
+      <p class="modalSub" id="winSub">—</p>
+
+      <div class="modalActions">
+        <button class="primary" id="winRematch" type="button">Revanche</button>
+        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
+        <button class="ghost shareBtn" id="winShare" type="button" title="Teilen">📤 Teilen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v21";
-  const MATCH_KEY    = "dart_counter_match_v21";
-  const APP_URL = "https://nicoloehle.github.io/dart-counter/";
+  const SETTINGS_KEY = "dart_counter_settings_v23";
+  const MATCH_KEY    = "dart_counter_match_v23";
+  const APP_URL      = "https://nicoloehle.github.io/dart-counter/";
 
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 6;
@@ -650,7 +766,6 @@
 
   function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
-  /* Sounds */
   let audioCtx = null;
   function ensureAudio(){
     if(audioCtx) return;
@@ -673,8 +788,16 @@
     tap(){ beep(520, 40, "sine", 0.045); },
     undo(){ beep(260, 60, "triangle", 0.05); },
     set(){ beep(740, 70, "square", 0.04); },
-    ui(){  beep(420, 35, "sine", 0.035); }
+    ui(){  beep(420, 35, "sine", 0.035); },
+    win(){ beep(880, 110, "triangle", 0.05); }
   };
+
+  function toast(msg){
+    const t = el("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 1600);
+  }
 
   const state = {
     players: [
@@ -684,7 +807,16 @@
     firstToSets: 3,
     legsToWinSet: 3,
     firstServerId: "p1",
-    match: { inProgress:false, matchOver:false, sets:{}, legs:{}, legsTotal:{}, history:[], setNo:1 }
+
+    match: {
+      inProgress:false,
+      matchOver:false,
+      sets:{},
+      legs:{},
+      legsTotal:{},
+      history:[],
+      setNo:1
+    }
   };
 
   function playerName(p, fallback){ const n=(p?.name||"").trim(); return n ? n : fallback; }
@@ -737,6 +869,7 @@
       }));
     }catch(_){}
   }
+
   function loadSettings(){
     try{
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -749,7 +882,6 @@
           name: (typeof p.name === "string") ? p.name : "",
           color: (typeof p.color === "string" && p.color) ? p.color : COLOR_OPTIONS[i % COLOR_OPTIONS.length].hex
         }));
-        // Sicherstellen: mind. 2
         while(state.players.length < MIN_PLAYERS){
           state.players.push({ id: uid(), name: "", color: firstFreeColor(usedColors(null)) });
         }
@@ -816,9 +948,9 @@
     openPaletteFor = null;
     renderPlayers();
     updateFirstServerSelect();
+    renderResumeCard();
   }
 
-  /* ---------- Setup UI ---------- */
   let openPaletteFor = null;
 
   function updatePlayerCountUI(){
@@ -855,16 +987,37 @@
       });
 
       const input = document.createElement("input");
+      input.type = "text";
       input.placeholder = `Spieler ${idx+1}`;
       input.value = (typeof p.name === "string") ? p.name : "";
+
+      // ✅ Done/Fertig auf Handy + Enter schließt Feld
+      input.setAttribute("enterkeyhint", "done");
+      input.setAttribute("inputmode", "text");
+      input.setAttribute("autocomplete", "name");
+      input.setAttribute("autocapitalize", "words");
+      input.setAttribute("autocorrect", "off");
+      input.setAttribute("spellcheck", "false");
+
+      input.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){
+          e.preventDefault();
+          input.blur();
+        }
+      });
+
       input.addEventListener("input", ()=>{
+        p.name = input.value;
+        saveSettings();
+        updateFirstServerSelect();
+      });
+      input.addEventListener("blur", ()=>{
         p.name = input.value;
         saveSettings();
         updateFirstServerSelect();
       });
 
       let rightEl = document.createElement("div");
-      // ✅ Löschen nur, wenn > MIN_PLAYERS und Spielerindex >= 2
       if(state.players.length > MIN_PLAYERS && idx >= MIN_PLAYERS){
         const trash = document.createElement("button");
         trash.type = "button";
@@ -950,7 +1103,6 @@
     }
   }, { passive: true });
 
-  /* ---------- Game rendering/logic (kurz gehalten) ---------- */
   function initScoresForPlayers(){
     state.match.sets = {};
     state.match.legs = {};
@@ -963,6 +1115,23 @@
     state.match.setNo = 1;
   }
 
+  function snapshot(){
+    state.match.history.push(JSON.parse(JSON.stringify({
+      players: state.players,
+      firstToSets: state.firstToSets,
+      legsToWinSet: state.legsToWinSet,
+      firstServerId: state.firstServerId,
+      match: state.match
+    })));
+    if(state.match.history.length > 80) state.match.history.shift();
+  }
+
+  function logLine(t){
+    const prev = el("log").textContent || "";
+    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
+    el("log").textContent = t + sep + prev;
+  }
+
   function currentLegNumberWithinSet(){
     return Object.values(state.match.legs).reduce((a,b)=>a+(+b||0), 0) + 1;
   }
@@ -970,7 +1139,7 @@
   function computeThrowerId(){
     const n = state.players.length;
     const startIdx = Math.max(0, state.players.findIndex(p=>p.id === state.firstServerId));
-    const setStarterIdx = (startIdx + (state.match.setNo - 1) % n) % n;
+    const setStarterIdx = (startIdx + ((state.match.setNo - 1) % n)) % n;
     const legOffset = (currentLegNumberWithinSet() - 1) % n;
     return state.players[(setStarterIdx + legOffset) % n]?.id || state.players[0]?.id || null;
   }
@@ -978,22 +1147,28 @@
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
-    let didLong = false;
+    let longDone = false;
 
     const clear = () => { if(timer) clearTimeout(timer); timer = null; };
-
-    targetEl.addEventListener("pointerdown", () => {
-      didLong = false; clear();
-      timer = setTimeout(() => { didLong = true; onLongPress(); }, LONG);
-    }, { passive: true });
-
-    targetEl.addEventListener("pointerup", () => {
-      if(!didLong) onTap();
+    const start = () => {
+      longDone = false;
       clear();
-    });
+      timer = setTimeout(() => { longDone = true; onLongPress(); }, LONG);
+    };
+    const end = () => {
+      clear();
+      if(!longDone) onTap();
+    };
 
+    targetEl.addEventListener("pointerdown", start, { passive:true });
+    targetEl.addEventListener("pointerup", end);
     targetEl.addEventListener("pointercancel", clear);
     targetEl.addEventListener("pointerleave", clear);
+
+    targetEl.addEventListener("touchstart", start, { passive:true });
+    targetEl.addEventListener("touchend", end);
+    targetEl.addEventListener("touchcancel", clear);
+
     targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
   }
 
@@ -1041,14 +1216,235 @@
     el("legsPill").textContent = `Legs/Set: First to ${state.legsToWinSet}`;
   }
 
-  function logLine(t){
-    const prev = el("log").textContent || "";
-    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
-    el("log").textContent = t + sep + prev;
+  function scoreSummarySets(){
+    return state.players.map(p => `${playerName(p,"")}:${state.match.sets[p.id]||0}`).join(" · ");
+  }
+  function scoreSummaryLegs(){
+    return state.players.map(p => `${playerName(p,"")}:${state.match.legs[p.id]||0}`).join(" · ");
+  }
+
+  function finishMatch(winnerId){
+    state.match.matchOver = true;
+    try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
+    showWinModal(winnerId);
+    renderGame();
+  }
+
+  function awardSet(playerId){
+    state.match.sets[playerId] = (state.match.sets[playerId] || 0) + 1;
+    for(const p of state.players){
+      state.match.legs[p.id] = 0;
+    }
+    logLine(`Set an ${playerName(getPlayerById(playerId), "Spieler")} — Sets: ${scoreSummarySets()}`);
+    sfx.set(); haptic(18);
+
+    state.match.setNo += 1;
+
+    if((state.match.sets[playerId] || 0) >= state.firstToSets){
+      finishMatch(playerId);
+    }
+  }
+
+  function addLeg(playerId){
+    if(state.match.matchOver) return;
+
+    snapshot();
+
+    state.match.legs[playerId] = (state.match.legs[playerId] || 0) + 1;
+    state.match.legsTotal[playerId] = (state.match.legsTotal[playerId] || 0) + 1;
+
+    haptic(12); sfx.tap();
+    logLine(`Leg an ${playerName(getPlayerById(playerId),"Spieler")} — Legs: ${scoreSummaryLegs()}`);
+
+    if((state.match.legs[playerId] || 0) >= state.legsToWinSet){
+      awardSet(playerId);
+    }
+
+    renderGame();
+  }
+
+  function undo(){
+    if(state.match.matchOver) return;
+    const prev = state.match.history.pop();
+    if(!prev) return;
+
+    state.players = prev.players;
+    state.firstToSets = prev.firstToSets;
+    state.legsToWinSet = prev.legsToWinSet;
+    state.firstServerId = prev.firstServerId;
+    state.match = prev.match;
+
+    enforceUniqueColorsAll();
+    applyFirstTwoColorsToCSS();
+    saveSettings();
+
+    haptic(10); sfx.undo();
+    logLine("Rückgängig.");
+    renderGame();
+  }
+
+  function toggleLog(){
+    el("log").classList.toggle("hidden");
+    const vis = !el("log").classList.contains("hidden");
+    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded", String(vis));
+    haptic(8); sfx.ui();
+  }
+
+  function endAndReturnToSetup(){
+    if(confirm("Spiel beenden und zum Setup zurück?")){
+      show("setup");
+      haptic(10); sfx.ui();
+    }
+  }
+
+  function showWinModal(winnerId){
+    const winner = getPlayerById(winnerId);
+    const modal = el("winModal");
+    const card = modal.querySelector(".modalCard");
+    const winColor = winner?.color || "#d61f26";
+    card.style.setProperty("--winColor", winColor);
+
+    el("winTitle").textContent = `Glückwunsch ${playerName(winner,"Spieler")}!`;
+    el("winScore").textContent = `Ergebnis: ${scoreSummarySets()}`;
+    el("winSub").textContent =
+      `Legs gesamt: ` + state.players.map(p => `${playerName(p,"")}: ${state.match.legsTotal[p.id]||0}`).join(" · ");
+
+    modal.classList.add("show");
+    haptic(40); sfx.win();
+  }
+  function hideWinModal(){ el("winModal").classList.remove("show"); }
+
+  function loadSavedMatch(){
+    try{
+      const raw = localStorage.getItem(MATCH_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(_){ return null; }
+  }
+
+  function renderResumeCard(){
+    const saved = loadSavedMatch();
+    const card = el("resumeCard");
+    if(!saved || !saved.match || saved.match.matchOver){
+      card.classList.add("hidden");
+      return;
+    }
+    card.classList.remove("hidden");
+    const dt = new Date(saved.savedAt || Date.now());
+    const names = (saved.players || []).map((p,i)=> (p.name||`Spieler ${i+1}`)).join(" · ");
+    el("resumeMeta").textContent =
+      `${names} — gespeichert: ${dt.toLocaleString()}`;
+  }
+
+  function resumeSavedMatch(){
+    const saved = loadSavedMatch();
+    if(!saved) return;
+
+    state.players = (saved.players || state.players).slice(0, MAX_PLAYERS);
+    state.firstToSets = saved.firstToSets || state.firstToSets;
+    state.legsToWinSet = saved.legsToWinSet || state.legsToWinSet;
+    state.firstServerId = saved.firstServerId || (state.players[0]?.id);
+
+    state.match = saved.match || state.match;
+    state.match.inProgress = true;
+    state.match.matchOver = !!state.match.matchOver;
+
+    enforceUniqueColorsAll();
+    applyFirstTwoColorsToCSS();
+    saveSettings();
+    updateFirstServerSelect();
+
+    show("game");
+    renderGame();
+    toast("▶️ Match fortgesetzt");
+    haptic(14); sfx.ui();
+  }
+
+  function discardSavedMatch(){
+    if(confirm("Gespeichertes Match wirklich verwerfen?")){
+      try{ localStorage.removeItem(MATCH_KEY); }catch(_){}
+      renderResumeCard();
+      toast("🗑️ Gespeichertes Match entfernt");
+      haptic(10); sfx.ui();
+    }
+  }
+
+  // ✅ Button-Bestätigung beim Speichern
+  function saveMatchToStorage(){
+    const btn = el("saveResume");
+    const oldText = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = "Speichere …";
+
+    try{
+      const payload = {
+        savedAt: Date.now(),
+        players: state.players,
+        firstToSets: state.firstToSets,
+        legsToWinSet: state.legsToWinSet,
+        firstServerId: state.firstServerId,
+        match: state.match
+      };
+      localStorage.setItem(MATCH_KEY, JSON.stringify(payload));
+
+      btn.textContent = "Gespeichert ✓";
+      toast("✅ Match gespeichert. Sie können später fortsetzen.");
+      haptic(18); sfx.ui();
+      renderResumeCard();
+
+      setTimeout(()=>{
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }, 1100);
+
+    }catch(_){
+      btn.disabled = false;
+      btn.textContent = oldText;
+      toast("❌ Speichern fehlgeschlagen.");
+    }
+  }
+
+  function buildShareText(){
+    const names = state.players.map((p,i)=>playerName(p,`Spieler ${i+1}`));
+    const sets = state.players.map((p,i)=>`${names[i]}: ${state.match.sets[p.id]||0}`).join(" · ");
+    const legsTotal = state.players.map((p,i)=>`${names[i]}: ${state.match.legsTotal[p.id]||0}`).join(" · ");
+    return [
+      "🎯 Dart Set & Leg Counter",
+      "",
+      "📌 Ergebnis (Sets):",
+      sets,
+      "",
+      "📌 Legs gesamt:",
+      legsTotal,
+      "",
+      `⚙️ Matchformat: First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs`,
+      "",
+      `👉 App öffnen: ${APP_URL}`
+    ].join("\n");
+  }
+
+  async function shareResult(){
+    const text = buildShareText();
+    try{
+      if(navigator.share){
+        await navigator.share({ title:"Dart Set & Leg Counter", text, url: APP_URL });
+      }else{
+        await navigator.clipboard.writeText(text);
+        toast("📋 In die Zwischenablage kopiert");
+      }
+    }catch(_){
+      try{
+        await navigator.clipboard.writeText(text);
+        toast("📋 In die Zwischenablage kopiert");
+      }catch(__){
+        alert(text);
+      }
+    }
   }
 
   function startMatch(){
-    // ✅ harte Sicherheit: min/max
     if(state.players.length < MIN_PLAYERS){
       alert("Mindestens 2 Spieler erforderlich.");
       return;
@@ -1064,40 +1460,16 @@
 
     state.match.inProgress = true;
     state.match.matchOver = false;
+    state.match.history = [];
     initScoresForPlayers();
     el("log").textContent = "";
 
     logLine(`Start — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
-
     saveSettings();
+
     haptic(12); sfx.ui();
     show("game");
     renderGame();
-  }
-
-  function addLeg(playerId){
-    state.match.legs[playerId] = (state.match.legs[playerId] || 0) + 1;
-    state.match.legsTotal[playerId] = (state.match.legsTotal[playerId] || 0) + 1;
-    haptic(12); sfx.tap();
-    logLine(`Leg an ${playerName(getPlayerById(playerId),"Spieler")}`);
-    renderGame();
-  }
-
-  function undo(){ haptic(10); sfx.undo(); logLine("Rückgängig (Demo)."); }
-
-  function toggleLog(){
-    el("log").classList.toggle("hidden");
-    const vis = !el("log").classList.contains("hidden");
-    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
-    el("toggleLog").setAttribute("aria-expanded", String(vis));
-    haptic(8); sfx.ui();
-  }
-
-  function endAndReturnToSetup(){
-    if(confirm("Spiel beenden und zum Setup zurück?")){
-      show("setup");
-      haptic(10); sfx.ui();
-    }
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{
@@ -1117,10 +1489,11 @@
     el("firstServer").value = state.firstServerId;
 
     renderSetupHint();
+    renderResumeCard();
 
     el("addPlayer").addEventListener("click", ()=>{
       if(state.players.length >= MAX_PLAYERS){
-        alert("Maximal 6 Spieler erlaubt.");
+        toast("Maximal 6 Spieler erlaubt.");
         return;
       }
       const used = usedColors(null);
@@ -1159,8 +1532,37 @@
 
     el("startBtn").addEventListener("click", startMatch);
 
-    el("toggleLog")?.addEventListener("click", toggleLog);
-    el("endToSetup")?.addEventListener("click", endAndReturnToSetup);
+    el("toggleLog").addEventListener("click", toggleLog);
+    el("undo").addEventListener("click", undo);
+    el("endToSetup").addEventListener("click", endAndReturnToSetup);
+
+    el("saveResume").addEventListener("click", saveMatchToStorage);
+    el("resumeBtn").addEventListener("click", resumeSavedMatch);
+    el("discardBtn").addEventListener("click", discardSavedMatch);
+
+    el("winRematch").addEventListener("click", ()=>{
+      hideWinModal();
+      state.match.matchOver = false;
+      state.match.history = [];
+      initScoresForPlayers();
+      el("log").textContent = "";
+      logLine(`Revanche — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
+      renderGame();
+      haptic(14); sfx.ui();
+    });
+
+    el("winToSetup").addEventListener("click", ()=>{
+      hideWinModal();
+      state.match.matchOver = false;
+      show("setup");
+      haptic(10); sfx.ui();
+    });
+
+    el("winShare").addEventListener("click", shareResult);
+
+    el("winModal").addEventListener("click", (e)=>{
+      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
+    });
   });
 </script>
 </body>
