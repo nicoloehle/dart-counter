@@ -1,332 +1,1711 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dart Set & Leg Counter</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090c11" />
+  <title>Dart Set &amp; Leg Counter</title>
 
-<style>
-:root{
-  --pA:#d61f26;
-  --pB:#14a44d;
-  --bg:#0b0f14;
-  --panel:#141821;
-  --text:#f7f8fb;
-  --muted:#9aa0aa;
-  --radius:18px;
-}
+  <style>
+    :root{
+      --radius:18px;
+      --tap: 56px;
 
-*{box-sizing:border-box}
+      --fs-title: clamp(18px, 4.6vw, 26px);
+      --fs-h2: clamp(16px, 4.4vw, 20px);
+      --fs-body: clamp(15px, 4vw, 18px);
+      --fs-meta: clamp(12px, 3.3vw, 14px);
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:linear-gradient(180deg,#0f1117,#05070a);
-  color:var(--text);
-  padding:14px;
-}
+      --fs-name: clamp(18px, 4.8vw, 22px);
+      --fs-col: clamp(12px, 3.2vw, 13px);
+      --fs-num: clamp(20px, 5.4vw, 26px);
 
-.card{
-  background:linear-gradient(180deg,#151a25,#0f131d);
-  border-radius:var(--radius);
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 18px 40px rgba(0,0,0,.55);
-}
+      --pA: #d61f26;
+      --pB: #14a44d;
 
-/* ================= NAVBAR ================= */
-.navbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
+      --boardWhite: #f7f8fb;
+      --boardBlack: #0b0f14;
+    }
 
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+    html[data-theme="dark"]{
+      --bg0:#05070a;
+      --bg1:#090c11;
 
-.brandIcon{
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  padding:6px;
-  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.18),
-    0 14px 28px rgba(0,0,0,.45);
-}
+      --panelA: rgba(9,11,15,.93);
+      --panelB: rgba(13,16,21,.93);
 
-.brandIcon img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));
-}
+      --text:#f7f8fb;
+      --muted: rgba(247,248,251,.72);
+      --line: rgba(247,248,251,.14);
 
-.brandTitle{
-  font-size:20px;
-  font-weight:1000;
-  letter-spacing:.3px;
-}
+      --shadow: 0 16px 36px rgba(0,0,0,.55);
 
-/* ================= FORM ================= */
-.row{display:grid;gap:12px}
-@media(min-width:640px){.row.cols2{grid-template-columns:1fr 1fr}}
+      --inputBg: rgba(0,0,0,.40);
+      --btnBg: rgba(255,255,255,.05);
 
-input,select,button{
-  width:100%;
-  padding:12px;
-  border-radius:14px;
-  border:none;
-  font-size:16px;
-}
+      --tapBg: rgba(255,255,255,.03);
+      --tapBgActive: rgba(255,255,255,.08);
 
-input,select{
-  background:#0c1019;
-  color:var(--text);
-}
+      --dartOpacity: .22;
+      --themeColor: #090c11;
 
-button{
-  background:#1c2230;
-  color:var(--text);
-  font-weight:900;
-  cursor:pointer;
-}
+      --sbHeaderBg: rgba(255,255,255,.07);
+    }
 
-button.primary{
-  background:linear-gradient(180deg,var(--pA),#a5141a);
-}
+    html[data-theme="light"]{
+      --bg0:#eef1f4;
+      --bg1:#ffffff;
 
-button:active{transform:scale(.98)}
+      --panelA: rgba(255,255,255,.96);
+      --panelB: rgba(248,249,251,.96);
 
-.hidden{display:none}
+      --text:#0b0f14;
+      --muted: rgba(11,15,20,.68);
+      --line: rgba(11,15,20,.14);
 
-/* ================= SWITCH ================= */
-.switchRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.switch{
-  width:54px;height:30px;position:relative;
-}
-.switch input{display:none}
-.slider{
-  position:absolute;inset:0;
-  background:#333;border-radius:99px;
-}
-.slider:before{
-  content:"";
-  position:absolute;
-  left:4px;top:4px;
-  width:22px;height:22px;
-  border-radius:50%;
-  background:white;
-  transition:.2s;
-}
-.switch input:checked + .slider{
-  background:var(--pB)
-}
-.switch input:checked + .slider:before{
-  transform:translateX(24px)
-}
+      --shadow: 0 14px 28px rgba(0,0,0,.12);
 
-/* ================= SCORE ================= */
-.scoreRow{
-  display:grid;
-  grid-template-columns:40px 1fr 60px 60px;
-  align-items:center;
-  padding:12px;
-  border-radius:14px;
-  margin-bottom:8px;
-  user-select:none;
-}
-.scoreRow.A{background:rgba(214,31,38,.22)}
-.scoreRow.B{background:rgba(20,164,77,.22)}
+      --inputBg: rgba(255,255,255,.92);
+      --btnBg: rgba(11,15,20,.05);
 
-.name{font-weight:1000;font-size:18px}
-.num{text-align:center;font-size:24px;font-weight:1000}
+      --tapBg: rgba(11,15,20,.03);
+      --tapBgActive: rgba(11,15,20,.07);
 
-/* ================= LOG ================= */
-.log{
-  margin-top:12px;
-  background:#0a0d14;
-  border-radius:14px;
-  padding:12px;
-  font-family:monospace;
-  font-size:13px;
-  max-height:180px;
-  overflow:auto;
-}
+      --dartOpacity: .12;
+      --themeColor: #ffffff;
 
-/* ================= FOOTER ================= */
-.footer{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  font-size:13px;
-  color:var(--muted);
-}
-.footer img{
-  width:38px;height:38px;
-  border-radius:50%;
-  object-fit:cover;
-}
-</style>
+      --sbHeaderBg: rgba(11,15,20,.06);
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; overflow-x:hidden; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 760px at 12% -10%, color-mix(in srgb, var(--pA) 16%, transparent), transparent 60%),
+        radial-gradient(1080px 740px at 92% 0%, color-mix(in srgb, var(--pB) 14%, transparent), transparent 60%),
+        radial-gradient(900px 520px at 50% 110%, color-mix(in srgb, var(--boardBlack) 14%, transparent), transparent 62%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      padding:
+        max(14px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(14px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; position:relative; overflow-x: clip; }
+
+    .wrap::before{
+      content:"";
+      position:absolute;
+      left: 50%;
+      top: 54%;
+      width: min(980px, 140vw);
+      height: min(980px, 140vw);
+      transform: translate(-50%,-50%) rotate(-18deg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='v' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='.20'/%3E%3Cstop offset='55%25' stop-color='%23000000' stop-opacity='.12'/%3E%3Cstop offset='100%25' stop-color='%23000000' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg opacity='.92'%3E%3Cpath d='M160 530 L540 150 L610 220 L230 600 Z' fill='%23ffffff' fill-opacity='.08'/%3E%3Cpath d='M540 150 L690 90 L740 140 L610 220 Z' fill='%23d61f26' fill-opacity='.22'/%3E%3Cpath d='M230 600 L610 220 L680 290 L300 670 Z' fill='%2314a44d' fill-opacity='.20'/%3E%3Cpath d='M300 670 L680 290 L810 420 L430 800 Z' fill='%23ffffff' fill-opacity='.06'/%3E%3C/g%3E%3Ccircle cx='450' cy='450' r='430' fill='url(%23v)'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-repeat: no-repeat;
+      filter: blur(12px);
+      opacity: var(--dartOpacity);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .card{
+      position:relative;
+      z-index:1;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin-bottom: 18px; /* mehr Abstand zwischen Cards */
+    }
+
+    /* mehr vertikale Abstände im Setup */
+    .vstack{ display:grid; gap: 16px; }
+    .vstack.tight{ gap: 12px; }
+    .divider{ height:1px; background: color-mix(in srgb, var(--text) 10%, transparent); border-radius:999px; }
+
+    .navbar{
+      position: sticky;
+      top: max(0px, env(safe-area-inset-top));
+      z-index: 10;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--panelA) 90%, transparent), color-mix(in srgb, var(--panelB) 90%, transparent));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 12px 14px;
+      margin-bottom: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    /* LOGO (präsent) */
+    .brandIcon{
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.12),
+        0 14px 30px rgba(0,0,0,.35);
+      flex: 0 0 auto;
+      overflow:hidden;
+      padding: 6px;
+    }
+    .brandIcon img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
+      transform: translateY(1px);
+    }
+
+    .brandTitle{
+      font-size: var(--fs-title);
+      font-weight: 1100;
+      letter-spacing: .2px;
+      line-height: 1.12;
+      min-width: 0;
+      white-space: nowrap;       /* wichtig: Theme Button bleibt sichtbar */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topActions{ display:flex; gap:10px; align-items:center; flex: 0 0 auto; }
+
+    .row{ display:grid; grid-template-columns: 1fr; gap: 14px; } /* mehr Abstand */
+    @media(min-width:560px){ .row.cols2{ grid-template-columns: 1fr 1fr; } }
+
+    label{ display:block; font-size: var(--fs-meta); color: var(--muted); margin: 0 0 8px; }
+
+    input, select{
+      width:100%;
+      font-size: var(--fs-body);
+      padding: 12px;
+      min-height: var(--tap);
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+      background: var(--inputBg);
+      color: var(--text);
+      outline:none;
+    }
+    input::placeholder{ color: color-mix(in srgb, var(--text) 45%, transparent); }
+
+    .meta{ color: var(--muted); font-size: var(--fs-meta); line-height:1.35; }
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .controls.stacked{ flex-direction: column; align-items: stretch; }
+    @media(min-width:560px){
+      .controls.stacked{ flex-direction: row; align-items:center; }
+    }
+    .spacer{ flex:1; }
+
+    button{
+      appearance:none;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: var(--btnBg);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 12px;
+      min-height: var(--tap);
+      font-size: var(--fs-body);
+      font-weight: 900;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action: manipulation;
+      box-shadow: 0 10px 20px rgba(0,0,0,.18);
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+      width: 100%;
+    }
+    @media(min-width:560px){
+      button{ width: auto; }
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    button.primary{
+      border-color: color-mix(in srgb, var(--pA) 58%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--pA) 92%, white 0%), color-mix(in srgb, var(--pA) 70%, black 22%));
+      color: #fff;
+    }
+    button.ghost{ box-shadow:none; background: var(--btnBg); }
+
+    button.small{
+      min-height: 40px;
+      padding: 8px 10px;
+      font-size: var(--fs-meta);
+      border-radius: 999px;
+      box-shadow:none;
+      width: auto;
+    }
+
+    .themeBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 900;
+      box-shadow:none;
+      white-space: nowrap;
+      width: auto;
+    }
+
+    .hidden{ display:none!important; }
+
+    /* ---- SETUP: Spieler + Farben ---- */
+    .playerCard{ display:grid; gap: 16px; } /* mehr Abstand */
+    .playerLine{
+      display:grid;
+      grid-template-columns: 56px 1fr; /* größer -> mobil sichtbarer */
+      gap: 12px;
+      align-items:center;
+    }
+    .colorPickBtn{
+      width: 56px;
+      height: 56px;
+      min-height: 56px;
+      padding: 0;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:none;
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text) 22%, transparent);
+    }
+    .colorPickBtn::after{
+      content:"";
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--text) 70%, transparent);
+      background: var(--dot, #fff);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    }
+
+    .palette{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      margin-top: 10px;
+    }
+    .swatch{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--text) 28%, transparent);
+      background: var(--c);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0;
+      min-height: 36px;
+      box-shadow:none;
+      position: relative;
+      width: 36px;
+    }
+    .swatch.selected{
+      outline: 3px solid color-mix(in srgb, var(--text) 42%, transparent);
+      outline-offset: 2px;
+    }
+    .swatch.disabled{
+      opacity: .26;
+      cursor: not-allowed;
+      filter: grayscale(65%);
+    }
+    .swatch .check{
+      font-size: 16px;
+      line-height: 1;
+      opacity: .0;
+      transform: translateY(-1px);
+      color: var(--checkColor, color-mix(in srgb, var(--text) 92%, transparent));
+      text-shadow: 0 8px 18px rgba(0,0,0,.35);
+    }
+    .swatch.selected .check{ opacity: 1; }
+
+    /* Switches */
+    .switchRow{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 6px 0; }
+    .switchLabel{ font-size: var(--fs-meta); color: var(--muted); margin:0 0 2px; }
+    .switchTitle{ font-size: var(--fs-body); font-weight: 1000; }
+    .switch{ position: relative; width: 56px; height: 32px; flex: 0 0 auto; }
+    .switch input{ display:none; }
+    .slider{
+      position:absolute; inset:0;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      transition: .18s ease;
+    }
+    .slider::after{
+      content:"";
+      position:absolute; top: 50%; left: 6px;
+      width: 22px; height: 22px;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--text) 92%, transparent);
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+      transition: .18s ease;
+    }
+    .switch input:checked + .slider{
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--pB) 55%, transparent),
+        color-mix(in srgb, var(--pB) 28%, transparent)
+      );
+      border-color: color-mix(in srgb, var(--pB) 45%, transparent);
+    }
+    .switch input:checked + .slider::after{
+      left: 28px;
+      background: #fff;
+    }
+
+    /* ---- SCOREBOARD ---- */
+    .scoreboard{ padding: 0; overflow:hidden; }
+
+    .sb-header{
+      display:grid;
+      grid-template-columns: 86px 1fr 74px 74px;
+      align-items:center;
+      padding: 10px 14px;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: var(--sbHeaderBg);
+      column-gap: 8px;
+    }
+    .sb-header .col{
+      text-align:center;
+      font-size: var(--fs-col);
+      color: color-mix(in srgb, var(--muted) 86%, transparent);
+      font-weight: 1000;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+    .sb-header .left{
+      text-align:left;
+      font-size: var(--fs-col);
+      color: color-mix(in srgb, var(--muted) 86%, transparent);
+      font-weight: 1000;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+
+    .sb-row{
+      display:grid;
+      grid-template-columns: 86px 1fr 74px 74px;
+      align-items:center;
+      padding: 12px 14px;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      background: var(--tapBg);
+      column-gap: 8px;
+    }
+    .sb-row:last-child{ border-bottom:none; }
+
+    .sb-row.playerA{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pA) 44%, transparent),
+          color-mix(in srgb, var(--tapBg) 68%, transparent)
+        );
+    }
+    .sb-row.playerB{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--pB) 44%, transparent),
+          color-mix(in srgb, var(--tapBg) 68%, transparent)
+        );
+    }
+
+    .tap{ touch-action: manipulation; }
+
+    .sb-row.tap:active{
+      background:
+        linear-gradient(90deg,
+          color-mix(in srgb, var(--text) 10%, transparent),
+          var(--tapBgActive)
+        );
+    }
+
+    .serveCell{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 18px;
+      font-weight: 1100;
+      opacity: .95;
+      color: color-mix(in srgb, var(--text) 92%, transparent);
+    }
+    .serveCell.none{ opacity: 0; }
+
+    .name{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height: 44px;
+      font-size: var(--fs-name);
+      font-weight: 1100;
+      letter-spacing: .2px;
+      min-width: 0;
+    }
+    .name span{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .num{
+      text-align:center;
+      font-size: var(--fs-num);
+      font-weight: 1100;
+      letter-spacing: .3px;
+    }
+
+    .badgeLine{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: var(--fs-meta);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
+      font-weight: 900;
+    }
+    .chipDot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .chipDot.a{ background: var(--pA); }
+    .chipDot.b{ background: var(--pB); }
+
+    .hint{
+      margin-top: 10px;
+      font-size: var(--fs-meta);
+      color: color-mix(in srgb, var(--text) 62%, transparent);
+    }
+
+    .log{
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      background: color-mix(in srgb, var(--btnBg) 90%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      border-radius: 14px;
+      padding: 12px;
+      max-height: 170px;
+      overflow: auto;
+      margin-top: 10px;
+    }
+
+    /* ---- WIN MODAL ---- */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+    .modalOverlay.show{ display:flex; }
+
+    .modalCard{
+      width: min(560px, 100%);
+      border-radius: 20px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+      background: linear-gradient(180deg, var(--panelA), var(--panelB));
+    }
+    .modalTop{
+      padding: 14px 16px;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--winColor) 28%, transparent),
+        color-mix(in srgb, var(--winColor) 10%, transparent)
+      );
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .modalTopRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .modalTop .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: var(--fs-meta);
+      font-weight: 1000;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--winColor) 40%, transparent);
+      background: color-mix(in srgb, var(--winColor) 18%, transparent);
+      white-space: nowrap;
+    }
+    .shareBtn{
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: var(--fs-meta);
+      font-weight: 1000;
+      box-shadow:none;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      width:auto;
+    }
+
+    .modalBody{ padding: 18px 16px 16px; }
+    .modalTitle{
+      font-size: clamp(22px, 6vw, 34px);
+      font-weight: 1100;
+      line-height: 1.1;
+      margin: 0 0 10px;
+    }
+    .modalSub{
+      font-size: var(--fs-body);
+      color: var(--muted);
+      margin: 0 0 14px;
+    }
+
+    .summaryGrid{
+      display:grid;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      background: color-mix(in srgb, var(--btnBg) 92%, transparent);
+      margin: 12px 0 14px;
+    }
+    .summaryRow{
+      display:grid;
+      grid-template-columns: 1fr 90px 90px;
+      gap: 10px;
+      align-items:center;
+      font-size: var(--fs-meta);
+      color: var(--muted);
+      letter-spacing: .2px;
+      font-weight: 900;
+    }
+    .summaryRow .h{ text-align:center; opacity:.85; }
+    .summaryRow .n{
+      color: var(--text);
+      font-size: var(--fs-body);
+      font-weight: 1100;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summaryRow .v{
+      text-align:center;
+      color: var(--text);
+      font-size: var(--fs-body);
+      font-weight: 1100;
+    }
+
+    .modalActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .modalActions button{ width:auto; }
+    .modalActions button.primary{
+      border-color: color-mix(in srgb, var(--winColor) 45%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--winColor) 92%, white 0%), color-mix(in srgb, var(--winColor) 72%, black 18%));
+    }
+
+    /* Footer */
+    .footer{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+    }
+    .avatar{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+      flex: 0 0 auto;
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .presented{
+      font-size: var(--fs-meta);
+      color: var(--muted);
+      font-weight: 900;
+      line-height:1.25;
+    }
+
+    @media(min-width: 860px){
+      .wrap{ max-width: 980px; }
+      .card{ padding: 18px; }
+      .navbar{ padding: 14px 16px; margin-bottom: 26px; }
+      .brandTitle{ font-size: clamp(20px, 2.2vw, 28px); }
+      .brandIcon{ width: 60px; height: 60px; }
+    }
+    @media(max-width: 420px){
+      .brandIcon{ width: 48px; height: 48px; border-radius: 14px; }
+      .navbar{ gap: 10px; }
+    }
+  </style>
 </head>
 
 <body>
+<div class="wrap">
 
-<!-- SETUP -->
-<div id="setup">
-  <div class="navbar">
-    <div class="brand">
-      <div class="brandIcon">
-        <img src="assets/logo.png" alt="Dart Set & Leg Counter Logo">
+  <!-- SETUP -->
+  <div id="screenSetup">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brandIcon" aria-hidden="true">
+          <!-- Logo-Datei: assets/logo.png -->
+          <img src="assets/logo.png" alt="Dart Set & Leg Counter Logo">
+        </div>
+        <div class="brandTitle">Dart Set &amp; Leg Counter</div>
       </div>
-      <div class="brandTitle">Dart Set & Leg Counter</div>
+      <div class="topActions">
+        <!-- Theme Toggle (wieder da) -->
+        <button class="themeBtn ghost" id="themeToggle" type="button" aria-label="Theme wechseln">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card vstack">
+      <div class="playerCard">
+        <div>
+          <label>Spieler A</label>
+          <div class="playerLine">
+            <button class="colorPickBtn" id="colorBtnA" type="button" aria-label="Farbe Spieler A wählen"></button>
+            <input id="nameA" placeholder="Name Spieler A" />
+          </div>
+          <div class="palette hidden" id="paletteA" aria-label="Farben Spieler A"></div>
+        </div>
+
+        <div>
+          <label>Spieler B</label>
+          <div class="playerLine">
+            <button class="colorPickBtn" id="colorBtnB" type="button" aria-label="Farbe Spieler B wählen"></button>
+            <input id="nameB" placeholder="Name Spieler B" />
+          </div>
+          <div class="palette hidden" id="paletteB" aria-label="Farben Spieler B"></div>
+        </div>
+      </div>
+
+      <div class="meta">Einstellungen werden gespeichert.</div>
+    </div>
+
+    <div class="card vstack">
+      <div class="row cols2">
+        <div>
+          <label for="firstToSets">First to (Sets)</label>
+          <select id="firstToSets"></select>
+        </div>
+        <div>
+          <label for="legsToWinSet">First to (Legs pro Set)</label>
+          <select id="legsToWinSet"></select>
+        </div>
+      </div>
+
+      <div class="row cols2">
+        <div>
+          <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
+          <select id="firstServer">
+            <option value="A">Spieler A</option>
+            <option value="B">Spieler B</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="meta" style="margin-top:0;">&nbsp;</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row cols2">
+        <div class="switchRow">
+          <div>
+            <div class="switchLabel">Haptik</div>
+            <div class="switchTitle">Vibration bei Aktionen</div>
+          </div>
+          <label class="switch" aria-label="Haptik umschalten">
+            <input id="hapticToggle" type="checkbox" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="switchRow">
+          <div>
+            <div class="switchLabel">Sound</div>
+            <div class="switchTitle">Jubel beim Match-Gewinn</div>
+          </div>
+          <label class="switch" aria-label="Sound umschalten">
+            <input id="soundToggle" type="checkbox" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="meta" id="formatHint"></div>
+
+      <div class="controls stacked" style="margin-top:4px;">
+        <button class="primary" id="startBtn" type="button">Spiel starten</button>
+        <button class="ghost hidden" id="resumeBtn" type="button">Zwischenstand fortsetzen</button>
+        <button class="ghost" id="quickHelpBtn" type="button">Kurzhilfe</button>
+      </div>
+
+      <div class="meta" id="helpText" style="display:none;">
+        Im Spiel: Tippen Sie auf die Spielerzeile = Leg +1. Langer Druck auf Spielerzeile = Einen Schritt zurück.<br>
+        Der ▶-Pfeil zeigt den aktuellen Anwurf für das nächste Leg.
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="row cols2">
-      <input id="nameA" value="Spieler A">
-      <input id="nameB" value="Spieler B">
+  <!-- GAME -->
+  <div id="screenGame" class="hidden">
+    <div class="navbar">
+      <div class="brand">
+        <div class="brandIcon" aria-hidden="true">
+          <img src="assets/logo.png" alt="Dart Set & Leg Counter Logo">
+        </div>
+        <div class="brandTitle">Dart Set &amp; Leg Counter</div>
+      </div>
+      <div class="topActions">
+        <button class="themeBtn ghost" id="themeToggle2" type="button" aria-label="Theme wechseln">
+          <span id="themeIcon2">🌙</span>
+          <span id="themeLabel2">Dark</span>
+        </button>
+      </div>
     </div>
 
-    <div class="row cols2">
-      <select id="sets"></select>
-      <select id="legs"></select>
-    </div>
+    <div class="card scoreboard">
+      <div class="sb-header">
+        <div class="col">ANWURF</div>
+        <div class="left">NAME</div>
+        <div class="col">SETS</div>
+        <div class="col">LEGS</div>
+      </div>
 
-    <div class="switchRow">
-      <span>Haptik</span>
-      <label class="switch">
-        <input type="checkbox" id="haptic" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
+      <div class="sb-row tap playerA" id="rowA" role="button" aria-label="Leg gewonnen Spieler A">
+        <div class="serveCell" id="serveA">▶</div>
+        <div class="name"><span id="titleA">Spieler A</span></div>
+        <div class="num" id="setsA">0</div>
+        <div class="num" id="legsA">0</div>
+      </div>
 
-    <div class="switchRow">
-      <span>Sound</span>
-      <label class="switch">
-        <input type="checkbox" id="sound" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
+      <div class="sb-row tap playerB" id="rowB" role="button" aria-label="Leg gewonnen Spieler B">
+        <div class="serveCell" id="serveB">▶</div>
+        <div class="name"><span id="titleB">Spieler B</span></div>
+        <div class="num" id="setsB">0</div>
+        <div class="num" id="legsB">0</div>
+      </div>
 
-    <button class="primary" onclick="start()">Spiel starten</button>
+      <div style="padding:12px 14px;">
+        <div class="badgeLine">
+          <span class="pill" id="matchPill"></span>
+          <span class="pill" id="legsPill"></span>
+          <span class="pill"><span class="chipDot a"></span>Spieler A</span>
+          <span class="pill"><span class="chipDot b"></span>Spieler B</span>
+        </div>
+
+        <!-- Reihenfolge wie gewünscht:
+             1) Einen Schritt zurück
+             2) Zwischenstand speichern & später fortsetzen
+             3) Verlauf anzeigen
+             4) Neues Match
+        -->
+        <div class="controls stacked" style="margin-top:12px;">
+          <button class="ghost" id="undo" type="button">Einen Schritt zurück</button>
+          <button class="ghost" id="saveCheckpoint" type="button">Zwischenstand speichern &amp; später fortsetzen</button>
+          <button class="ghost" id="toggleLog" type="button" aria-expanded="false">Verlauf anzeigen</button>
+          <button class="ghost" id="resetToSetup" type="button">Neues Match</button>
+        </div>
+
+        <!-- Log startet IMMER hidden -->
+        <div class="log hidden" id="log"></div>
+        <div class="hint">Anwurf (▶) wechselt automatisch pro Leg und pro Set.</div>
+      </div>
+    </div>
   </div>
+
+  <!-- FOOTER -->
+  <div class="card footer" aria-label="Präsentiert von">
+    <div class="avatar" aria-hidden="true">
+      <img src="assets/nico.jpg" alt="Profilbild" onerror="this.src='https://via.placeholder.com/72';">
+    </div>
+    <div class="presented">Diese App wird präsentiert von Nici (den aber jeder nur Nico nennt)</div>
+  </div>
+
 </div>
 
-<!-- GAME -->
-<div id="game" class="hidden">
-  <div class="navbar">
-    <div class="brand">
-      <div class="brandIcon">
-        <img src="assets/logo.png" alt="">
+<!-- WIN MODAL -->
+<div class="modalOverlay" id="winModal" role="dialog" aria-modal="true" aria-label="Match beendet">
+  <div class="modalCard" style="--winColor: var(--pA);">
+    <div class="modalTop">
+      <span class="tag" id="winTag">🏆 Match beendet</span>
+      <div class="modalTopRight">
+        <span style="font-weight:1000; color: var(--muted); font-size: var(--fs-meta);" id="winScore">—</span>
+        <button class="shareBtn" id="shareBtn" type="button" aria-label="Ergebnis teilen">📤 Teilen</button>
       </div>
-      <div class="brandTitle">Dart Set & Leg Counter</div>
+    </div>
+    <div class="modalBody">
+      <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
+      <p class="modalSub" id="winSub">Sie haben das Match gewonnen.</p>
+
+      <div class="summaryGrid" aria-label="Match-Zusammenfassung">
+        <div class="summaryRow" style="opacity:.85;">
+          <div></div>
+          <div class="h">Sets</div>
+          <div class="h">Legs</div>
+        </div>
+        <div class="summaryRow">
+          <div class="n" id="sumNameA">Spieler A</div>
+          <div class="v" id="sumSetsA">0</div>
+          <div class="v" id="sumLegsA">0</div>
+        </div>
+        <div class="summaryRow">
+          <div class="n" id="sumNameB">Spieler B</div>
+          <div class="v" id="sumSetsB">0</div>
+          <div class="v" id="sumLegsB">0</div>
+        </div>
+      </div>
+
+      <div class="modalActions">
+        <button class="primary" id="winRematch" type="button">Revanche</button>
+        <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
+      </div>
     </div>
   </div>
-
-  <div class="card">
-    <div class="scoreRow A" onclick="addLeg('A')">
-      <div>▶</div>
-      <div class="name" id="nA"></div>
-      <div class="num" id="sA">0</div>
-      <div class="num" id="lA">0</div>
-    </div>
-
-    <div class="scoreRow B" onclick="addLeg('B')">
-      <div></div>
-      <div class="name" id="nB"></div>
-      <div class="num" id="sB">0</div>
-      <div class="num" id="lB">0</div>
-    </div>
-
-    <button onclick="undo()">Rückgängig</button>
-    <button onclick="location.reload()">Neues Match</button>
-
-    <div class="log" id="log"></div>
-  </div>
-</div>
-
-<div class="card footer">
-  <img src="https://via.placeholder.com/150">
-  <div>Diese App wird präsentiert von Nici (den aber jeder nur Nico nennt)</div>
 </div>
 
 <script>
-let S={A:0,B:0},L={A:0,B:0},LT={A:0,B:0},H=[];
-let FS=3,FL=3,turn="A";
+  const STORAGE_KEY  = "dart_counter_tvscore_v11";
+  const THEME_KEY    = "dart_counter_theme_v2";
+  const SETTINGS_KEY = "dart_counter_settings_v1";
+  const CHECKPOINT_KEY = "dart_counter_checkpoint_v1";
 
-for(let i=1;i<=7;i++){
-  sets.innerHTML+=`<option value="${i}">First to ${i} Sets</option>`;
-  legs.innerHTML+=`<option value="${i}">First to ${i} Legs</option>`;
-}
-sets.value=3;legs.value=3;
+  // Schwarz entfernt
+  const COLOR_OPTIONS = [
+    { key: "red",    name: "Rot",     hex: "#d61f26" },
+    { key: "green",  name: "Grün",    hex: "#14a44d" },
+    { key: "white",  name: "Weiß",    hex: "#f7f8fb" },
+    { key: "blue",   name: "Blau",    hex: "#2f6bff" },
+    { key: "yellow", name: "Gelb",    hex: "#f2c230" },
+    { key: "pink",   name: "Pink",    hex: "#ff3ea5" },
+    { key: "orange", name: "Orange",  hex: "#f97316" },
+    { key: "gray",   name: "Grau",    hex: "#9ca3af" }
+  ];
 
-function vib(p=15){
-  if(haptic.checked && navigator.vibrate) navigator.vibrate(p);
-}
+  const state = {
+    names: { A: "Spieler A", B: "Spieler B" },
+    colors:{ A: "#d61f26",   B: "#14a44d" },
 
-let ac;
-function cheer(){
-  if(!sound.checked) return;
-  ac=ac||new (window.AudioContext||webkitAudioContext)();
-  let o=ac.createOscillator(),g=ac.createGain();
-  o.frequency.value=440;o.type="sawtooth";
-  g.gain.value=.12;
-  o.connect(g);g.connect(ac.destination);
-  o.start();setTimeout(()=>o.stop(),350);
-}
+    firstToSets: 3,   // 1..7
+    legsToWinSet: 3,  // 1..7
+    firstServer: "A",
 
-function log(t){
-  logEl.textContent=t+"\n────────────\n"+logEl.textContent;
-}
+    sets: { A: 0, B: 0 },
+    legs: { A: 0, B: 0 },
+    legsTotal: { A: 0, B: 0 },
+    history: [],
+    matchOver: false,
 
-function start(){
-  FS=+sets.value;FL=+legs.value;
-  nA.textContent=nameA.value;
-  nB.textContent=nameB.value;
-  setup.classList.add("hidden");
-  game.classList.remove("hidden");
-  log("Match gestartet");
-}
+    settings: { haptics: true, sound: true }
+  };
 
-function addLeg(p){
-  H.push(JSON.stringify({S,L,LT,turn}));
-  vib();
-  L[p]++;LT[p]++;
-  log("Leg an "+(p==="A"?nA.textContent:nB.textContent));
-  if(L[p]>=FL){
-    S[p]++;L.A=L.B=0;
-    log("Set an "+(p==="A"?nA.textContent:nB.textContent));
-    if(S[p]>=FS){cheer();alert("Match gewonnen!")}
+  const el = (id) => document.getElementById(id);
+  const other = (p) => (p === "A" ? "B" : "A");
+
+  function haptic(pattern = 14) {
+    try {
+      if(!state.settings.haptics) return;
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch (_) {}
   }
-  update();turn=turn==="A"?"B":"A";
-}
 
-function undo(){
-  let h=H.pop();if(!h)return;
-  let o=JSON.parse(h);
-  S=o.S;L=o.L;LT=o.LT;turn=o.turn;
-  vib([20,40,20]);
-  log("Rückgängig");
-  update();
-}
+  // Jubel via WebAudio
+  let audioCtx = null;
+  function ensureAudio(){
+    try{
+      if(!state.settings.sound) return;
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
+    }catch(_){}
+  }
+  function unlockAudioOnce(){ ensureAudio(); document.removeEventListener("pointerdown", unlockAudioOnce); }
+  function playCheer(){
+    if(!state.settings.sound) return;
+    ensureAudio();
+    if(!audioCtx) return;
 
-function update(){
-  sA.textContent=S.A;sB.textContent=S.B;
-  lA.textContent=L.A;lB.textContent=L.B;
-}
+    const now = audioCtx.currentTime;
 
-const logEl=document.getElementById("log");
+    const bufferSize = Math.floor(audioCtx.sampleRate * 0.25);
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * 0.6;
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.0001, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+    const noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = "bandpass";
+    noiseFilter.frequency.setValueAtTime(1200, now);
+    noiseFilter.Q.setValueAtTime(0.8, now);
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(audioCtx.destination);
+
+    const tone = (freq, start, dur, gVal) => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(freq, start);
+
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(gVal, start + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+
+      osc.start(start);
+      osc.stop(start + dur + 0.02);
+    };
+
+    tone(440, now + 0.00, 0.20, 0.12);
+    tone(554, now + 0.06, 0.22, 0.10);
+    tone(659, now + 0.12, 0.22, 0.08);
+
+    noise.start(now);
+    noise.stop(now + 0.25);
+  }
+
+  function setTheme(theme){
+    const t = (theme === "light") ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", t);
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    meta && meta.setAttribute("content",
+      getComputedStyle(document.documentElement).getPropertyValue("--themeColor").trim() || (t==="light" ? "#ffffff" : "#090c11")
+    );
+
+    const label = (t === "light") ? "Light" : "Dark";
+    const icon  = (t === "light") ? "☀️" : "🌙";
+
+    el("themeLabel").textContent  = label;
+    el("themeLabel2").textContent = label;
+    el("themeIcon").textContent   = icon;
+    el("themeIcon2").textContent  = icon;
+
+    try { localStorage.setItem(THEME_KEY, t); } catch(_) {}
+  }
+  function toggleTheme(){
+    const cur = document.documentElement.getAttribute("data-theme") || "dark";
+    setTheme(cur === "dark" ? "light" : "dark");
+    haptic(8);
+  }
+  function loadTheme(){
+    try{
+      const t = localStorage.getItem(THEME_KEY);
+      setTheme(t || "dark");
+    }catch(_){
+      setTheme("dark");
+    }
+  }
+
+  function isLightHex(hex){
+    const h = (hex||"").replace("#","").trim();
+    if(h.length !== 6) return false;
+    const r = parseInt(h.slice(0,2),16);
+    const g = parseInt(h.slice(2,4),16);
+    const b = parseInt(h.slice(4,6),16);
+    const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+    return lum > 170;
+  }
+
+  function applyPlayerColors(){
+    document.documentElement.style.setProperty("--pA", state.colors.A);
+    document.documentElement.style.setProperty("--pB", state.colors.B);
+
+    el("colorBtnA").style.setProperty("--dot", state.colors.A);
+    el("colorBtnB").style.setProperty("--dot", state.colors.B);
+  }
+
+  function firstAvailableColor(excludeHex){
+    const exclude = (excludeHex||"").toLowerCase();
+    const found = COLOR_OPTIONS.find(c => c.hex.toLowerCase() !== exclude);
+    return found ? found.hex : (COLOR_OPTIONS[0]?.hex || "#ffffff");
+  }
+
+  function ensureUniqueColors(changedPlayer){
+    const a = state.colors.A.toLowerCase();
+    const b = state.colors.B.toLowerCase();
+    if(a === b){
+      const fix = other(changedPlayer);
+      state.colors[fix] = firstAvailableColor(state.colors[changedPlayer]);
+    }
+  }
+
+  function buildPalette(player){
+    const pal = el(player === "A" ? "paletteA" : "paletteB");
+    pal.innerHTML = "";
+
+    for(const c of COLOR_OPTIONS){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "swatch";
+      btn.style.setProperty("--c", c.hex);
+      btn.style.setProperty("--checkColor", isLightHex(c.hex) ? "#0b0f14" : "");
+
+      const check = document.createElement("span");
+      check.className = "check";
+      check.textContent = "✓";
+      btn.appendChild(check);
+
+      btn.addEventListener("click", ()=>{
+        const opp = other(player);
+        if(state.colors[opp].toLowerCase() === c.hex.toLowerCase()) return;
+        state.colors[player] = c.hex;
+        ensureUniqueColors(player);
+        saveSettings();
+        applyPlayerColors();
+        refreshPalettes();
+        haptic(10);
+      });
+
+      pal.appendChild(btn);
+    }
+  }
+
+  function refreshPalettes(){
+    const aPal = el("paletteA");
+    const bPal = el("paletteB");
+
+    const aColor = state.colors.A.toLowerCase();
+    const bColor = state.colors.B.toLowerCase();
+
+    [...aPal.querySelectorAll(".swatch")].forEach((sw, idx)=>{
+      const hex = COLOR_OPTIONS[idx].hex.toLowerCase();
+      sw.classList.toggle("selected", hex === aColor);
+      sw.classList.toggle("disabled", hex === bColor);
+    });
+
+    [...bPal.querySelectorAll(".swatch")].forEach((sw, idx)=>{
+      const hex = COLOR_OPTIONS[idx].hex.toLowerCase();
+      sw.classList.toggle("selected", hex === bColor);
+      sw.classList.toggle("disabled", hex === aColor);
+    });
+  }
+
+  function togglePalette(player){
+    const pal = el(player === "A" ? "paletteA" : "paletteB");
+    const otherPal = el(player === "A" ? "paletteB" : "paletteA");
+    otherPal.classList.add("hidden");
+    pal.classList.toggle("hidden");
+    haptic(8);
+  }
+
+  function closePalettes(){
+    el("paletteA").classList.add("hidden");
+    el("paletteB").classList.add("hidden");
+  }
+
+  function fillRangeSelect(selectEl, unit, defVal){
+    selectEl.innerHTML = "";
+    for(let i=1;i<=7;i++){
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = `First to ${i} ${unit}`;
+      selectEl.appendChild(opt);
+    }
+    selectEl.value = String(defVal);
+  }
+
+  function loadToggleSettings(){
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if(raw){
+        const s = JSON.parse(raw);
+        state.settings.haptics = (s.haptics !== false);
+        state.settings.sound   = (s.sound !== false);
+      }
+    }catch(_){}
+
+    el("hapticToggle").checked = !!state.settings.haptics;
+    el("soundToggle").checked  = !!state.settings.sound;
+  }
+
+  function saveToggleSettings(){
+    try{
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+        haptics: !!state.settings.haptics,
+        sound: !!state.settings.sound
+      }));
+    }catch(_){}
+  }
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+
+      const s = JSON.parse(raw);
+
+      el("nameA").value = typeof s.nameA === "string" ? s.nameA : "";
+      el("nameB").value = typeof s.nameB === "string" ? s.nameB : "";
+
+      el("firstToSets").value  = String([1,2,3,4,5,6,7].includes(+s.firstToSets) ? +s.firstToSets : 3);
+      el("legsToWinSet").value = String([1,2,3,4,5,6,7].includes(+s.legsToWinSet) ? +s.legsToWinSet : 3);
+      el("firstServer").value  = (s.firstServer === "B") ? "B" : "A";
+
+      state.colors.A = typeof s.colorA === "string" ? s.colorA : state.colors.A;
+      state.colors.B = typeof s.colorB === "string" ? s.colorB : state.colors.B;
+
+      const allowed = new Set(COLOR_OPTIONS.map(c => c.hex.toLowerCase()));
+      if(!allowed.has(state.colors.A.toLowerCase())) state.colors.A = "#d61f26";
+      if(!allowed.has(state.colors.B.toLowerCase())) state.colors.B = "#14a44d";
+
+      ensureUniqueColors("A");
+    }catch(_){}
+  }
+
+  function saveSettings(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        nameA: el("nameA").value || "",
+        nameB: el("nameB").value || "",
+        firstToSets: +el("firstToSets").value,
+        legsToWinSet: +el("legsToWinSet").value,
+        firstServer: el("firstServer").value,
+        colorA: state.colors.A,
+        colorB: state.colors.B
+      }));
+    }catch(_){}
+  }
+
+  function snapshot(){
+    state.history.push(JSON.parse(JSON.stringify({
+      names: state.names,
+      colors: state.colors,
+      firstToSets: state.firstToSets,
+      legsToWinSet: state.legsToWinSet,
+      firstServer: state.firstServer,
+      sets: state.sets,
+      legs: state.legs,
+      legsTotal: state.legsTotal,
+      matchOver: state.matchOver
+    })));
+    if(state.history.length > 80) state.history.shift();
+  }
+
+  function logLine(t){
+    const sep = "────────────────────\n";
+    el("log").textContent = t + "\n" + sep + el("log").textContent;
+  }
+
+  function currentSetNumber(){ return state.sets.A + state.sets.B + 1; }
+  function currentLegNumberWithinSet(){ return state.legs.A + state.legs.B + 1; }
+
+  function computeThrower(){
+    const setNo = currentSetNumber();
+    const setStarter = (setNo % 2 === 1) ? state.firstServer : other(state.firstServer);
+    const legNo = currentLegNumberWithinSet();
+    return (legNo % 2 === 1) ? setStarter : other(setStarter);
+  }
+
+  function renderSetupHint(){
+    const firstTo = +el("firstToSets").value;
+    const legsToWin = +el("legsToWinSet").value;
+    const starter = el("firstServer").value;
+    el("formatHint").textContent =
+      `Match: First to ${firstTo} Sets · Set: First to ${legsToWin} Legs · Anwurf Start: Spieler ${starter}`;
+  }
+
+  function applySetup(){
+    state.names.A = el("nameA").value.trim() || "Spieler A";
+    state.names.B = el("nameB").value.trim() || "Spieler B";
+
+    ensureUniqueColors("A");
+    applyPlayerColors();
+
+    state.firstToSets = +el("firstToSets").value;
+    state.legsToWinSet = +el("legsToWinSet").value;
+    state.firstServer = (el("firstServer").value === "B") ? "B" : "A";
+  }
+
+  function show(screen){
+    el("screenSetup").classList.toggle("hidden", screen !== "setup");
+    el("screenGame").classList.toggle("hidden", screen !== "game");
+    closePalettes();
+  }
+
+  function renderGame(){
+    el("titleA").textContent = state.names.A;
+    el("titleB").textContent = state.names.B;
+
+    el("setsA").textContent = state.sets.A;
+    el("setsB").textContent = state.sets.B;
+    el("legsA").textContent = state.legs.A;
+    el("legsB").textContent = state.legs.B;
+
+    el("matchPill").textContent = `Match: First to ${state.firstToSets} Sets`;
+    el("legsPill").textContent  = `Set: First to ${state.legsToWinSet} Legs`;
+
+    const thrower = computeThrower();
+    el("serveA").classList.toggle("none", thrower !== "A");
+    el("serveB").classList.toggle("none", thrower !== "B");
+  }
+
+  function updateWinSummary(){
+    el("sumNameA").textContent = state.names.A;
+    el("sumNameB").textContent = state.names.B;
+    el("sumSetsA").textContent = state.sets.A;
+    el("sumSetsB").textContent = state.sets.B;
+    el("sumLegsA").textContent = state.legsTotal.A;
+    el("sumLegsB").textContent = state.legsTotal.B;
+  }
+
+  function buildShareText(){
+    return [
+      "🎯 Dart Set & Leg Counter",
+      `${state.names.A} vs ${state.names.B}`,
+      `Sets: ${state.sets.A}-${state.sets.B}`,
+      `Legs (gesamt): ${state.legsTotal.A}-${state.legsTotal.B}`,
+      `Format: First to ${state.firstToSets} Sets · Legs/Set: ${state.legsToWinSet}`
+    ].join("\n");
+  }
+
+  async function shareResult(){
+    const text = buildShareText();
+    try{
+      if(navigator.share){
+        await navigator.share({ text, title: "Dart Ergebnis" });
+        haptic(16);
+        return;
+      }
+    }catch(_){}
+
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(text);
+        alert("Ergebnis in die Zwischenablage kopiert.");
+        haptic(16);
+        return;
+      }
+    }catch(_){}
+
+    prompt("Ergebnis kopieren:", text);
+  }
+
+  function showWinModal(winner){
+    state.matchOver = true;
+
+    const winnerName = state.names[winner];
+    const winnerColor = (winner === "A") ? state.colors.A : state.colors.B;
+
+    const modal = el("winModal");
+    const card = modal.querySelector(".modalCard");
+    card.style.setProperty("--winColor", winnerColor);
+
+    el("winTitle").textContent = `Glückwunsch ${winnerName}!`;
+    el("winSub").textContent = "Sie haben das Match gewonnen.";
+    el("winScore").textContent = `${state.sets.A}-${state.sets.B} Sets`;
+
+    updateWinSummary();
+    el("winTag").textContent = "🏆 Match beendet";
+
+    modal.classList.add("show");
+
+    playCheer();
+    haptic([35, 55, 35]);
+
+    // Match ist vorbei -> optional: gespeicherten Zwischenstand löschen
+    // (damit man nicht aus Versehen ein fertiges Match „fortsetzt“)
+    try{ localStorage.removeItem(CHECKPOINT_KEY); }catch(_){}
+    updateResumeButton();
+  }
+
+  function hideWinModal(){ el("winModal").classList.remove("show"); }
+
+  function finishMatchIfNeeded(player){
+    if(state.sets[player] >= state.firstToSets){
+      showWinModal(player);
+      return true;
+    }
+    return false;
+  }
+
+  function awardSet(player){
+    state.sets[player] += 1;
+    state.legs.A = 0;
+    state.legs.B = 0;
+    logLine(`Set an ${state.names[player]} — Sets: ${state.sets.A}-${state.sets.B}`);
+    finishMatchIfNeeded(player);
+  }
+
+  function addLeg(player){
+    if(state.matchOver) return;          // wichtig: blockieren
+    if(el("winModal").classList.contains("show")) return; // extra Sicherheit
+
+    snapshot();
+
+    state.legs[player] += 1;
+    state.legsTotal[player] += 1;
+
+    haptic(12);
+    logLine(`Leg an ${state.names[player]} — Legs: ${state.legs.A}-${state.legs.B}`);
+
+    if(state.legs[player] >= state.legsToWinSet){
+      awardSet(player);
+      if(state.matchOver){ renderGame(); return; }
+    }
+    renderGame();
+  }
+
+  function resetMatch(keepSetup = true){
+    state.matchOver = false;
+    state.sets.A = 0; state.sets.B = 0;
+    state.legs.A = 0; state.legs.B = 0;
+    state.legsTotal.A = 0; state.legsTotal.B = 0;
+    state.history = [];
+    el("log").textContent = "";
+    hideWinModal();
+    logLine("Neues Match gestartet.");
+    renderGame();
+
+    // Log bleibt zu
+    el("log").classList.add("hidden");
+    el("toggleLog").textContent = "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded","false");
+
+    haptic(20);
+
+    if(!keepSetup) show("setup");
+  }
+
+  function undo(){
+    if(state.matchOver) return;
+    const prev = state.history.pop();
+    if(!prev) return;
+
+    state.names = prev.names;
+    state.colors = prev.colors;
+    state.firstToSets = prev.firstToSets;
+    state.legsToWinSet = prev.legsToWinSet;
+    state.firstServer = prev.firstServer;
+    state.sets = prev.sets;
+    state.legs = prev.legs;
+    state.legsTotal = prev.legsTotal;
+    state.matchOver = prev.matchOver;
+
+    applyPlayerColors();
+    refreshPalettes();
+    haptic(18);
+    logLine("Einen Schritt zurück.");
+    renderGame();
+  }
+
+  function toggleLog(){
+    el("log").classList.toggle("hidden");
+    const vis = !el("log").classList.contains("hidden");
+    el("toggleLog").textContent = vis ? "Verlauf ausblenden" : "Verlauf anzeigen";
+    el("toggleLog").setAttribute("aria-expanded", String(vis));
+    haptic(8);
+  }
+
+  function attachTapAndLongPress(targetEl, onTap, onLongPress){
+    const LONG = 450;
+    let timer = null;
+    let didLong = false;
+
+    const clear = () => {
+      if(timer) clearTimeout(timer);
+      timer = null;
+    };
+
+    targetEl.addEventListener("pointerdown", () => {
+      didLong = false;
+      clear();
+      timer = setTimeout(() => {
+        didLong = true;
+        onLongPress();
+        haptic(10);
+      }, LONG);
+    }, { passive: true });
+
+    targetEl.addEventListener("pointerup", () => {
+      if(!didLong) onTap();
+      clear();
+    });
+
+    targetEl.addEventListener("pointercancel", clear);
+    targetEl.addEventListener("pointerleave", clear);
+
+    targetEl.addEventListener("contextmenu", (e)=> e.preventDefault());
+  }
+
+  // ---- Zwischenstand speichern/fortsetzen ----
+  function saveCheckpoint(){
+    try{
+      const payload = {
+        ts: Date.now(),
+        // Setup
+        names: state.names,
+        colors: state.colors,
+        firstToSets: state.firstToSets,
+        legsToWinSet: state.legsToWinSet,
+        firstServer: state.firstServer,
+        // Match
+        sets: state.sets,
+        legs: state.legs,
+        legsTotal: state.legsTotal,
+        // Log (damit Verlauf beim Fortsetzen nicht weg ist)
+        logText: el("log").textContent || "",
+        // Hinweis: history speichern wir bewusst nicht (einfacher/stabiler)
+        // Settings
+        settings: state.settings
+      };
+      localStorage.setItem(CHECKPOINT_KEY, JSON.stringify(payload));
+      haptic([20, 30, 20]);
+      alert("Zwischenstand gespeichert. Sie können später über „Zwischenstand fortsetzen“ weitermachen.");
+    }catch(_){
+      alert("Konnte Zwischenstand nicht speichern (LocalStorage nicht verfügbar).");
+    }
+    updateResumeButton();
+  }
+
+  function hasCheckpoint(){
+    try{ return !!localStorage.getItem(CHECKPOINT_KEY); }catch(_){ return false; }
+  }
+
+  function updateResumeButton(){
+    const btn = el("resumeBtn");
+    if(!btn) return;
+    btn.classList.toggle("hidden", !hasCheckpoint());
+  }
+
+  function resumeCheckpoint(){
+    let raw = null;
+    try{ raw = localStorage.getItem(CHECKPOINT_KEY); }catch(_){}
+    if(!raw){ alert("Kein gespeicherter Zwischenstand gefunden."); updateResumeButton(); return; }
+
+    try{
+      const p = JSON.parse(raw);
+
+      // Restore settings
+      if(p.settings){
+        state.settings.haptics = (p.settings.haptics !== false);
+        state.settings.sound   = (p.settings.sound !== false);
+        el("hapticToggle").checked = !!state.settings.haptics;
+        el("soundToggle").checked  = !!state.settings.sound;
+        saveToggleSettings();
+      }
+
+      // Restore setup
+      state.names = p.names || state.names;
+      state.colors = p.colors || state.colors;
+      state.firstToSets = +p.firstToSets || state.firstToSets;
+      state.legsToWinSet = +p.legsToWinSet || state.legsToWinSet;
+      state.firstServer = (p.firstServer === "B") ? "B" : "A";
+
+      // Restore match
+      state.sets = p.sets || {A:0,B:0};
+      state.legs = p.legs || {A:0,B:0};
+      state.legsTotal = p.legsTotal || {A:0,B:0};
+      state.matchOver = false;
+      state.history = [];
+
+      // Restore log
+      el("log").textContent = p.logText || "";
+      el("log").classList.add("hidden");
+      el("toggleLog").textContent = "Verlauf anzeigen";
+      el("toggleLog").setAttribute("aria-expanded","false");
+
+      // Reflect inputs in setup
+      el("nameA").value = (state.names.A === "Spieler A") ? "" : state.names.A;
+      el("nameB").value = (state.names.B === "Spieler B") ? "" : state.names.B;
+      el("firstToSets").value = String(state.firstToSets);
+      el("legsToWinSet").value = String(state.legsToWinSet);
+      el("firstServer").value = state.firstServer;
+
+      ensureUniqueColors("A");
+      applyPlayerColors();
+      refreshPalettes();
+      renderSetupHint();
+
+      // Go to game
+      renderGame();
+      show("game");
+      haptic(18);
+      ensureAudio();
+    }catch(_){
+      alert("Zwischenstand ist beschädigt und konnte nicht geladen werden.");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fillRangeSelect(el("firstToSets"), "Sets", 3);
+    fillRangeSelect(el("legsToWinSet"), "Legs", 3);
+
+    buildPalette("A");
+    buildPalette("B");
+
+    document.addEventListener("pointerdown", unlockAudioOnce, { once:true });
+
+    el("colorBtnA").addEventListener("click", ()=> togglePalette("A"));
+    el("colorBtnB").addEventListener("click", ()=> togglePalette("B"));
+
+    document.addEventListener("click", (e)=>{
+      const inA = el("paletteA").contains(e.target) || el("colorBtnA").contains(e.target);
+      const inB = el("paletteB").contains(e.target) || el("colorBtnB").contains(e.target);
+      if(!inA && !inB) closePalettes();
+    });
+
+    ["nameA","nameB","firstToSets","legsToWinSet","firstServer"].forEach(id=>{
+      el(id).addEventListener("input", ()=>{ saveSettings(); renderSetupHint(); });
+      el(id).addEventListener("change", ()=>{ saveSettings(); renderSetupHint(); haptic(8); });
+    });
+
+    el("hapticToggle").addEventListener("change", ()=>{
+      state.settings.haptics = el("hapticToggle").checked;
+      saveToggleSettings();
+      haptic(10);
+    });
+
+    el("soundToggle").addEventListener("change", ()=>{
+      state.settings.sound = el("soundToggle").checked;
+      saveToggleSettings();
+      haptic(8);
+      ensureAudio();
+    });
+
+    el("quickHelpBtn").addEventListener("click", ()=>{
+      const t = el("helpText");
+      t.style.display = (t.style.display === "none") ? "block" : "none";
+      haptic(8);
+    });
+
+    el("startBtn").addEventListener("click", ()=>{
+      ensureAudio();
+      applySetup();
+      saveSettings();
+
+      state.matchOver = false;
+      state.sets.A = 0; state.sets.B = 0;
+      state.legs.A = 0; state.legs.B = 0;
+      state.legsTotal.A = 0; state.legsTotal.B = 0;
+      state.history = [];
+      el("log").textContent = "";
+
+      logLine(`Start: ${state.names.A} vs ${state.names.B} — First to ${state.firstToSets} Sets — Legs/Set: ${state.legsToWinSet} — Anwurf: Spieler ${state.firstServer}`);
+
+      // Log bleibt zu
+      el("log").classList.add("hidden");
+      el("toggleLog").textContent = "Verlauf anzeigen";
+      el("toggleLog").setAttribute("aria-expanded","false");
+
+      renderGame();
+      haptic(14);
+      show("game");
+    });
+
+    // Resume button im Setup
+    el("resumeBtn").addEventListener("click", resumeCheckpoint);
+
+    // Tap/Longpress im Spiel
+    attachTapAndLongPress(el("rowA"), () => addLeg("A"), undo);
+    attachTapAndLongPress(el("rowB"), () => addLeg("B"), undo);
+
+    el("undo").addEventListener("click", undo);
+    el("toggleLog").addEventListener("click", toggleLog);
+    el("saveCheckpoint").addEventListener("click", saveCheckpoint);
+
+    el("resetToSetup").addEventListener("click", ()=>{
+      haptic(10);
+      if(confirm("Zum Setup zurückkehren und neues Match vorbereiten?")){
+        hideWinModal();
+        state.matchOver = false;
+        show("setup");
+      }
+    });
+
+    // Theme Toggle (Setup + Game)
+    el("themeToggle").addEventListener("click", toggleTheme);
+    el("themeToggle2").addEventListener("click", toggleTheme);
+
+    // Win modal actions
+    el("winRematch").addEventListener("click", ()=> resetMatch(true));
+    el("winToSetup").addEventListener("click", ()=>{
+      hideWinModal();
+      state.matchOver = false;
+      show("setup");
+      haptic(10);
+    });
+    el("shareBtn").addEventListener("click", shareResult);
+
+    el("winModal").addEventListener("click", (e)=>{
+      if(e.target === el("winModal")){ e.preventDefault(); e.stopPropagation(); }
+    });
+
+    // Init
+    loadTheme();
+    loadToggleSettings();
+    loadSettings();
+    applyPlayerColors();
+    refreshPalettes();
+    renderSetupHint();
+
+    // Resume Button Sichtbarkeit
+    updateResumeButton();
+  });
 </script>
-
 </body>
 </html>
