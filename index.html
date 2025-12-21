@@ -109,16 +109,16 @@
       flex: 1;
     }
 
-    /* ✅ Nur fixe Breite, keine fixe Höhe – keine Verzerrung */
+    /* Only fixed width, no fixed height */
     .logoImg{
       width: 44px;
       height: auto;
-      aspect-ratio: 1 / 1;   /* verhindert Layout-Sprung, bleibt quadratisch */
+      aspect-ratio: 1 / 1;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.26);
       background: rgba(0,0,0,.18);
       flex: 0 0 auto;
-      object-fit: contain;   /* nichts wird abgeschnitten / verzerrt */
+      object-fit: contain;
       box-shadow: 0 10px 18px rgba(0,0,0,.25);
     }
 
@@ -303,7 +303,6 @@
       outline: 3px solid rgba(255,255,255,.42);
       outline-offset: 2px;
     }
-    /* ✅ "durchgestrichen" statt ausgegraut */
     .swatch.taken{
       opacity: .95;
       cursor: not-allowed;
@@ -335,15 +334,14 @@
     /* SCOREBOARD */
     .scoreboard{ padding: 0; overflow:hidden; }
 
-    /* ✅ Header: hellgrau vollflächig, kein Verlauf */
     .sb-header{
       display:grid;
       grid-template-columns: 86px 1fr 70px 70px;
       align-items:center;
       padding: 10px 14px;
-      background: #e6e8ec;   /* hellgrau */
+      background: #e6e8ec;
       border-bottom: 1px solid rgba(0,0,0,.10);
-      column-gap: 12px;      /* ✅ mehr Abstand, kein Überlappen */
+      column-gap: 12px;
       position:relative;
     }
     .sb-header .col, .sb-header .left{
@@ -351,7 +349,7 @@
       color: rgba(11,15,20,.92);
       font-weight: 1200;
       letter-spacing: .28px;
-      text-transform: uppercase; /* ✅ einheitlich */
+      text-transform: uppercase;
       position:relative;
       z-index:1;
     }
@@ -378,7 +376,6 @@
         );
     }
 
-    /* ✅ Anwurf Zelle IMMER mit schwarzem Hintergrund */
     .serveCell{
       display:flex;
       align-items:center;
@@ -556,7 +553,7 @@
       padding: 12px;
     }
 
-    /* ✅ Nur fixe Breite, keine fixe Höhe – keine Verzerrung */
+    /* Only fixed width, no fixed height */
     .footerImg{
       width: 84px;
       height: auto;
@@ -634,17 +631,16 @@
       <div class="card">
         <div class="controls" style="gap:12px;">
           <div style="flex:1; min-width: 240px;">
-            <label for="firstToSets">Sets (First to)</label>
+            <label for="firstToSets">Sets</label>
             <select id="firstToSets"></select>
           </div>
           <div style="flex:1; min-width: 240px;">
-            <label for="legsToWinSet">Legs (First to)</label>
+            <label for="legsToWinSet">Legs (pro Set)</label>
             <select id="legsToWinSet"></select>
           </div>
         </div>
       </div>
 
-      <!-- Anwurf im Setup -->
       <div class="card compact">
         <label for="firstServer">Anwurf in Set 1 / Leg 1</label>
         <select id="firstServer"></select>
@@ -686,8 +682,6 @@
           <div class="badgeLine">
             <span class="pill" id="setsPill"></span>
             <span class="pill" id="legsPill"></span>
-
-            <!-- ✅ Spieler A/B statt nur A/B -->
             <span class="pill" id="pillA"></span>
             <span class="pill" id="pillB"></span>
           </div>
@@ -735,7 +729,6 @@
       <h2 class="modalTitle" id="winTitle">Glückwunsch!</h2>
       <p class="modalSub" id="winSub">—</p>
 
-      <!-- ✅ Nur 2 Buttons + Share Icon -->
       <div class="modalActions">
         <button class="primary" id="winRematch" type="button">Revanche</button>
         <button class="ghost" id="winToSetup" type="button">Zum Setup</button>
@@ -748,14 +741,16 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const SETTINGS_KEY = "dart_counter_settings_v24";
-  const MATCH_KEY    = "dart_counter_match_v24";
+  const SETTINGS_KEY = "dart_counter_settings_v25";
+  const MATCH_KEY    = "dart_counter_match_v25";
   const APP_URL      = "https://nicoloehle.github.io/dart-counter/";
 
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 6;
 
-  /* Farben sortiert + ohne schwarz/weiß/grau, mit braun/dunkelblau/violett/pink */
+  // Only odd for both
+  const ODD_CHOICES = [1,3,5,7];
+
   const COLOR_OPTIONS = [
     { key: "red",      name: "Rot",        hex: "#d61f26" },
     { key: "green",    name: "Grün",       hex: "#14a44d" },
@@ -773,7 +768,6 @@
 
   function haptic(ms = 14) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(_){} }
 
-  /* Simple click sounds */
   let audioCtx = null;
   function ensureAudio(){
     if(audioCtx) return;
@@ -807,13 +801,18 @@
     setTimeout(()=>t.classList.remove("show"), 1600);
   }
 
+  // --- helpers for consistent wording ---
+  function bestOfFromFirstTo(firstTo){ return firstTo * 2 - 1; }
+  function fmtSets(firstTo){ return `First to ${firstTo} (Best of ${bestOfFromFirstTo(firstTo)})`; }
+  function fmtLegs(firstTo){ return `First to ${firstTo}`; }
+
   const state = {
     players: [
       { id: "p1", name: "", color: COLOR_OPTIONS[0].hex },
       { id: "p2", name: "", color: COLOR_OPTIONS[1].hex }
     ],
-    firstToSets: 3,
-    legsToWinSet: 3,
+    firstToSets: 3,      // odd only: 1/3/5/7
+    legsToWinSet: 3,     // odd only: 1/3/5/7
     firstServerId: "p1",
 
     match: {
@@ -874,6 +873,12 @@
     }catch(_){}
   }
 
+  function normalizeOdd(val, fallback){
+    const n = +val;
+    if(ODD_CHOICES.includes(n)) return n;
+    return fallback;
+  }
+
   function loadSettings(){
     try{
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -891,8 +896,8 @@
         }
       }
 
-      state.firstToSets  = Number.isFinite(+s.firstToSets) ? Math.min(7, Math.max(1, +s.firstToSets)) : state.firstToSets;
-      state.legsToWinSet = Number.isFinite(+s.legsToWinSet) ? Math.min(7, Math.max(1, +s.legsToWinSet)) : state.legsToWinSet;
+      state.firstToSets  = normalizeOdd(s.firstToSets, state.firstToSets);
+      state.legsToWinSet = normalizeOdd(s.legsToWinSet, state.legsToWinSet);
 
       if(typeof s.firstServerId === "string" && s.firstServerId && getPlayerById(s.firstServerId)){
         state.firstServerId = s.firstServerId;
@@ -904,13 +909,25 @@
     }catch(_){}
   }
 
-  function fillOneToSeven(selectEl, defaultVal){
+  // Dropdowns: odd only + consistent text
+  function fillSetsSelect(selectEl, currentFirstTo){
     selectEl.innerHTML = "";
-    for(let i=1;i<=7;i++){
+    for (const firstTo of ODD_CHOICES){
       const opt = document.createElement("option");
-      opt.value = String(i);
-      opt.textContent = String(i);
-      if(i === defaultVal) opt.selected = true;
+      opt.value = String(firstTo);
+      opt.textContent = fmtSets(firstTo);
+      if(firstTo === currentFirstTo) opt.selected = true;
+      selectEl.appendChild(opt);
+    }
+  }
+
+  function fillLegsSelect(selectEl, currentLegs){
+    selectEl.innerHTML = "";
+    for (const n of ODD_CHOICES){
+      const opt = document.createElement("option");
+      opt.value = String(n);
+      opt.textContent = fmtLegs(n);
+      if(n === currentLegs) opt.selected = true;
       selectEl.appendChild(opt);
     }
   }
@@ -939,7 +956,7 @@
     const legs = +el("legsToWinSet").value;
     const starter = getPlayerById(el("firstServer").value);
     el("formatHint").textContent =
-      `Match: First to ${sets} Sets · Set: First to ${legs} Legs · Anwurf Start: ${playerName(starter, "Spieler 1")}`;
+      `Match: ${fmtSets(sets)} · Set: ${fmtLegs(legs)} Legs · Anwurf Start: ${playerName(starter, "Spieler 1")}`;
   }
 
   function show(screen){
@@ -991,7 +1008,6 @@
       input.placeholder = `Spieler ${idx+1}`;
       input.value = (typeof p.name === "string") ? p.name : "";
 
-      /* ✅ Mobile: Done/Fertig + Enter schließt Feld */
       input.setAttribute("enterkeyhint", "done");
       input.setAttribute("inputmode", "text");
       input.setAttribute("autocomplete", "name");
@@ -1117,21 +1133,40 @@
     state.match.setNo = 1;
   }
 
+  /* ===========================
+     ✅ PERFORMANCE FIX:
+     snapshot stores NO nested history
+  ============================ */
   function snapshot(){
     state.match.history.push(JSON.parse(JSON.stringify({
       players: state.players,
       firstToSets: state.firstToSets,
       legsToWinSet: state.legsToWinSet,
       firstServerId: state.firstServerId,
-      match: state.match
+
+      match: {
+        inProgress: state.match.inProgress,
+        matchOver: state.match.matchOver,
+        setNo: state.match.setNo,
+        sets: state.match.sets,
+        legs: state.match.legs,
+        legsTotal: state.match.legsTotal
+      }
     })));
     if(state.match.history.length > 80) state.match.history.shift();
   }
 
+  /* ===========================
+     ✅ PERFORMANCE FIX:
+     log is bounded (no O(n²))
+  ============================ */
+  const LOG_MAX_LINES = 180;
+  const logLines = [];
   function logLine(t){
-    const prev = el("log").textContent || "";
-    const sep = prev.trim().length ? "\n────────────────────────\n" : "";
-    el("log").textContent = t + sep + prev;
+    logLines.unshift(t);
+    if(logLines.length > 1) logLines.splice(1, 0, "────────────────────────");
+    while(logLines.length > LOG_MAX_LINES) logLines.pop();
+    el("log").textContent = logLines.join("\n");
   }
 
   function currentLegNumberWithinSet(){
@@ -1146,7 +1181,6 @@
     return state.players[(setStarterIdx + legOffset) % n]?.id || state.players[0]?.id || null;
   }
 
-  /* ✅ Fix für Doppelzählung: NUR Pointer-Events */
   function attachTapAndLongPress(targetEl, onTap, onLongPress){
     const LONG = 450;
     let timer = null;
@@ -1210,8 +1244,13 @@
       rows.appendChild(row);
     });
 
-    el("setsPill").textContent = `Sets: First to ${state.firstToSets}`;
-    el("legsPill").textContent = `Legs/Set: First to ${state.legsToWinSet}`;
+    el("setsPill").textContent = `Sets: ${fmtSets(state.firstToSets)}`;
+    el("legsPill").textContent = `Legs/Set: ${fmtLegs(state.legsToWinSet)}`;
+
+    const p1 = state.players[0] || { name:"", color: COLOR_OPTIONS[0].hex };
+    const p2 = state.players[1] || { name:"", color: COLOR_OPTIONS[1].hex };
+    el("pillA").textContent = `Spieler 1: ${playerName(p1,"Spieler 1")}`;
+    el("pillB").textContent = `Spieler 2: ${playerName(p2,"Spieler 2")}`;
   }
 
   function scoreSummarySets(){
@@ -1231,17 +1270,11 @@
     renderGame();
   }
 
-  /* ✅ Set vergeben + Legs im Set zurücksetzen */
   function awardSet(playerId){
     state.match.sets[playerId] = (state.match.sets[playerId] || 0) + 1;
-
-    for(const p of state.players){
-      state.match.legs[p.id] = 0;
-    }
-
+    for(const p of state.players){ state.match.legs[p.id] = 0; }
     logLine(`Set an ${playerName(getPlayerById(playerId), "Spieler")} — Sets: ${scoreSummarySets()}`);
     sfx.set(); haptic(18);
-
     state.match.setNo += 1;
 
     if((state.match.sets[playerId] || 0) >= state.firstToSets){
@@ -1249,10 +1282,8 @@
     }
   }
 
-  /* ✅ Leg hinzufügen + wenn >= legsToWinSet => Set vergeben */
   function addLeg(playerId){
     if(state.match.matchOver) return;
-
     snapshot();
 
     state.match.legs[playerId] = (state.match.legs[playerId] || 0) + 1;
@@ -1264,7 +1295,6 @@
     if((state.match.legs[playerId] || 0) >= state.legsToWinSet){
       awardSet(playerId);
     }
-
     renderGame();
   }
 
@@ -1274,10 +1304,13 @@
     if(!prev) return;
 
     state.players = prev.players;
-    state.firstToSets = prev.firstToSets;
-    state.legsToWinSet = prev.legsToWinSet;
+    state.firstToSets = normalizeOdd(prev.firstToSets, state.firstToSets);
+    state.legsToWinSet = normalizeOdd(prev.legsToWinSet, state.legsToWinSet);
     state.firstServerId = prev.firstServerId;
+
+    const oldHistory = state.match.history;
     state.match = prev.match;
+    state.match.history = oldHistory;
 
     enforceUniqueColorsAll();
     applyFirstTwoColorsToCSS();
@@ -1351,8 +1384,8 @@
       }
     }
 
-    state.firstToSets = saved.firstToSets || state.firstToSets;
-    state.legsToWinSet = saved.legsToWinSet || state.legsToWinSet;
+    state.firstToSets = normalizeOdd(saved.firstToSets, state.firstToSets);
+    state.legsToWinSet = normalizeOdd(saved.legsToWinSet, state.legsToWinSet);
     state.firstServerId = saved.firstServerId || (state.players[0]?.id);
 
     state.match = saved.match || state.match;
@@ -1379,7 +1412,6 @@
     }
   }
 
-  /* ✅ Speichern + Button-Bestätigung */
   function saveMatchToStorage(){
     const btn = el("saveResume");
     const oldText = btn.textContent;
@@ -1425,7 +1457,7 @@
       "📌 Legs gesamt:",
       scoreSummaryLegsTotal(),
       "",
-      `⚙️ Matchformat: First to ${state.firstToSets} Sets · First to ${state.legsToWinSet} Legs`,
+      `⚙️ Matchformat: Sets ${fmtSets(state.firstToSets)} · Legs/Set ${fmtLegs(state.legsToWinSet)}`,
       "",
       `👉 App öffnen: ${APP_URL}`
     ].join("\n");
@@ -1459,17 +1491,18 @@
       state.players = state.players.slice(0, MAX_PLAYERS);
     }
 
-    state.firstToSets  = +el("firstToSets").value;
-    state.legsToWinSet = +el("legsToWinSet").value;
+    state.firstToSets  = normalizeOdd(+el("firstToSets").value, state.firstToSets);
+    state.legsToWinSet = normalizeOdd(+el("legsToWinSet").value, state.legsToWinSet);
     state.firstServerId = el("firstServer").value || state.players[0].id;
 
     state.match.inProgress = true;
     state.match.matchOver = false;
     state.match.history = [];
     initScoresForPlayers();
+    logLines.length = 0;
     el("log").textContent = "";
 
-    logLine(`Start — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
+    logLine(`Start — Sets ${fmtSets(state.firstToSets)} — Legs/Set ${fmtLegs(state.legsToWinSet)}`);
     saveSettings();
 
     haptic(12); sfx.ui();
@@ -1484,8 +1517,8 @@
     enforceUniqueColorsAll();
     applyFirstTwoColorsToCSS();
 
-    fillOneToSeven(el("firstToSets"), state.firstToSets);
-    fillOneToSeven(el("legsToWinSet"), state.legsToWinSet);
+    fillSetsSelect(el("firstToSets"), state.firstToSets);
+    fillLegsSelect(el("legsToWinSet"), state.legsToWinSet);
 
     renderPlayers();
     updateFirstServerSelect();
@@ -1513,8 +1546,8 @@
 
     ["firstToSets","legsToWinSet"].forEach(id=>{
       el(id).addEventListener("change", ()=>{
-        state.firstToSets  = +el("firstToSets").value;
-        state.legsToWinSet = +el("legsToWinSet").value;
+        state.firstToSets  = normalizeOdd(+el("firstToSets").value, state.firstToSets);
+        state.legsToWinSet = normalizeOdd(+el("legsToWinSet").value, state.legsToWinSet);
         saveSettings();
         renderSetupHint();
         sfx.ui();
@@ -1549,8 +1582,9 @@
       state.match.matchOver = false;
       state.match.history = [];
       initScoresForPlayers();
+      logLines.length = 0;
       el("log").textContent = "";
-      logLine(`Revanche — First to ${state.firstToSets} Sets — First to ${state.legsToWinSet} Legs`);
+      logLine(`Revanche — Sets ${fmtSets(state.firstToSets)} — Legs/Set ${fmtLegs(state.legsToWinSet)}`);
       renderGame();
       haptic(14); sfx.ui();
     });
